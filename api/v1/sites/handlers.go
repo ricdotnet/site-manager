@@ -6,7 +6,6 @@ import (
 	"github.com/ricdotnet/goenvironmental"
 	"net/http"
 	"ricr.dev/site-manager/config"
-	"ricr.dev/site-manager/services/sites"
 	"strconv"
 )
 
@@ -35,7 +34,7 @@ func (a *API) all(ctx echo.Context) error {
 // read the contents of the specified file
 func (a *API) single(ctx echo.Context) error {
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	site := a.repository.GetOne(id)
+	site := a.repository.GetOne(id, 1)
 
 	// if the site doesn't exist it will set the site to 0?
 	if site.ID == 0 {
@@ -43,9 +42,14 @@ func (a *API) single(ctx echo.Context) error {
 	}
 
 	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
-	vhosts, err := sites.ReadSingle(apacheDir+"sites-available/", site.ConfigName)
+	vhosts, err := a.sitesService.ReadSingle(apacheDir+"sites-available/", site.ConfigName)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, &Response{
+			ApiResponse: config.ApiResponse{
+				Code:    400,
+				Message: "We have a database record for that name but could not read the file",
+			},
+		})
 	}
 	_vhosts := fmt.Sprintf("%s", vhosts)
 

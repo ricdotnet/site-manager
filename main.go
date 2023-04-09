@@ -12,7 +12,6 @@ import (
 
 func main() {
 	goenvironmental.ParseEnv()
-
 	cfg := config.NewConfig()
 
 	dbString, _ := goenvironmental.Get("DB_STRING")
