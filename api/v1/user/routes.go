@@ -3,10 +3,11 @@ package user
 import (
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
+	"ricr.dev/site-manager/config"
 )
 
-func Routes(g *echo.Group, db *gorm.DB) {
-	api := New(db)
+func Routes(g *echo.Group, db *gorm.DB, cfg *config.Config) {
+	api := New(db, cfg)
 
 	user := g.Group("/user")
 

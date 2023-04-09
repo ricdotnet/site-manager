@@ -13,8 +13,8 @@ func New(cfg *config.Config, db *gorm.DB) *echo.Echo {
 	//e.Use(cfg.ConfigMiddleware)
 
 	v1 := e.Group("/api/v1")
-	sites.Routes(v1, db)
-	user.Routes(v1, db)
+	sites.Routes(v1, db, cfg)
+	user.Routes(v1, db, cfg)
 
 	return e
 }

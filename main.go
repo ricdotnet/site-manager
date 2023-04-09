@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	router "ricr.dev/site-manager/api/v1"
 	"ricr.dev/site-manager/api/v1/sites"
+	"ricr.dev/site-manager/api/v1/user"
 	"ricr.dev/site-manager/config"
 )
 
@@ -19,7 +20,7 @@ func main() {
 	if err != nil {
 		panic("Failed to connect to the database")
 	}
-	err = db.AutoMigrate(&sites.Site{})
+	err = db.AutoMigrate(&user.User{}, &sites.Site{})
 	if err != nil {
 		return
 	}

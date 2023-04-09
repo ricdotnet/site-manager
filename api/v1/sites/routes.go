@@ -3,6 +3,7 @@ package sites
 import (
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
+	"ricr.dev/site-manager/config"
 )
 
 type Sites struct {
@@ -11,8 +12,8 @@ type Sites struct {
 
 // for the user id we are assuming it will always be present on the authorisation token
 
-func Routes(g *echo.Group, db *gorm.DB) {
-	api := New(db)
+func Routes(g *echo.Group, db *gorm.DB, cfg *config.Config) {
+	api := New(db, cfg)
 
 	sites := g.Group("/sites")
 
