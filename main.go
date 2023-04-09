@@ -12,11 +12,11 @@ import (
 
 func main() {
 	goenvironmental.ParseEnv()
-	goenvironmental.Get("APACHE_DIR")
 
 	cfg := config.NewConfig()
 
-	db, err := gorm.Open(mysql.Open(goenvironmental.Get("DB_STRING")), &gorm.Config{})
+	dbString, _ := goenvironmental.Get("DB_STRING")
+	db, err := gorm.Open(mysql.Open(dbString), &gorm.Config{})
 	if err != nil {
 		panic("Failed to connect to the database")
 	}

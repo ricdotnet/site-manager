@@ -42,7 +42,8 @@ func (a *API) single(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, "The site you tried to look for does not exist")
 	}
 
-	vhosts, err := sites.ReadSingle(goenvironmental.Get("APACHE_DIR")+"sites-available/", site.ConfigName)
+	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
+	vhosts, err := sites.ReadSingle(apacheDir+"sites-available/", site.ConfigName)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
