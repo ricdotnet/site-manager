@@ -18,35 +18,61 @@ func NewRepository(db *gorm.DB, cfg *config.Config) *Repository {
 	}
 }
 
-func (r *Repository) GetAll(user int) *[]Site {
+func (r *Repository) GetAll(user int) (*[]Site, error) {
 	sites := new([]Site)
-	r.db.Find(&sites, "user = ?", user)
-	r.logger.Infof("Found %d site records for user with id %d", len(*sites), user)
+	if err := r.db.Find(&sites, "user = ?", user).Error; err != nil {
+		return nil, err
+	}
 
-	return sites
+	r.logger.Infof("Found %d site records for user with id %d", len(*sites), user)
+	return sites, nil
 }
 
-func (r *Repository) GetOne(id int, user int) *Site {
+func (r *Repository) GetOne(id int, user int) (*Site, error) {
 	site := &Site{}
-	r.db.First(site, "id = ?", id)
+	if err := r.db.First(site, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
 	if site != nil {
 		r.logger.Info("Found 1 site record with id of %d for user %d", id, user)
 	}
 
-	return site
+	return site, nil
 }
 
-func (r *Repository) Create(site *Site) *Site {
-	r.db.Create(site)
-	return site
+func (r *Repository) Create(site *Site) (*Site, error) {
+	if err := r.db.Create(site).Error; err != nil {
+		return nil, err
+	}
+	return site, nil
 }
 
-func (r *Repository) Update(site *Site) *Site {
-	r.db.Updates(site)
-	return site
+func (r *Repository) Update(site *Site) (*Site, error) {
+	updated := &Site{}
+	var err error
+	if err = r.db.Updates(site).Error; err != nil {
+		return nil, err
+	}
+	if err = r.db.First(updated, "id = ?", site.ID).Error; err != nil {
+		return nil, err
+	}
+	return updated, nil
 }
 
-func (r *Repository) Delete(id int) int {
-	r.db.Delete(&Site{}, id)
-	return id
+func (r *Repository) Enable(site *Site) error {
+	if err := r.db.Model(site).
+		Where("id = ?", site.ID).
+		Update("enabled", site.Enabled).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) Delete(id int) error {
+	if err := r.db.Delete(&Site{}, id).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

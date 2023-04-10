@@ -19,7 +19,10 @@ type Response struct {
 // all
 // get all sites that belong to a specific user
 func (a *API) all(ctx echo.Context) error {
-	userSites := a.repository.GetAll(2)
+	userSites, err := a.repository.GetAll(2)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when trying to find all sites")
+	}
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
@@ -34,7 +37,10 @@ func (a *API) all(ctx echo.Context) error {
 // read the contents of the specified file
 func (a *API) single(ctx echo.Context) error {
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	site := a.repository.GetOne(id, 1)
+	site, err := a.repository.GetOne(id, 1)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Something went wrong when trying to find the site")
+	}
 
 	// if the site doesn't exist it will set the site to 0?
 	if site.ID == 0 {
@@ -71,23 +77,64 @@ func (a *API) create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	a.repository.Create(site)
+	create, err := a.repository.Create(site)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, Response{
+			ApiResponse: config.ApiResponse{
+				Code:    400,
+				Message: "Unable to create a new site",
+			},
+		})
+	}
 
 	return ctx.JSON(http.StatusCreated, Response{
 		ApiResponse: config.ApiResponse{
 			Code:    201,
 			Message: "Site created with success",
 		},
+		Site: create,
 	})
 }
 
 // update
 // endpoint to change an existing site data (not the vhosts file)
 func (a *API) update(ctx echo.Context) error {
+	site := &Site{}
+	err := ctx.Bind(site)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
+	}
+
+	updated, _ := a.repository.Update(site)
+
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
 			Code:    200,
-			Message: "Endpoint not implemented yet",
+			Message: "Site updated successfully",
+		},
+		Site: updated,
+	})
+}
+
+// enable
+// endpoint to enable disable a site
+func (a *API) enable(ctx echo.Context) error {
+	site := &Site{}
+	err := ctx.Bind(site)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
+	}
+
+	id, _ := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	site.ID = uint(id)
+	if err := a.repository.Enable(site); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Unable to update site status")
+	}
+
+	return ctx.JSON(http.StatusOK, Response{
+		ApiResponse: config.ApiResponse{
+			Code:    200,
+			Message: "Site updated successfully",
 		},
 	})
 }
@@ -102,7 +149,9 @@ func (a *API) delete(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "The id must be of type integer")
 	}
 
-	a.repository.Delete(_id)
+	if err := a.repository.Delete(_id); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Unable to delete site")
+	}
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{

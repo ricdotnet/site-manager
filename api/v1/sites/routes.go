@@ -18,8 +18,9 @@ func Routes(g *echo.Group, db *gorm.DB, cfg *config.Config) {
 	sites := g.Group("/sites")
 
 	sites.GET("/all/:type", api.all)
-	sites.GET("/single/:id", api.single)
-	sites.POST("/single", api.create)
-	sites.PATCH("/single/:id", api.update)
-	sites.DELETE("/single/:id", api.delete)
+	sites.GET("/single/get/:id", api.single)
+	sites.POST("/single/create", api.create)
+	sites.PATCH("/single/update/:id", api.update)
+	sites.PATCH("/single/enable/:id", api.enable)
+	sites.DELETE("/single/delete/:id", api.delete)
 }
