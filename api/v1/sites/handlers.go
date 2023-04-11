@@ -105,6 +105,15 @@ func (a *API) update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
 	}
 
+	id, _ := strconv.Atoi(ctx.Param("id"))
+	if site.ConfigName != "" {
+		oldSite, _ := a.repository.GetOne(id, 1)
+		err = a.sitesService.UpdateName(oldSite.ConfigName, site.ConfigName)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Unable to find a file to rename")
+		}
+	}
+
 	updated, _ := a.repository.Update(site)
 
 	return ctx.JSON(http.StatusOK, Response{

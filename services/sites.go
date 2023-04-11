@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/op/go-logging"
+	"github.com/ricdotnet/goenvironmental"
 	"os"
 	"ricr.dev/site-manager/config"
 )
@@ -58,4 +59,20 @@ func (ss *SitesService) WriteSingle(dir string, name string) {
 
 func (ss *SitesService) DeleteSingle(dir string, name string) {
 	// not implemented yet
+}
+
+// UpdateName
+// update the name of a .conf file
+func (ss *SitesService) UpdateName(curr string, new string) error {
+	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
+	apacheDir += "/sites-available/"
+
+	oldPath := apacheDir + curr
+	newPath := apacheDir + new
+
+	if err := os.Rename(oldPath, newPath); err != nil {
+		return err
+	}
+
+	return nil
 }
