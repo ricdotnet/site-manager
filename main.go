@@ -40,7 +40,14 @@ func main() {
 
 func sitesAvailable(l *logging.Logger) {
 	sitesMap := scripts.Init(l).MapSites()
+	file, _ := os.Create("file to write")
+
 	for k, v := range sitesMap {
-		fmt.Printf("[key]: %s - [value]: %s\n", k, v)
+		line := fmt.Sprintf("INSERT INTO sites (domain, config_name, user) VALUES ('%s', '%s', %d);\n", v, k, 1)
+		// ignore the errors :-)
+		_, _ = file.WriteString(line)
 	}
+
+	// ignore the errors :-)
+	_ = file.Close()
 }
