@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/alexedwards/argon2id v0.0.0-20230305115115-4b3c3280a736 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect

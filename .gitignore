@@ -1,2 +1,14 @@
+# ide
 .idea
+.vscode
+
+# system
+*/**/.DS_Store
+
+# environment vars
 .env
+.env.development
+.env.production
+
+# sites-available script output
+db_inserts.sql

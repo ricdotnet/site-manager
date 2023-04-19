@@ -12,16 +12,19 @@ import (
 	"ricr.dev/site-manager/api/v1/user"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/scripts"
+	"time"
 )
 
 func main() {
 	goenvironmental.ParseEnv()
 	cfg := config.NewConfig()
 
-	command := os.Args[1]
-	if command == "sa" {
-		sitesAvailable(cfg.Logger)
-		return
+	if len(os.Args) > 1 {
+		command := os.Args[1]
+		if command == "sa" {
+			sitesAvailable(cfg.Logger)
+			return
+		}
 	}
 
 	dbString, _ := goenvironmental.Get("DB_STRING")
@@ -39,8 +42,10 @@ func main() {
 }
 
 func sitesAvailable(l *logging.Logger) {
+	start := time.Now()
+
 	sitesMap := scripts.Init(l).MapSites()
-	file, _ := os.Create("file to write")
+	file, _ := os.Create("db_inserts.sql")
 
 	for k, v := range sitesMap {
 		line := fmt.Sprintf("INSERT INTO sites (domain, config_name, user) VALUES ('%s', '%s', %d);\n", v, k, 1)
@@ -50,4 +55,9 @@ func sitesAvailable(l *logging.Logger) {
 
 	// ignore the errors :-)
 	_ = file.Close()
+
+	finish := time.Now()
+	seconds := float64(finish.UnixMilli()-start.UnixMilli()) / 1000
+
+	fmt.Printf("Finished parsing all config files in %v seconds", seconds)
 }

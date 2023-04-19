@@ -13,7 +13,7 @@ type API struct {
 
 func New(db *gorm.DB, cfg *config.Config) *API {
 	return &API{
-		repository: NewRepository(db),
+		repository: NewRepository(db, cfg.Logger),
 		logger:     cfg.Logger,
 	}
 }
