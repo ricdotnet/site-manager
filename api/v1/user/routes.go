@@ -6,10 +6,10 @@ import (
 	"ricr.dev/site-manager/config"
 )
 
-func Routes(g *echo.Group, db *gorm.DB, cfg *config.Config) {
+func Routes(v1 *echo.Group, db *gorm.DB, cfg *config.Config) {
 	api := New(db, cfg)
 
-	user := g.Group("/user")
+	user := v1.Group("/user")
 
 	user.POST("/login", api.login)
 	user.POST("/register", api.register)

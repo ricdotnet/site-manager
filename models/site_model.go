@@ -1,8 +1,6 @@
-package sites
+package models
 
-import (
-	"ricr.dev/site-manager/config"
-)
+import "ricr.dev/site-manager/config"
 
 type Site struct {
 	config.BaseModel

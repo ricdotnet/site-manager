@@ -5,7 +5,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"ricr.dev/site-manager/config"
+	"ricr.dev/site-manager/models"
 )
+
+type User = models.User
 
 func (a *API) login(ctx echo.Context) error {
 	a.logger.Info("Entering /login handler")

@@ -32,13 +32,20 @@ func main() {
 	if err != nil {
 		panic("Failed to connect to the database")
 	}
-	err = db.AutoMigrate(&user.User{}, &sites.Site{})
+	err = db.AutoMigrate(dbModels()...)
 	if err != nil {
 		return
 	}
 
 	v1 := router.New(cfg, db)
 	v1.Logger.Fatal(v1.Start(":4000"))
+}
+
+func dbModels() []interface{} {
+	return []interface{}{
+		&user.User{},
+		&sites.Site{},
+	}
 }
 
 func sitesAvailable(l *logging.Logger) {
@@ -50,7 +57,10 @@ func sitesAvailable(l *logging.Logger) {
 	for k, v := range sitesMap {
 		line := fmt.Sprintf("INSERT INTO sites (domain, config_name, user) VALUES ('%s', '%s', %d);\n", v, k, 1)
 		// ignore the errors :-)
-		_, _ = file.WriteString(line)
+		_, err := file.WriteString(line)
+		if err != nil {
+			l.Fatalf("Writing failed while writing sql insert for %s", v)
+		}
 	}
 
 	// ignore the errors :-)

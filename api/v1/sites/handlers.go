@@ -6,8 +6,12 @@ import (
 	"github.com/ricdotnet/goenvironmental"
 	"net/http"
 	"ricr.dev/site-manager/config"
+	"ricr.dev/site-manager/models"
 	"strconv"
 )
+
+type Site = models.Site
+type User = models.User
 
 type Response struct {
 	config.ApiResponse

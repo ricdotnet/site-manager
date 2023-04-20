@@ -12,7 +12,9 @@ func New(cfg *config.Config, db *gorm.DB) *echo.Echo {
 	e := echo.New()
 	//e.Use(cfg.ConfigMiddleware)
 
-	v1 := e.Group("/api/v1")
+	api := e.Group("/api") // /api group
+
+	v1 := api.Group("/v1") // /v1 group
 	sites.Routes(v1, db, cfg)
 	user.Routes(v1, db, cfg)
 
