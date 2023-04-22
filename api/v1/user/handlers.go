@@ -6,9 +6,15 @@ import (
 	"net/http"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
+	"ricr.dev/site-manager/utils"
 )
 
 type User = models.User
+
+type Response struct {
+	config.ApiResponse
+	Token string `json:"token,omitempty"`
+}
 
 func (a *API) login(ctx echo.Context) error {
 	a.logger.Info("Entering /login handler")
@@ -51,10 +57,15 @@ func (a *API) login(ctx echo.Context) error {
 		})
 	}
 
+	token := utils.MakeToken(result)
+
 	a.logger.Info("Exiting /login handler")
-	return ctx.JSON(http.StatusOK, config.ApiResponse{
-		Code:    200,
-		Message: "Logged in with success",
+	return ctx.JSON(http.StatusOK, Response{
+		Token: token,
+		ApiResponse: config.ApiResponse{
+			Code:    200,
+			Message: "Logged in with success",
+		},
 	})
 }
 

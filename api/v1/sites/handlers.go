@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
+	"ricr.dev/site-manager/utils"
 	"strconv"
 )
 
@@ -40,8 +41,10 @@ func (a *API) all(ctx echo.Context) error {
 // single
 // read the contents of the specified file
 func (a *API) single(ctx echo.Context) error {
+	userCtx := utils.GetTokenClaims(ctx)
+
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	site, err := a.repository.GetOne(id, 1)
+	site, err := a.repository.GetOne(id, userCtx.Id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Something went wrong when trying to find the site")
 	}

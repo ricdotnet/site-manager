@@ -1,6 +1,9 @@
 package config
 
-import "time"
+import (
+	"github.com/golang-jwt/jwt/v4"
+	"time"
+)
 
 // list of global structs used in the app
 type (
@@ -13,5 +16,11 @@ type (
 		ID        uint `gorm:"primaryKey"`
 		CreatedAt time.Time
 		UpdatedAt time.Time
+	}
+
+	JwtCustomClaims struct {
+		Id       int    `json:"id"`
+		Username string `json:"username"`
+		jwt.RegisteredClaims
 	}
 )

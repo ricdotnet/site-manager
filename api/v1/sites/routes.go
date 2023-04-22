@@ -16,7 +16,7 @@ type Sites struct {
 func Routes(v1 *echo.Group, db *gorm.DB, cfg *config.Config) {
 	api := New(db, cfg)
 
-	sites := v1.Group("/sites", middlewares.AuthMiddleware)
+	sites := v1.Group("/sites", middlewares.AuthMiddleware())
 
 	sites.GET("/all/:type", api.all)
 	sites.GET("/single/get/:id", api.single)
