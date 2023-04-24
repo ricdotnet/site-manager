@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/op/go-logging"
 	"github.com/ricdotnet/goenvironmental"
@@ -19,26 +20,31 @@ func main() {
 	goenvironmental.ParseEnv()
 	cfg := config.NewConfig()
 
-	if len(os.Args) > 1 {
-		command := os.Args[1]
-		if command == "sa" {
-			sitesAvailable(cfg.Logger)
-			return
-		}
-	}
+	sa := flag.Bool("sa", false, "map config files to their domains")
+	run := flag.Bool("run", false, "start the app")
+	flag.Parse()
 
-	dbString, _ := goenvironmental.Get("DB_STRING")
-	db, err := gorm.Open(mysql.Open(dbString), &gorm.Config{})
-	if err != nil {
-		panic("Failed to connect to the database")
-	}
-	err = db.AutoMigrate(dbModels()...)
-	if err != nil {
+	if *sa {
+		sitesAvailable(cfg.Logger)
 		return
 	}
 
-	v1 := router.New(cfg, db)
-	v1.Logger.Fatal(v1.Start(":4000"))
+	if *run {
+		dbString, _ := goenvironmental.Get("DB_STRING")
+		db, err := gorm.Open(mysql.Open(dbString), &gorm.Config{})
+		if err != nil {
+			panic("Failed to connect to the database")
+		}
+		err = db.AutoMigrate(dbModels()...)
+		if err != nil {
+			return
+		}
+
+		v1 := router.New(cfg, db)
+		v1.Logger.Fatal(v1.Start(":4000"))
+	}
+
+	println("Nothing to run. -h to see the flags you can run")
 }
 
 func dbModels() []interface{} {
