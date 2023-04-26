@@ -8,4 +8,5 @@ type Site struct {
 	ConfigName string `json:"config_name" gorm:"unique;size:255"`
 	User       uint   `json:"user"`
 	Enabled    bool   `json:"enabled" gorm:"default:0"`
+	Content    string `json:"content,omitempty" gorm:"-"`
 }

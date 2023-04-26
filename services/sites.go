@@ -53,8 +53,17 @@ func (ss *SitesService) ReadSingle(dir string, name string) ([]byte, error) {
 	return vhost, nil
 }
 
-func (ss *SitesService) WriteSingle(dir string, name string) {
-	// not implemented yet
+func (ss *SitesService) WriteSingle(name string, content string) error {
+	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
+	apacheDir += "sites-available/"
+
+	err := os.WriteFile(apacheDir+name, []byte(content), 0666)
+	if err != nil {
+		return err
+	}
+
+	ss.logger.Infof("Finished writing the new config for %s", name)
+	return nil
 }
 
 func (ss *SitesService) DeleteSingle(dir string, name string) {
@@ -65,7 +74,7 @@ func (ss *SitesService) DeleteSingle(dir string, name string) {
 // update the name of a .conf file
 func (ss *SitesService) UpdateName(curr string, new string) error {
 	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
-	apacheDir += "/sites-available/"
+	apacheDir += "sites-available/"
 
 	oldPath := apacheDir + curr
 	newPath := apacheDir + new

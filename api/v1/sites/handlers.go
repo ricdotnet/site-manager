@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/ricdotnet/goenvironmental"
 	"net/http"
+	"os/exec"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
 	"ricr.dev/site-manager/utils"
@@ -112,9 +113,12 @@ func (a *API) update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
 	}
 
+	userCtx := utils.GetTokenClaims(ctx)
+
 	id, _ := strconv.Atoi(ctx.Param("id"))
+	site.ID = uint(id)
 	if site.ConfigName != "" {
-		oldSite, _ := a.repository.GetOne(id, 1)
+		oldSite, _ := a.repository.GetOne(id, userCtx.Id)
 		err = a.sitesService.UpdateName(oldSite.ConfigName, site.ConfigName)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Unable to find a file to rename")
@@ -122,6 +126,13 @@ func (a *API) update(ctx echo.Context) error {
 	}
 
 	updated, _ := a.repository.Update(site)
+
+	if site.Content != "" {
+		err = a.sitesService.WriteSingle(updated.ConfigName, site.Content)
+		if err != nil {
+			println(err.Error())
+		}
+	}
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
@@ -134,7 +145,7 @@ func (a *API) update(ctx echo.Context) error {
 
 // enable
 // endpoint to enable disable a site
-func (a *API) enable(ctx echo.Context) error {
+func (a *API) status(ctx echo.Context) error {
 	site := &Site{}
 	err := ctx.Bind(site)
 	if err != nil {
@@ -143,9 +154,13 @@ func (a *API) enable(ctx echo.Context) error {
 
 	id, _ := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	site.ID = uint(id)
-	if err := a.repository.Enable(site); err != nil {
+	if err = a.repository.Enable(site); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Unable to update site status")
 	}
+
+	cmd := exec.Command("systemctl", "reload", "apache2")
+	stdout, _ := cmd.Output()
+	a.logger.Info(stdout)
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
@@ -165,7 +180,7 @@ func (a *API) delete(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "The id must be of type integer")
 	}
 
-	if err := a.repository.Delete(_id); err != nil {
+	if err = a.repository.Delete(_id); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Unable to delete site")
 	}
 

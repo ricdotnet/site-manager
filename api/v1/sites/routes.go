@@ -7,10 +7,6 @@ import (
 	"ricr.dev/site-manager/config"
 )
 
-type Sites struct {
-	Sites []string `json:"sites"`
-}
-
 // for the user id we are assuming it will always be present on the authorisation token
 
 func Routes(v1 *echo.Group, db *gorm.DB, cfg *config.Config) {
@@ -19,9 +15,9 @@ func Routes(v1 *echo.Group, db *gorm.DB, cfg *config.Config) {
 	sites := v1.Group("/sites", middlewares.AuthMiddleware())
 
 	sites.GET("/all/:type", api.all)
-	sites.GET("/single/get/:id", api.single)
-	sites.POST("/single/create", api.create)
-	sites.PATCH("/single/update/:id", api.update)
-	sites.PATCH("/single/enable/:id", api.enable)
-	sites.DELETE("/single/delete/:id", api.delete)
+	sites.GET("/single/:id", api.single)
+	sites.POST("/single", api.create)
+	sites.PATCH("/single/:id", api.update)
+	sites.PATCH("/single/:id/status", api.status)
+	sites.DELETE("/single/:id", api.delete)
 }
