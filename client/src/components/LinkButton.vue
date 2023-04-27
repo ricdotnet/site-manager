@@ -1,7 +1,7 @@
 <template>
-  <a :href="props.href" class="flex items-center px-4 hover">
+  <router-link :to="props.href" class="flex items-center px-4 hover">
     {{ props.text }}
-  </a>
+  </router-link>
 </template>
 
 <script setup lang="ts">
@@ -13,6 +13,8 @@
 
 <style scoped>
   .hover {
-    @apply hover:outline hover:outline-light-dim dark:hover:outline-dark-dim;
+    /*@apply outline-none hover:outline hover:outline-light-dim dark:hover:outline-dark-dim;*/
+    @apply dark:hover:text-light-dim hover:text-dark-dim;
+    @apply ease-in-out duration-300 rounded-md;
   }
 </style>

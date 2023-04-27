@@ -1,10 +1,15 @@
 <template>
-  <div class="h-12 w-full flex py-2 px-4">
-    <LinkButton href="#" text="Register" />
-    <LinkButton href="#" text="Login" />
-    <button @click="toggle">
-      Change Theme
-    </button>
+  <div class="w-full border-b dark:border-dark-border border-light-border">
+    <div class="content h-12 flex py-2 px-4 justify-between">
+      <button @click="toggle">
+        Change Theme
+      </button>
+
+      <div class="flex">
+        <LinkButton href="login" text="Login"/>
+        <LinkButton href="register" text="Register"/>
+      </div>
+    </div>
   </div>
 </template>
 

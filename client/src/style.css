@@ -5,3 +5,7 @@
 body {
     @apply bg-light text-dark dark:bg-dark dark:text-light;
 }
+
+.content {
+    @apply w-full md:max-w-[640px] lg:max-w-[1280px] mx-auto;
+}

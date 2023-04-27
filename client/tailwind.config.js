@@ -9,10 +9,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        dark: '#071108',
-        'dark-dim': '#222322',
+        dark: '#181719',
+        'dark-dim': '#6B696C',
+        'dark-border': '#2B2C2D',
         light: '#DFE0E2',
-        'light-dim': '#EEF1F7',
+        'light-dim': '#AEAFB1',
+        'light-border': '#C3C4CC',
         'cobalt-green': '#A2E3C4'
       }
     }
