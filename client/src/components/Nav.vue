@@ -3,8 +3,12 @@
     <div class="content h-12 flex py-2 px-4 justify-between items-center">
       <span>Site-Manager</span>
 
-      <div class="flex">
-        <Toggle @ontoggle="toggleTheme" :is-checked="isDark" name="themeToggle" title="Theme toggle"/>
+      <div class="flex space-x-3">
+        <Toggle @ontoggle="toggleTheme"
+                :is-checked="isDark"
+                :is-theme-toggle="true"
+                name="themeToggle"
+                title="Theme toggle"/>
         <LinkButton href="login" text="Login"/>
         <LinkButton href="register" text="Register"/>
       </div>
