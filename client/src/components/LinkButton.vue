@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="props.href" class="flex items-center px-4 hover">
+  <router-link :to="props.href" class="flex items-center px-2 hover">
     {{ props.text }}
   </router-link>
 </template>

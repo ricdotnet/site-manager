@@ -1,7 +1,15 @@
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 
-const useTheme = (): { toggle: () => void } => {
-  const currentTheme = ref<'light' | 'dark'>();
+type ThemeString = 'light' | 'dark';
+
+type TUseTheme = {
+  toggleTheme: () => void;
+  currentTheme: Ref<ThemeString>;
+}
+
+const useTheme = (): TUseTheme => {
+  // prefer light first
+  const currentTheme = ref<ThemeString>('light');
 
   const setDark = (set: boolean): void => {
     if (set) {
@@ -22,12 +30,13 @@ const useTheme = (): { toggle: () => void } => {
     setDark(false);
   }
 
-  const toggle = (): void => {
+  const toggleTheme = (): void => {
     currentTheme.value === 'dark' ? setDark(false) : setDark(true);
   };
 
   return {
-    toggle
+    toggleTheme,
+    currentTheme,
   };
 };
 
