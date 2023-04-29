@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-light text-dark dark:bg-dark dark:text-light;
+}
+
+.content {
+  @apply w-full md:max-w-[640px] lg:max-w-[1280px] mx-auto;
+}
+
+.button-hover-effect {
+  &:not(:disabled) {
+    @apply hover:-translate-y-[2px] active:translate-y-0 ease-in-out duration-75;
+  }
+
+  &:disabled {
+    @apply bg-gradient-to-b from-white/50 to-white/50;
+  }
+}
