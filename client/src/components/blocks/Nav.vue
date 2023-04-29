@@ -18,9 +18,8 @@
 
 <script setup lang="ts">
   import { computed } from 'vue';
-  import Toggle from './UI/Toggle.vue';
-  import LinkButton from './LinkButton.vue';
-  import { useTheme } from '../composables';
+  import { LinkButton, Toggle } from "../";
+  import { useTheme } from '../../composables';
 
   const { toggleTheme, currentTheme } = useTheme();
 

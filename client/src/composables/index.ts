@@ -1,1 +1,1 @@
-export * from './useTheme.ts';
+export { useTheme } from './useTheme.ts';
