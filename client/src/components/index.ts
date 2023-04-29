@@ -1,5 +1,6 @@
 // UI bits
 export { default as Toggle } from './UI/Toggle.vue';
+export { default as Button } from './UI/Button.vue';
 export { default as LinkButton } from './UI/LinkButton.vue';
 
 // Blocks
