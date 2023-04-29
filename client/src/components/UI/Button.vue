@@ -1,11 +1,12 @@
 <template>
-  <button class="rounded-xl button-hover-effect"
+  <button class="rounded-xl button-hover-effect flex items-center space-x-1"
           :class="computedStyles"
           :name="props.name"
           :value="props.value"
           :type="buttonType"
           :disabled="props.disabled">
     {{ props.text }}
+    <slot/>
   </button>
 </template>
 
