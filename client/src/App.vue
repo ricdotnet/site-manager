@@ -7,5 +7,5 @@
 </template>
 
 <script setup lang="ts">
-  import Nav from './components/Nav.vue';
+  import { Nav } from './components/';
 </script>
