@@ -40,7 +40,7 @@
 
     switch (props.size) {
       case 'sm':
-        return 'px-2 py-1';
+        return 'px-2 py-1 text-sm';
       case 'md':
         return defaultSize;
       case 'lg':
