@@ -79,4 +79,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: codeql-analysis
-        path: codeql-result.txt
+        path: ${{ matrix.language }}.sarif
