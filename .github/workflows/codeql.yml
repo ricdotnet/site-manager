@@ -74,3 +74,9 @@ jobs:
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
+
+    - name: Archive CodeQL analysis result
+      uses: actions/upload-artifact@v3
+      with:
+        name: codeql-analysis
+        path: codeql-result.txt
