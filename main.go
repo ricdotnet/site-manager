@@ -40,8 +40,11 @@ func main() {
 			return
 		}
 
+		port, _ := goenvironmental.Get("PORT")
+
+		// define the echo router and run
 		v1 := router.New(cfg, db)
-		v1.Logger.Fatal(v1.Start(":4000"))
+		v1.Logger.Fatal(v1.Start(fmt.Sprintf(":%s", port)))
 	}
 
 	println("Nothing to run. -h to see the flags you can run")

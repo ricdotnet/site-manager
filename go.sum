@@ -33,6 +33,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/ricdotnet/goenvironmental v0.2.2 h1:Af2dhWmFixX3egtZYVmK2IhmrlMWcZd4rsNt8k2C9cI=
 github.com/ricdotnet/goenvironmental v0.2.2/go.mod h1:Psjihu9vflJidhR2IcPpcmvqX2IwVfnYd6QfbPwRA1Q=
+github.com/ricdotnet/goenvironmental v0.2.3 h1:kVwkjwLN1B17n3AEK4r/k83xDcT0dRpJYxHpzfzhszM=
+github.com/ricdotnet/goenvironmental v0.2.3/go.mod h1:Psjihu9vflJidhR2IcPpcmvqX2IwVfnYd6QfbPwRA1Q=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=

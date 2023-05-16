@@ -7,7 +7,7 @@ require (
 	github.com/labstack/echo-jwt/v4 v4.1.0
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
-	github.com/ricdotnet/goenvironmental v0.2.2
+	github.com/ricdotnet/goenvironmental v0.2.3
 	gorm.io/driver/mysql v1.4.7
 	gorm.io/gorm v1.24.6
 )
