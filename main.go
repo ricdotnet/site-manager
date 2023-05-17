@@ -31,14 +31,14 @@ func main() {
 
 	if *run {
 		dbString, _ := goenvironmental.Get("DB_STRING")
-		db, err := gorm.Open(mysql.Open(dbString), &gorm.Config{})
+    db, err := gorm.Open(mysql.Open(dbString), &gorm.Config{})
 		if err != nil {
 			panic("Failed to connect to the database")
-		}
+    }
 		err = db.AutoMigrate(dbModels()...)
 		if err != nil {
-			return
-		}
+      panic("Could not run AutoMigrate")
+	  }
 
 		port, _ := goenvironmental.Get("PORT")
 
