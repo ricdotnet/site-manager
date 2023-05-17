@@ -17,7 +17,7 @@ func New(cfg *config.Config, db *gorm.DB) *echo.Echo {
 	e.GET("/ping", func(ctx echo.Context) error {
 		return ctx.JSON(http.StatusOK, config.ApiResponse{
 			Code:    200,
-			Message: "pong",
+			Message: "here is a pong",
 		})
 	})
 

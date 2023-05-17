@@ -1,9 +1,14 @@
 version: "3.8"
+
+networks:
+  site-manager:
+    driver: bridge
+
 volumes:
   site-manager-db:
 
 services:
-  mysql:
+  mysql-db:
     image: mysql:8.0.33
     environment:
       - MYSQL_DATABASE=site-manager
@@ -11,20 +16,24 @@ services:
       - MYSQL_PASSWORD=User.Password.2023
       - MYSQL_ROOT_PASSWORD=Root.Password.2023
     ports:
-      - "127.0.0.1:3306:3306"
+      - "3306:3306"
     restart: unless-stopped
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - site-manager-db:/var/lib/mysql
+    networks:
+      - site-manager
   app:
     image: site-manager:latest
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - "127.0.0.1:3000:3000"
+      - "3000:3000"
     restart: unless-stopped
     env_file:
       - .env
     depends_on:
-      - mysql
+      - mysql-db
+    networks:
+      - site-manager
