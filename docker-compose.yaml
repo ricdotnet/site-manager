@@ -1,0 +1,29 @@
+version: "3.8"
+volumes:
+  site-manager-db:
+services:
+  mysql:
+    image: mysql:8.0.33
+    environment:
+      - MYSQL_DATABASE: "site-manager"
+      - MYSQL_USER: "user"
+      - MYSQL_PASSWORD: "password"
+      - MYSQL_ROOT_PASSWORD: "password"
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    restart: unless-stopped
+    volumes:
+      - site-manager-db:/var/lib/mysql
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - mysql
