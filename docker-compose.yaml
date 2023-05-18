@@ -10,11 +10,13 @@ volumes:
 services:
   mysql-db:
     image: mysql:8.0.33
+    env_file:
+      - .env
     environment:
-      - MYSQL_DATABASE=site-manager
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=User.Password.2023
-      - MYSQL_ROOT_PASSWORD=Root.Password.2023
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
     ports:
       - "3306:3306"
     restart: unless-stopped
