@@ -17,14 +17,20 @@ func NewRepository(db *gorm.DB, logger *logging.Logger) *Repository {
 	}
 }
 
-func (r *Repository) GetOne(username string) (*User, error) {
+func (r *Repository) GetOne(value string, isEmail bool) (*User, error) {
 
 	user := new(User)
-	if err := r.db.First(user, "username = ?", username).Error; err != nil {
-		return nil, err
+	if isEmail {
+		if err := r.db.First(user, "email = ?", value).Error; err != nil {
+			return nil, err
+		}
+		r.logger.Infof("Found 1 user record with the email %s", user.Email)
+	} else {
+		if err := r.db.First(user, "username = ?", value).Error; err != nil {
+			return nil, err
+		}
+		r.logger.Infof("Found 1 user record with the username %s", user.Username)
 	}
-
-	r.logger.Infof("Found 1 user record for username %s", user.Username)
 
 	return user, nil
 }
