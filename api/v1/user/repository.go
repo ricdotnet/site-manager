@@ -18,8 +18,8 @@ func NewRepository(db *gorm.DB, logger *logging.Logger) *Repository {
 }
 
 func (r *Repository) GetOne(value string, isEmail bool) (*User, error) {
-
 	user := new(User)
+
 	if isEmail {
 		if err := r.db.First(user, "email = ?", value).Error; err != nil {
 			return nil, err
@@ -36,8 +36,11 @@ func (r *Repository) GetOne(value string, isEmail bool) (*User, error) {
 }
 
 func (r *Repository) CreateOne(user *User) {
+	err := r.db.Create(user).Error
 
-	r.db.Create(user)
+	if err != nil {
+		r.logger.Errorf("Could not create a new user with the username %s", user.Username)
+	}
 
 	r.logger.Infof("Created a new user with the username %s", user.Username)
 }

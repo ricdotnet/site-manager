@@ -83,13 +83,6 @@ func (a *API) register(ctx echo.Context) error {
 	}
 
 	existingUsername, _ := a.repository.GetOne(user.Username, false)
-	//if err != nil {
-	//	a.logger.Errorf("Something went wrong when trying to register with the username %s", user.Username)
-	//	return ctx.JSON(http.StatusInternalServerError, config.ApiResponse{
-	//		Code:    http.StatusInternalServerError,
-	//		Message: "Something went wrong when trying to register",
-	//	})
-	//}
 	if existingUsername != nil {
 		a.logger.Infof("A user with the username %s already exists", user.Username)
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
@@ -99,13 +92,6 @@ func (a *API) register(ctx echo.Context) error {
 	}
 
 	existingEmail, _ := a.repository.GetOne(user.Email, true)
-	//if err != nil {
-	//	a.logger.Errorf("Something went wrong when trying to register with the email %s", user.Email)
-	//	return ctx.JSON(http.StatusInternalServerError, config.ApiResponse{
-	//		Code:    http.StatusInternalServerError,
-	//		Message: "Something went wrong when trying to register",
-	//	})
-	//}
 	if existingEmail != nil {
 		a.logger.Infof("A user with the email %s already exists", user.Email)
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
