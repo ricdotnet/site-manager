@@ -14,5 +14,5 @@ type User struct {
 	FirstName       string    `json:"first_name" gorm:"size:255;default:"`
 	LastName        string    `json:"last_name" gorm:"size:255;default:"`
 	LastLogin       time.Time `json:"last_login" gorm:"default:"`
-	Sites           []Site    `gorm:"foreignKey:User"`
+	Sites           []Site    `gorm:"foreignKey:UserID"`
 }

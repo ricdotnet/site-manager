@@ -127,12 +127,12 @@ func (a *API) update(ctx echo.Context) error {
 
 	updated, _ := a.repository.Update(site)
 
-	if site.Content != "" {
-		err = a.sitesService.WriteSingle(updated.ConfigName, site.Content)
-		if err != nil {
-			println(err.Error())
-		}
-	}
+	//if site.Content != "" {
+	//	err = a.sitesService.WriteSingle(updated.ConfigName, site.Content)
+	//	if err != nil {
+	//		println(err.Error())
+	//	}
+	//}
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
