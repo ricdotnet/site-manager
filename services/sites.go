@@ -1,9 +1,11 @@
 package services
 
 import (
+	"fmt"
 	"github.com/op/go-logging"
 	"github.com/ricdotnet/goenvironmental"
 	"os"
+	"regexp"
 	"ricr.dev/site-manager/config"
 )
 
@@ -53,6 +55,7 @@ func (ss *SitesService) ReadSingle(dir string, name string) ([]byte, error) {
 	return vhost, nil
 }
 
+// TODO: Update this to write based on site_data
 func (ss *SitesService) WriteSingle(name string, content string) error {
 	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
 	apacheDir += "sites-available/"
@@ -73,6 +76,13 @@ func (ss *SitesService) DeleteSingle(dir string, name string) {
 // UpdateName
 // update the name of a .conf file
 func (ss *SitesService) UpdateName(curr string, new string) error {
+	pattern := "^([A-z0-9-.]+[^/\\])"
+	regex := regexp.MustCompile(pattern)
+
+	if !regex.MatchString(new) {
+		return fmt.Errorf("the filename used %s is not a valid filename", new)
+	}
+
 	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
 	apacheDir += "sites-available/"
 
