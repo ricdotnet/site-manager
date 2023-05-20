@@ -9,9 +9,8 @@ import (
 	"gorm.io/gorm"
 	"os"
 	router "ricr.dev/site-manager/api/v1"
-	"ricr.dev/site-manager/api/v1/sites"
-	"ricr.dev/site-manager/api/v1/user"
 	"ricr.dev/site-manager/config"
+	"ricr.dev/site-manager/db"
 	"ricr.dev/site-manager/scripts"
 	"time"
 )
@@ -30,33 +29,29 @@ func main() {
 	}
 
 	if *run {
-		dbString, _ := goenvironmental.Get("DB_STRING")
-		db, err := gorm.Open(mysql.Open(dbString), &gorm.Config{})
+		// TODO: extract db related stuff maybe into the /db dir
+		dbUser, _ := goenvironmental.Get("DB_USER")
+		dbPass, _ := goenvironmental.Get("DB_PASSWORD")
+		dbName, _ := goenvironmental.Get("DB_NAME")
+
+		dns := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPass, dbName)
+		dbConn, err := gorm.Open(mysql.Open(dns), &gorm.Config{})
 		if err != nil {
 			panic(err.Error())
 		}
-		err = db.AutoMigrate(dbModels()...)
-		if err != nil {
-			panic("Could not run AutoMigrate")
-		}
+		db.RunMigrations(dbConn)
 
 		port, _ := goenvironmental.Get("PORT")
 
 		// define the echo router and run
-		v1 := router.New(cfg, db)
+		v1 := router.New(cfg, dbConn)
 		v1.Logger.Fatal(v1.Start(fmt.Sprintf(":%s", port)))
 	}
 
 	println("Nothing to run. -h to see the flags you can run")
 }
 
-func dbModels() []interface{} {
-	return []interface{}{
-		&user.User{},
-		&sites.Site{},
-	}
-}
-
+// TODO: extract this into its own package
 func sitesAvailable(l *logging.Logger) {
 	start := time.Now()
 
