@@ -8,7 +8,7 @@ volumes:
   site-manager-db:
 
 services:
-  mysql-db:
+  db:
     image: mysql:8.0.33
     env_file:
       - .env
@@ -25,7 +25,8 @@ services:
       - site-manager-db:/var/lib/mysql
     networks:
       - site-manager
-  app:
+
+  api:
     image: site-manager:latest
     build:
       context: .
@@ -36,6 +37,6 @@ services:
     env_file:
       - .env
     depends_on:
-      - mysql-db
+      - db
     networks:
       - site-manager
