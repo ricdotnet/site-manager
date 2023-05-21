@@ -5,8 +5,8 @@ import (
 	"github.com/op/go-logging"
 	"github.com/ricdotnet/goenvironmental"
 	"os"
-	"regexp"
 	"ricr.dev/site-manager/config"
+	"ricr.dev/site-manager/utils"
 )
 
 type SitesService struct {
@@ -76,18 +76,16 @@ func (ss *SitesService) DeleteSingle(dir string, name string) {
 // UpdateName
 // update the name of a .conf file
 func (ss *SitesService) UpdateName(curr string, new string) error {
-	pattern := "^([A-z0-9-.]+[^/\\])"
-	regex := regexp.MustCompile(pattern)
 
-	if !regex.MatchString(new) {
+	if !utils.IsValidFilename(new) {
+		ss.logger.Errorf("The filename used %s is not a valid filename", new)
 		return fmt.Errorf("the filename used %s is not a valid filename", new)
 	}
 
-	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
-	apacheDir += "sites-available/"
+	apachePath := utils.BuildApachePath("sites-available/")
 
-	oldPath := apacheDir + curr
-	newPath := apacheDir + new
+	oldPath := apachePath + curr
+	newPath := apachePath + new
 
 	if err := os.Rename(oldPath, newPath); err != nil {
 		return err
