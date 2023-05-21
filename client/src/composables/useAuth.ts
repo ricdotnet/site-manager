@@ -1,3 +1,5 @@
+import { RegisterData } from "../types.ts";
+
 const useAuth = () => {
   // const api = import.meta.env.VITE_API;
 
@@ -5,8 +7,8 @@ const useAuth = () => {
   const login = (username: string, password: string) => {
   }
 
-  // @ts-ignore
-  const register = (data: {}) => {
+  const register = (data: RegisterData): void | {} => {
+    console.log(data);
   }
 
   return { login, register }

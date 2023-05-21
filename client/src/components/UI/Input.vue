@@ -39,7 +39,7 @@
 
 <style scoped lang="scss">
   .input {
-    @apply py-3 px-4 bg-white border border-light-border rounded-md ease-in-out duration-200;
+    @apply py-3 px-4 bg-white border border-light-border rounded-md transition-[outline] ease-in-out duration-200;
     @apply dark:bg-dark dark:border-dark-border;
   }
 </style>
