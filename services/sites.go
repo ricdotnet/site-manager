@@ -5,6 +5,7 @@ import (
 	"github.com/op/go-logging"
 	"github.com/ricdotnet/goenvironmental"
 	"os"
+	"path/filepath"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/utils"
 )
@@ -84,8 +85,8 @@ func (ss *SitesService) UpdateName(curr string, new string) error {
 
 	apachePath := utils.BuildApachePath("sites-available/")
 
-	oldPath := apachePath + curr
-	newPath := apachePath + new
+	oldPath := filepath.Join(apachePath, curr)
+	newPath := filepath.Join(apachePath, new)
 
 	if err := os.Rename(oldPath, newPath); err != nil {
 		return err
