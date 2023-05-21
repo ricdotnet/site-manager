@@ -1,13 +1,12 @@
 const useAuth = () => {
   // const api = import.meta.env.VITE_API;
 
+  // @ts-ignore
   const login = (username: string, password: string) => {
-    console.log(username);
-    console.log(password);
   }
 
+  // @ts-ignore
   const register = (data: {}) => {
-    console.log(data);
   }
 
   return { login, register }
