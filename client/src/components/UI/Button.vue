@@ -1,5 +1,5 @@
 <template>
-  <button class="rounded-xl button-hover-effect flex items-center space-x-1"
+  <button class="rounded-md button-hover-effect flex items-center space-x-1"
           :class="computedStyles"
           :name="props.name"
           :value="props.value"

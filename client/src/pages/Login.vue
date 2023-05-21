@@ -1,46 +1,67 @@
 <template>
-  <div class="flex justify-center mt-10">
-    <div class="w-[26rem] px-6 py-3 rounded-md border border-light-border dark:border-dark-border">
-      <div class="text-2xl font-bold tracking-widest mb-6">Login</div>
+  <Stack>
+    <div class="title">Login to your account</div>
+    <div class="group">
       <form class="flex flex-col space-y-3" @submit="onSubmitLogin">
         <label for="username" class="flex flex-col space-y-2">
           <span class="pl-4">Username</span>
-          <input id="username" ref="username"
-                 class="bg-white px-3 py-3 w-full rounded-md outline-none focus:outline-cobalt-green text-dark dark:bg-dark-border dark:text-light ease-in-out duration-200"
-                 type="text"/>
+          <Input id="username" ref="username"/>
         </label>
         <label for="password" class="flex flex-col space-y-2">
           <span class="pl-4">Password</span>
-          <input id="password" ref="password"
-                 class="bg-white px-3 py-3 w-full rounded-md outline-none focus:outline-cobalt-green text-dark dark:bg-dark-border dark:text-light ease-in-out duration-200"
-                 type="password"/>
+          <Input id="password" ref="password" type="password"/>
         </label>
-        <div class="flex space-x-3 py-3 justify-end">
+        <ButtonGroup>
+          <LinkButton text="Forgot password" href="#"/>
           <Button value="login_btn"
                   name="login_btn"
                   text="Login"
                   color="primary"
                   type="submit"/>
-        </div>
+        </ButtonGroup>
       </form>
     </div>
-  </div>
+  </Stack>
 </template>
 
 <script setup lang="ts">
   import { ref } from "vue";
-  import { Button } from "../components";
+  import { Button, ButtonGroup, Input, LinkButton, Stack } from "../components";
+  import { InputComponent } from "../types";
+  import { useAuth } from "../composables";
 
-  const username = ref<HTMLInputElement>();
-  const password = ref<HTMLInputElement>();
+  const username = ref<InputComponent>();
+  const password = ref<InputComponent>();
 
-  function onSubmitLogin(e: Event) {
+  const { login } = useAuth();
+
+  const onSubmitLogin = (e: Event) => {
     e.preventDefault();
 
-    console.log(username.value?.value);
-    console.log(password.value?.value);
+    const u = username.value?.getValue();
+    const p = password.value?.getValue();
+
+    if (!u) {
+      username.value?.setError();
+    }
+
+    if (!p) {
+      password.value?.setError();
+    }
+
+    if (u && p) {
+      return login(u, p);
+    }
   }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  .title {
+    @apply text-2xl font-bold tracking-widest mb-6;
+  }
+
+  .group {
+    @apply w-full bg-white px-6 py-10 rounded-md shadow-md;
+    @apply lg:w-[26rem] dark:bg-dark;
+  }
 </style>
