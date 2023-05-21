@@ -1,10 +1,13 @@
 package services
 
 import (
+	"fmt"
 	"github.com/op/go-logging"
 	"github.com/ricdotnet/goenvironmental"
 	"os"
+	"path/filepath"
 	"ricr.dev/site-manager/config"
+	"ricr.dev/site-manager/utils"
 )
 
 type SitesService struct {
@@ -53,6 +56,7 @@ func (ss *SitesService) ReadSingle(dir string, name string) ([]byte, error) {
 	return vhost, nil
 }
 
+// TODO: Update this to write based on site_data
 func (ss *SitesService) WriteSingle(name string, content string) error {
 	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
 	apacheDir += "sites-available/"
@@ -73,11 +77,16 @@ func (ss *SitesService) DeleteSingle(dir string, name string) {
 // UpdateName
 // update the name of a .conf file
 func (ss *SitesService) UpdateName(curr string, new string) error {
-	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
-	apacheDir += "sites-available/"
 
-	oldPath := apacheDir + curr
-	newPath := apacheDir + new
+	if !utils.IsValidFilename(new) {
+		ss.logger.Errorf("The filename used %s is not a valid filename", new)
+		return fmt.Errorf("the filename used %s is not a valid filename", new)
+	}
+
+	apachePath := utils.BuildApachePath("sites-available/")
+
+	oldPath := filepath.Join(apachePath, curr)
+	newPath := filepath.Join(apachePath, new)
 
 	if err := os.Rename(oldPath, newPath); err != nil {
 		return err

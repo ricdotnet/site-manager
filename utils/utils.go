@@ -4,6 +4,8 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/ricdotnet/goenvironmental"
+	"path"
+	"regexp"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
 	"time"
@@ -31,4 +33,16 @@ func GetTokenClaims(ctx echo.Context) *config.JwtCustomClaims {
 	claims := user.Claims.(*config.JwtCustomClaims)
 
 	return claims
+}
+
+func BuildApachePath(suffix string) string {
+	apachePath, _ := goenvironmental.Get("APACHE_PATH")
+	return path.Clean(apachePath + suffix)
+}
+
+func IsValidFilename(filename string) bool {
+	pattern := "^[A-z0-9-.]+$"
+	regex := regexp.MustCompile(pattern)
+
+	return regex.MatchString(filename)
 }

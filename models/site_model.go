@@ -1,12 +1,23 @@
 package models
 
-import "ricr.dev/site-manager/config"
+import (
+	"ricr.dev/site-manager/config"
+)
 
 type Site struct {
 	config.BaseModel
-	Domain     string `json:"domain" gorm:"size:255"`
-	ConfigName string `json:"config_name" gorm:"unique;size:255"`
-	User       uint   `json:"user"`
+	Domain     string `json:"domain" gorm:"size:255;unique"`
+	ConfigName string `json:"config_name" gorm:"size:255;unique"`
 	Enabled    bool   `json:"enabled" gorm:"default:0"`
-	Content    string `json:"content,omitempty" gorm:"-"`
+	HasSSL     bool   `json:"has_ssl" gorm:"default:0"`
+	UserID     uint   `json:"user_id"`
+}
+
+type SiteData struct {
+	ServerName  string `json:"server_name" gorm:"size:255;not null;"`
+	ServerAlias string `json:"server_alias" gorm:"size:255;not null;"`
+	Port        uint   `json:"port" gorm:"not null;"`
+	Directory   string `json:"directory" gorm:"size:255;not null;"`
+	SiteID      uint   `json:"site_id" gorm:"foreignKey:Site"`
+	Site        Site
 }

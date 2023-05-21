@@ -121,18 +121,11 @@ func (a *API) update(ctx echo.Context) error {
 		oldSite, _ := a.repository.GetOne(id, userCtx.Id)
 		err = a.sitesService.UpdateName(oldSite.ConfigName, site.ConfigName)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Unable to find a file to rename")
+			return echo.NewHTTPError(http.StatusBadRequest, "Something went wrong when updating this site")
 		}
 	}
 
 	updated, _ := a.repository.Update(site)
-
-	if site.Content != "" {
-		err = a.sitesService.WriteSingle(updated.ConfigName, site.Content)
-		if err != nil {
-			println(err.Error())
-		}
-	}
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
