@@ -1,11 +1,11 @@
 <template>
-  <router-link :to="props.href" class="flex items-center px-2 hover">
-    {{ props.text }}
+  <router-link :to="href" class="flex items-center px-2 hover">
+    {{ text }}
   </router-link>
 </template>
 
 <script setup lang="ts">
-  const props = defineProps<{
+  defineProps<{
     text: string,
     href: string,
   }>();

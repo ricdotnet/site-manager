@@ -26,12 +26,19 @@
     return 'outline-none focus:outline-cobalt-green'
   });
 
+  const emits = defineEmits<{
+    (event: 'onResetError'): void;
+  }>();
+
   const getValue = () => {
     return inputRef.value?.value;
   }
 
   const setError = (bool = true) => {
     hasError.value = bool;
+    if (!bool) {
+      emits('onResetError');
+    }
   }
 
   defineExpose({ getValue, setError });

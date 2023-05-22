@@ -13,7 +13,8 @@ type User = models.User
 
 type Response struct {
 	config.ApiResponse
-	Token string `json:"token,omitempty"`
+	Token       string `json:"token,omitempty"`
+	MessageCode string `json:"message_code,omitempty"`
 }
 
 func (a *API) login(ctx echo.Context) error {
@@ -26,7 +27,7 @@ func (a *API) login(ctx echo.Context) error {
 	if username == "" {
 		a.logger.Warning("A user tried to login without username")
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:    400,
+			Code:    http.StatusBadRequest,
 			Message: "Username cannot be missing",
 		})
 	}
@@ -35,25 +36,31 @@ func (a *API) login(ctx echo.Context) error {
 	if password == "" {
 		a.logger.Warningf("User %s tried to login without password", username)
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:    400,
+			Code:    http.StatusBadRequest,
 			Message: "Password cannot be missing",
 		})
 	}
 
 	result, _ := a.repository.GetOne(username, false)
 	if result == nil {
-		return ctx.JSON(http.StatusNotFound, config.ApiResponse{
-			Code:    404,
-			Message: "A user with the details provided does not exist",
+		return ctx.JSON(http.StatusBadRequest, &Response{
+			ApiResponse: config.ApiResponse{
+				Code:    http.StatusBadRequest,
+				Message: "A user with the details provided does not exist",
+			},
+			MessageCode: "username_not_found",
 		})
 	}
 
 	correctPassword, _, _ := argon2id.CheckHash(password, result.Password)
 	if !correctPassword {
 		a.logger.Warningf("User %s tried to login with an incorrect password", username)
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:    400,
-			Message: "Incorrect password used",
+		return ctx.JSON(http.StatusBadRequest, &Response{
+			ApiResponse: config.ApiResponse{
+				Code:    http.StatusBadRequest,
+				Message: "Incorrect password used",
+			},
+			MessageCode: "incorrect_password",
 		})
 	}
 
@@ -63,7 +70,7 @@ func (a *API) login(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, Response{
 		Token: token,
 		ApiResponse: config.ApiResponse{
-			Code:    200,
+			Code:    http.StatusOK,
 			Message: "Logged in with success",
 		},
 	})
@@ -77,7 +84,7 @@ func (a *API) register(ctx echo.Context) error {
 
 	if user.Password != user.PasswordConfirm {
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:    400,
+			Code:    http.StatusBadRequest,
 			Message: "The passwords do not match",
 		})
 	}
@@ -106,7 +113,7 @@ func (a *API) register(ctx echo.Context) error {
 
 	a.logger.Info("Exiting the /register handler")
 	return ctx.JSON(http.StatusOK, config.ApiResponse{
-		Code:    200,
+		Code:    http.StatusOK,
 		Message: "Registered with success",
 	})
 }
@@ -118,7 +125,7 @@ func (a *API) update(ctx echo.Context) error {
 
 	a.logger.Info("Exiting the /update handler")
 	return ctx.JSON(http.StatusNotImplemented, config.ApiResponse{
-		Code:    501,
+		Code:    http.StatusNotImplemented,
 		Message: "Endpoint not implemented",
 	})
 }

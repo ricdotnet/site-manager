@@ -41,7 +41,10 @@ func main() {
 		}
 		db.RunMigrations(dbConn)
 
-		port, _ := goenvironmental.Get("PORT")
+		port, err := goenvironmental.Get("PORT")
+		if err != nil {
+			panic("A port for the api was not defined")
+		}
 
 		// define the echo router and run
 		v1 := router.New(cfg, dbConn)

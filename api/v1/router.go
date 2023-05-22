@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 	"net/http"
 	"ricr.dev/site-manager/api/v1/sites"
@@ -11,7 +12,7 @@ import (
 
 func New(cfg *config.Config, db *gorm.DB) *echo.Echo {
 	e := echo.New()
-	//e.Use(cfg.ConfigMiddleware)
+	e.Use(middleware.CORS())
 
 	// ping endpoint to test if the api is running
 	e.GET("/ping", func(ctx echo.Context) error {
