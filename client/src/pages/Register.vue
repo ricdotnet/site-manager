@@ -13,11 +13,11 @@
         </label>
         <label for="password" class="flex flex-col space-y-2">
           <span class="pl-4">Password</span>
-          <Input id="password" ref="password"/>
+          <Input type="password" id="password" ref="password"/>
         </label>
         <label for="password-confirm" class="flex flex-col space-y-2">
           <span class="pl-4">Confirm Password</span>
-          <Input id="password-confirm" ref="passwordConfirm"/>
+          <Input type="password" id="password-confirm" ref="passwordConfirm"/>
         </label>
 
         <ButtonGroup>
@@ -26,7 +26,8 @@
                   name="register"
                   text="Register"
                   color="primary"
-                  type="submit"/>
+                  type="submit"
+                  :isActioning="isRegistering"/>
         </ButtonGroup>
       </form>
     </div>
@@ -38,53 +39,75 @@
   import { InputComponent, RegisterData } from "../types.ts";
   import { ref } from "vue";
   import { useAuth } from "../composables";
+  import { useRouter } from "vue-router";
+
+  const router = useRouter();
 
   const username = ref<InputComponent>();
   const email = ref<InputComponent>();
   const password = ref<InputComponent>();
   const passwordConfirm = ref<InputComponent>();
 
+  const isRegistering = ref(false);
+
   const { register } = useAuth();
 
-  const onSubmitRegister = (e: Event) => {
+  const hasError = ref(false);
+  const setHasError = (v: boolean = true) => {
+    hasError.value = v;
+  }
+
+  const onSubmitRegister = async (e: Event) => {
     e.preventDefault();
+    isRegistering.value = true;
+    setHasError(false);
 
     const registerData: RegisterData = {
       username: username.value?.getValue() ?? '',
       email: email.value?.getValue() ?? '',
       password: password.value?.getValue() ?? '',
-      passwordConfirm: passwordConfirm.value?.getValue() ?? '',
+      password_confirm: passwordConfirm.value?.getValue() ?? '',
     };
 
-    // TODO: extract these validations to a validator file
     if (!registerData.username) {
       username.value?.setError();
+      setHasError();
     }
 
     if (!registerData.email) {
       email.value?.setError();
+      setHasError();
     }
 
     if (!registerData.password) {
       password.value?.setError();
+      setHasError();
     }
 
-    if (!registerData.passwordConfirm) {
+    if (!registerData.password_confirm) {
       passwordConfirm.value?.setError();
+      setHasError();
     }
 
-    if (registerData.password !== registerData.passwordConfirm) {
+    if (registerData.password !== registerData.password_confirm) {
       password.value?.setError();
       passwordConfirm.value?.setError();
+      setHasError();
     }
 
-    if ((registerData.password === registerData.passwordConfirm)
-    && registerData.password && registerData.passwordConfirm) {
+    if ((registerData.password === registerData.password_confirm)
+      && registerData.password && registerData.password_confirm) {
       password.value?.setError(false);
       passwordConfirm.value?.setError(false);
     }
 
-    register(registerData);
+    if (!!hasError.value) return isRegistering.value = false;
+
+    const { error } = await register(registerData);
+    if (error) return; // deal with some error
+
+    isRegistering.value = false;
+    await router.push('/login');
   }
 </script>
 

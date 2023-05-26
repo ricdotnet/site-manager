@@ -37,9 +37,12 @@
   import { Button, ButtonGroup, Input, LinkButton, Stack } from "../components";
   import { InputComponent } from "../types";
   import { useAuth } from "../composables";
+  import { useRouter } from "vue-router";
 
   const username = ref<InputComponent>();
   const password = ref<InputComponent>();
+
+  const router = useRouter();
 
   const state = reactive<{
     hasUsernameError: boolean;
@@ -67,7 +70,7 @@
       state.hasUsernameError = false;
       state.hasPasswordError = false;
       state.resetTimer = undefined;
-    }, 5000);
+    }, 15000);
   }
 
   const onResetError = (key: 'username' | 'password') => {
@@ -94,10 +97,10 @@
     }
 
     if (u && p) {
-      const { error, data } = await login(u, p);
+      const { error } = await login(u, p);
       if (error) return onErrorResponse(error);
 
-      console.log(data);
+      await router.push('/');
     }
   }
 </script>

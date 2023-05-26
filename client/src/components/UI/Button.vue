@@ -1,11 +1,12 @@
 <template>
   <button class="rounded-md button-hover-effect flex items-center space-x-1"
           :class="computedStyles"
-          :name="props.name"
-          :value="props.value"
+          :name="name"
+          :value="value"
           :type="buttonType"
-          :disabled="props.disabled">
-    {{ props.text }}
+          :disabled="disabled || isActioning">
+    <span>{{ text }}</span>
+    <ArrowPathIcon v-if="isActioning" class="w-5 animate-spin"/>
     <slot/>
   </button>
 </template>
@@ -13,6 +14,7 @@
 <script setup lang="ts">
   import { computed } from "vue";
   import { ButtonColor, ButtonSize, ButtonType } from "../../types.ts";
+  import { ArrowPathIcon } from "@heroicons/vue/20/solid";
 
   const props = defineProps<{
     value: string;
@@ -22,6 +24,7 @@
     disabled?: boolean;
     size?: ButtonSize;
     type?: ButtonType;
+    isActioning?: boolean;
   }>();
 
   const buttonStyle = computed(() => {

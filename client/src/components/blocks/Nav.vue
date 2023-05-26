@@ -9,8 +9,13 @@
                 :is-theme-toggle="true"
                 name="themeToggle"
                 title="Theme toggle"/>
-        <LinkButton href="login" text="Login"/>
-        <LinkButton href="register" text="Register"/>
+        <template v-if="!userStore.isAuthed">
+          <LinkButton href="login" text="Login"/>
+          <LinkButton href="register" text="Register"/>
+        </template>
+        <template v-else>
+          <LinkButton @on-link-click="doLogout" text="Logout"/>
+        </template>
       </div>
     </div>
   </div>
@@ -20,8 +25,19 @@
   import { computed } from 'vue';
   import { LinkButton, Toggle } from "../";
   import { useTheme } from '../../composables';
+  import { useUserStore } from "../../stores/user.store.ts";
+  import { useRouter } from "vue-router";
 
+  const router = useRouter();
   const { toggleTheme, currentTheme } = useTheme();
+  const userStore = useUserStore();
+
+  const doLogout = () => {
+    localStorage.removeItem('token');
+    userStore.setUsername('');
+    userStore.setIsAuthed(false);
+    router.push('/login');
+  }
 
   // this theme toggle will be checked if the current theme is dark
   const isDark = computed(() => {

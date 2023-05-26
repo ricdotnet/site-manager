@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/alexedwards/argon2id"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"ricr.dev/site-manager/config"
@@ -13,8 +14,23 @@ type User = models.User
 
 type Response struct {
 	config.ApiResponse
+	Username    string `json:"username,omitempty"`
 	Token       string `json:"token,omitempty"`
 	MessageCode string `json:"message_code,omitempty"`
+}
+
+func (a *API) auth(ctx echo.Context) error {
+
+	user := ctx.Get("user").(*jwt.Token)
+	claims := user.Claims.(*config.JwtCustomClaims)
+
+	return ctx.JSON(http.StatusOK, Response{
+		Username: claims.Username,
+		ApiResponse: config.ApiResponse{
+			Code:    http.StatusOK,
+			Message: "A valid token is being used",
+		},
+	})
 }
 
 func (a *API) login(ctx echo.Context) error {
@@ -68,7 +84,8 @@ func (a *API) login(ctx echo.Context) error {
 
 	a.logger.Info("Exiting /login handler")
 	return ctx.JSON(http.StatusOK, Response{
-		Token: token,
+		Username: username,
+		Token:    token,
 		ApiResponse: config.ApiResponse{
 			Code:    http.StatusOK,
 			Message: "Logged in with success",
