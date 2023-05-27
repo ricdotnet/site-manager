@@ -45,7 +45,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: 18
+        node-version: 14
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
