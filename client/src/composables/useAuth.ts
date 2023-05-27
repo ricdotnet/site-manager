@@ -29,6 +29,8 @@ const useAuth = () => {
 
   const register = async (registerData: RegisterData) => {
     const error = ref<any>();
+    console.log(registerData);
+    return { error: 'hi' };
     try {
       const { data } = await axios.post(`${api}/user/register`, registerData);
 
