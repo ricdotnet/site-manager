@@ -7,11 +7,12 @@ export const usernameValidator: Validator = {
   },
   match: {
     pattern: /^[A-Za-z0-9_$]+$/g,
-    message: 'Your username cannot contain invalid characters (only letters, numbers, _ and $ are allowed)',
+    message: 'Your username contains invalid characters (only letters, numbers, _ and $ are allowed)',
   },
   length: {
     minimum: 5,
-    message: 'Your username needs to be longer than or 5 characters',
+    maximum: 30,
+    message: 'Your username needs to be more than 5 characters and no more than 30',
   },
 };
 
@@ -20,6 +21,10 @@ export const emailValidator: Validator = {
     allowEmpty: false,
     message: 'Please enter an email',
   },
+  match: {
+    pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-.]+\.[A-Za-z]{2,}$/g,
+    message: 'The email entered is not a valid email address'
+  }
 };
 
 export const passwordValidator: Validator = {

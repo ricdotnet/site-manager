@@ -54,6 +54,11 @@ jobs:
         # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
         # queries: security-extended,security-and-quality
 
+    - name: CodeQL Analysis - Typescript Only
+      if: ${{ matrix.language == 'typescript' }}
+      run: |
+        # Run custom JavaScript-specific CodeQL queries here
+        codeql query run --language=javascript .github/queries.ql
 
     # Autobuild attempts to build any compiled languages  (C/C++, C#, Go, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
