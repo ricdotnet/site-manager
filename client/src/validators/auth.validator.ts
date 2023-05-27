@@ -6,8 +6,8 @@ export const usernameValidator: Validator = {
     message: 'Please enter a username',
   },
   match: {
-    pattern: /^[A-z0-9]+$/g,
-    message: 'Your username cannot contain invalid characters',
+    pattern: /^[A-Za-z0-9_$]+$/g,
+    message: 'Your username cannot contain invalid characters (only letters, numbers, _ and $ are allowed)',
   },
   length: {
     minimum: 5,
