@@ -5,19 +5,25 @@
       <form class="flex flex-col space-y-3" @submit="onSubmitRegister">
         <label for="username" class="flex flex-col space-y-2">
           <span class="pl-4">Username</span>
-          <Input id="username" ref="username"/>
+          <Input id="username" ref="username" :validator="usernameValidator"/>
         </label>
         <label for="email" class="flex flex-col space-y-2">
           <span class="pl-4">Email</span>
-          <Input id="email" ref="email"/>
+          <Input type="email" id="email" ref="email" :validator="emailValidator"/>
         </label>
         <label for="password" class="flex flex-col space-y-2">
           <span class="pl-4">Password</span>
-          <Input id="password" ref="password"/>
+          <Input type="password"
+                 id="password"
+                 ref="password"
+                 :validator="passwordValidator"/>
         </label>
         <label for="password-confirm" class="flex flex-col space-y-2">
           <span class="pl-4">Confirm Password</span>
-          <Input id="password-confirm" ref="passwordConfirm"/>
+          <Input type="password"
+                 id="password-confirm"
+                 ref="passwordConfirm"
+                 :validator="passwordConfirmValidator"/>
         </label>
 
         <ButtonGroup>
@@ -26,7 +32,8 @@
                   name="register"
                   text="Register"
                   color="primary"
-                  type="submit"/>
+                  type="submit"
+                  :isActioning="isRegistering"/>
         </ButtonGroup>
       </form>
     </div>
@@ -38,53 +45,77 @@
   import { InputComponent, RegisterData } from "../types.ts";
   import { ref } from "vue";
   import { useAuth } from "../composables";
+  import { useRouter } from "vue-router";
+  import { emailValidator, passwordConfirmValidator, passwordValidator, usernameValidator } from "../validators";
+  import { messages } from "../utils";
+
+  const router = useRouter();
 
   const username = ref<InputComponent>();
   const email = ref<InputComponent>();
   const password = ref<InputComponent>();
   const passwordConfirm = ref<InputComponent>();
 
+  const isRegistering = ref(false);
+
   const { register } = useAuth();
 
-  const onSubmitRegister = (e: Event) => {
+  const formHasError = ref(false);
+  const setFormHasError = (v: boolean = true) => {
+    formHasError.value = v;
+  }
+
+  const onSubmitRegister = async (e: Event) => {
     e.preventDefault();
+    setFormHasError(false);
 
     const registerData: RegisterData = {
       username: username.value?.getValue() ?? '',
       email: email.value?.getValue() ?? '',
       password: password.value?.getValue() ?? '',
-      passwordConfirm: passwordConfirm.value?.getValue() ?? '',
+      password_confirm: passwordConfirm.value?.getValue() ?? '',
     };
 
-    // TODO: extract these validations to a validator file
     if (!registerData.username) {
-      username.value?.setError();
+      username.value?.setError(true);
+      setFormHasError();
     }
 
     if (!registerData.email) {
-      email.value?.setError();
+      email.value?.setError(true);
+      setFormHasError();
     }
 
     if (!registerData.password) {
-      password.value?.setError();
+      password.value?.setError(true);
+      setFormHasError();
     }
 
-    if (!registerData.passwordConfirm) {
-      passwordConfirm.value?.setError();
+    if (!registerData.password_confirm) {
+      passwordConfirm.value?.setError(true);
+      setFormHasError();
     }
 
-    if (registerData.password !== registerData.passwordConfirm) {
-      password.value?.setError();
-      passwordConfirm.value?.setError();
+    if (registerData.password && (registerData.password !== registerData.password_confirm)) {
+      password.value?.setError(true, messages.user.passwords_not_match);
+      passwordConfirm.value?.setError(true, messages.user.passwords_not_match);
+      setFormHasError();
     }
 
-    if ((registerData.password === registerData.passwordConfirm)
-    && registerData.password && registerData.passwordConfirm) {
+    if ((registerData.password === registerData.password_confirm)
+      && registerData.password && registerData.password_confirm) {
       password.value?.setError(false);
       passwordConfirm.value?.setError(false);
     }
 
-    register(registerData);
+    if (!!formHasError.value) return;
+
+    isRegistering.value = true;
+    const { error } = await register(registerData);
+    if (error) return isRegistering.value = false; // deal with some error
+
+    isRegistering.value = false;
+    await router.push('/login');
   }
 </script>
 
