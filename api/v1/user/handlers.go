@@ -94,85 +94,16 @@ func (a *API) login(ctx echo.Context) error {
 func (a *API) register(ctx echo.Context) error {
 	a.logger.Info("Entering the /register handler")
 
-	usernameRegex := "^[A-Za-z0-9_$]+$"
-	emailRegex := "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-.]+\\.[A-Za-z]{2,}$"
-
 	user := new(User)
 	_ = ctx.Bind(user)
 
-	if user.Username == "" {
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "missing_username",
-		})
-	}
+	messageCode := a.registerValidationHelper(user)
 
-	if user.Email == "" {
+	if messageCode != "" {
+		a.logger.Info("Exiting the /register handler")
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
 			Code:        http.StatusBadRequest,
-			MessageCode: "missing_email",
-		})
-	}
-
-	if user.Password == "" {
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "missing_password",
-		})
-	}
-
-	if len(user.Username) < 5 || len(user.Username) > 30 {
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "invalid_username_length",
-		})
-	}
-
-	if match, _ := regexp.MatchString(usernameRegex, user.Username); !match {
-		a.logger.Warningf("Username %s does not pass regex validation", user.Username)
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "invalid_username",
-		})
-	}
-
-	if match, _ := regexp.MatchString(emailRegex, user.Email); !match {
-		a.logger.Warningf("Email address %s dot not pass regex validation", user.Email)
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "invalid_email",
-		})
-	}
-
-	if len(user.Password) <= 8 {
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "invalid_password_length",
-		})
-	}
-
-	if user.Password != user.PasswordConfirm {
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "passwords_not_match",
-		})
-	}
-
-	existingUsername, _ := a.repository.GetOne(user.Username, false)
-	if existingUsername != nil {
-		a.logger.Infof("A user with the username %s already exists", user.Username)
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "username_exists",
-		})
-	}
-
-	existingEmail, _ := a.repository.GetOne(user.Email, true)
-	if existingEmail != nil {
-		a.logger.Infof("A user with the email %s already exists", user.Email)
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "email_exists",
+			MessageCode: messageCode,
 		})
 	}
 
@@ -197,4 +128,63 @@ func (a *API) update(ctx echo.Context) error {
 		Code:        http.StatusNotImplemented,
 		MessageCode: "not_implemented",
 	})
+}
+
+func (a *API) registerValidationHelper(user *User) string {
+	usernameRegex := "^[A-Za-z0-9_$]+$"
+	emailRegex := "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-.]+\\.[A-Za-z]{2,}$"
+
+	if user.Username == "" {
+		a.logger.Warning("A user tried to register without username")
+		return "missing_username"
+	}
+
+	if user.Email == "" {
+		a.logger.Warning("A user tried to register without email address")
+		return "missing_email"
+	}
+
+	if user.Password == "" {
+		a.logger.Warning("A user tried to register without password")
+		return "missing_password"
+	}
+
+	if len(user.Username) < 5 || len(user.Username) > 30 {
+		a.logger.Warningf("Username %s is of invalid length", user.Username)
+		return "invalid_username_length"
+	}
+
+	if match, _ := regexp.MatchString(usernameRegex, user.Username); !match {
+		a.logger.Warningf("Username %s does not pass regex validation", user.Username)
+		return "invalid_username"
+	}
+
+	if match, _ := regexp.MatchString(emailRegex, user.Email); !match {
+		a.logger.Warningf("Email address %s does not pass regex validation", user.Email)
+		return "invalid_email"
+	}
+
+	if len(user.Password) <= 8 {
+		a.logger.Warningf("User %s tried to register with a password of invalid length", user.Username)
+		return "invalid_password_length"
+	}
+
+	if user.Password != user.PasswordConfirm {
+		a.logger.Warningf("User %s tried to register without confirming their password", user.Username)
+		return "passwords_not_match"
+	}
+
+	existingUsername, _ := a.repository.GetOne(user.Username, false)
+	if existingUsername != nil {
+		a.logger.Warningf("User %s tried to register with an existing username", user.Username)
+		return "username_exists"
+	}
+
+	existingEmail, _ := a.repository.GetOne(user.Email, true)
+	if existingEmail != nil {
+		a.logger.Infof("User %s tried to register with an existing email address", user.Email)
+		return "email_exists"
+	}
+
+	return ""
 }
