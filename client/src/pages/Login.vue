@@ -29,11 +29,12 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, ref } from "vue";
+  import { ref } from "vue";
   import { Button, ButtonGroup, Input, LinkButton, Stack } from "../components";
   import { InputComponent } from "../types";
   import { useAuth } from "../composables";
   import { useRouter } from "vue-router";
+  import { messages } from "../utils";
 
   const username = ref<InputComponent>();
   const password = ref<InputComponent>();
@@ -48,10 +49,10 @@
   }
   const onErrorResponse = (error: Error) => {
     if (error.message_code === 'username_not_found') {
-      username.value?.setError(true, 'A user with that username does not exit');
+      username.value?.setError(true, messages.user[error.message_code]);
     }
     if (error.message_code === 'incorrect_password') {
-      password.value?.setError(true, 'You entered the wrong password');
+      password.value?.setError(true, messages.user[error.message_code]);
     }
 
     isLoggingIn.value = false;

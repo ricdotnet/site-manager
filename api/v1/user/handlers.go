@@ -5,6 +5,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"regexp"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
 	"ricr.dev/site-manager/utils"
@@ -14,9 +15,8 @@ type User = models.User
 
 type Response struct {
 	config.ApiResponse
-	Username    string `json:"username,omitempty"`
-	Token       string `json:"token,omitempty"`
-	MessageCode string `json:"message_code,omitempty"`
+	Username string `json:"username,omitempty"`
+	Token    string `json:"token,omitempty"`
 }
 
 func (a *API) auth(ctx echo.Context) error {
@@ -27,8 +27,8 @@ func (a *API) auth(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, Response{
 		Username: claims.Username,
 		ApiResponse: config.ApiResponse{
-			Code:    http.StatusOK,
-			Message: "A valid token is being used",
+			Code:        http.StatusOK,
+			MessageCode: "valid_token",
 		},
 	})
 }
@@ -43,8 +43,8 @@ func (a *API) login(ctx echo.Context) error {
 	if username == "" {
 		a.logger.Warning("A user tried to login without username")
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:    http.StatusBadRequest,
-			Message: "Username cannot be missing",
+			Code:        http.StatusBadRequest,
+			MessageCode: "missing_username",
 		})
 	}
 
@@ -52,8 +52,8 @@ func (a *API) login(ctx echo.Context) error {
 	if password == "" {
 		a.logger.Warningf("User %s tried to login without password", username)
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:    http.StatusBadRequest,
-			Message: "Password cannot be missing",
+			Code:        http.StatusBadRequest,
+			MessageCode: "missing_password",
 		})
 	}
 
@@ -61,10 +61,9 @@ func (a *API) login(ctx echo.Context) error {
 	if result == nil {
 		return ctx.JSON(http.StatusBadRequest, &Response{
 			ApiResponse: config.ApiResponse{
-				Code:    http.StatusBadRequest,
-				Message: "A user with the details provided does not exist",
+				Code:        http.StatusBadRequest,
+				MessageCode: "username_not_found",
 			},
-			MessageCode: "username_not_found",
 		})
 	}
 
@@ -73,10 +72,9 @@ func (a *API) login(ctx echo.Context) error {
 		a.logger.Warningf("User %s tried to login with an incorrect password", username)
 		return ctx.JSON(http.StatusBadRequest, &Response{
 			ApiResponse: config.ApiResponse{
-				Code:    http.StatusBadRequest,
-				Message: "Incorrect password used",
+				Code:        http.StatusBadRequest,
+				MessageCode: "incorrect_password",
 			},
-			MessageCode: "incorrect_password",
 		})
 	}
 
@@ -87,8 +85,8 @@ func (a *API) login(ctx echo.Context) error {
 		Username: username,
 		Token:    token,
 		ApiResponse: config.ApiResponse{
-			Code:    http.StatusOK,
-			Message: "Logged in with success",
+			Code:        http.StatusOK,
+			MessageCode: "login_success",
 		},
 	})
 }
@@ -96,13 +94,67 @@ func (a *API) login(ctx echo.Context) error {
 func (a *API) register(ctx echo.Context) error {
 	a.logger.Info("Entering the /register handler")
 
+	usernameRegex := "^[A-Za-z0-9_$]+$"
+	emailRegex := "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-.]+\\.[A-Za-z]{2,}$"
+
 	user := new(User)
 	_ = ctx.Bind(user)
 
+	if user.Username == "" {
+		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "missing_username",
+		})
+	}
+
+	if user.Email == "" {
+		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "missing_email",
+		})
+	}
+
+	if user.Password == "" {
+		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "missing_password",
+		})
+	}
+
+	if len(user.Username) < 5 || len(user.Username) > 30 {
+		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "invalid_username_length",
+		})
+	}
+
+	if match, _ := regexp.MatchString(usernameRegex, user.Username); !match {
+		a.logger.Warningf("Username %s does not pass regex validation", user.Username)
+		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "invalid_username",
+		})
+	}
+
+	if match, _ := regexp.MatchString(emailRegex, user.Email); !match {
+		a.logger.Warningf("Email address %s dot not pass regex validation", user.Email)
+		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "invalid_email",
+		})
+	}
+
+	if len(user.Password) <= 8 {
+		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "invalid_password_length",
+		})
+	}
+
 	if user.Password != user.PasswordConfirm {
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:    http.StatusBadRequest,
-			Message: "The passwords do not match",
+			Code:        http.StatusBadRequest,
+			MessageCode: "passwords_not_match",
 		})
 	}
 
@@ -110,8 +162,8 @@ func (a *API) register(ctx echo.Context) error {
 	if existingUsername != nil {
 		a.logger.Infof("A user with the username %s already exists", user.Username)
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:    http.StatusBadRequest,
-			Message: "A user with that username already exists",
+			Code:        http.StatusBadRequest,
+			MessageCode: "username_exists",
 		})
 	}
 
@@ -119,8 +171,8 @@ func (a *API) register(ctx echo.Context) error {
 	if existingEmail != nil {
 		a.logger.Infof("A user with the email %s already exists", user.Email)
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:    http.StatusBadRequest,
-			Message: "A user with that email already exists",
+			Code:        http.StatusBadRequest,
+			MessageCode: "email_exists",
 		})
 	}
 
@@ -130,8 +182,8 @@ func (a *API) register(ctx echo.Context) error {
 
 	a.logger.Info("Exiting the /register handler")
 	return ctx.JSON(http.StatusOK, config.ApiResponse{
-		Code:    http.StatusOK,
-		Message: "Registered with success",
+		Code:        http.StatusOK,
+		MessageCode: "register_success",
 	})
 }
 
@@ -142,7 +194,7 @@ func (a *API) update(ctx echo.Context) error {
 
 	a.logger.Info("Exiting the /update handler")
 	return ctx.JSON(http.StatusNotImplemented, config.ApiResponse{
-		Code:    http.StatusNotImplemented,
-		Message: "Endpoint not implemented",
+		Code:        http.StatusNotImplemented,
+		MessageCode: "not_implemented",
 	})
 }

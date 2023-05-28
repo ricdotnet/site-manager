@@ -1,4 +1,4 @@
-export { usernameValidator, passwordValidator } from './auth.validator.ts';
+export * from './auth.validator.ts';
 
 type Presence = {
   allowEmpty: boolean;

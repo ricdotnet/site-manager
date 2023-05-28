@@ -1,46 +1,47 @@
 import { Validator } from "./index.ts";
+import { messages } from "../utils";
 
 export const usernameValidator: Validator = {
   presence: {
     allowEmpty: false,
-    message: 'Please enter a username',
+    message: messages.user.missing_username,
   },
   match: {
     pattern: /^[A-Za-z0-9_$]+$/g,
-    message: 'Your username contains invalid characters (only letters, numbers, _ and $ are allowed)',
+    message: messages.user.invalid_username,
   },
   length: {
     minimum: 5,
     maximum: 30,
-    message: 'Your username needs to be more than 5 characters and no more than 30',
+    message: messages.user.invalid_username_length,
   },
 };
 
 export const emailValidator: Validator = {
   presence: {
     allowEmpty: false,
-    message: 'Please enter an email',
+    message: messages.user.missing_email,
   },
   match: {
     pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-.]+\.[A-Za-z]{2,}$/g,
-    message: 'The email entered is not a valid email address'
+    message: messages.user.invalid_email,
   }
 };
 
 export const passwordValidator: Validator = {
   presence: {
     allowEmpty: false,
-    message: 'Please enter a password',
+    message: messages.user.missing_password,
   },
   length: {
     minimum: 9,
-    message: 'Your password needs to be longer than 8 characters',
+    message: messages.user.invalid_password_length,
   },
 };
 
 export const passwordConfirmValidator: Validator = {
   presence: {
     allowEmpty: false,
-    message: 'Please confirm your password',
+    message: messages.user.missing_password_confirm,
   },
 };

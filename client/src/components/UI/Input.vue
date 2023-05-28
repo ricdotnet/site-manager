@@ -43,8 +43,6 @@
   const hasError = ref(false);
   const timeout = ref<NodeJS.Timeout>();
 
-  console.log('hello world');
-
   const errorClasses = computed(() => {
     if (hasError.value) {
       if (timeout.value) {
@@ -54,7 +52,7 @@
       timeout.value = setTimeout(() => {
         setError(false);
         emits('onResetError', props.id);
-      }, props.timeout ?? 3000);
+      }, props.timeout ?? 20000);
       return 'outline outline-offset-2 outline-2 outline-red-500';
     }
     return 'outline-none focus:outline-cobalt-green'

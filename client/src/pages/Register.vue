@@ -16,16 +16,14 @@
           <Input type="password"
                  id="password"
                  ref="password"
-                 :validator="passwordValidator"
-                 :error-message="state.passwordErrorMessage"/>
+                 :validator="passwordValidator"/>
         </label>
         <label for="password-confirm" class="flex flex-col space-y-2">
           <span class="pl-4">Confirm Password</span>
           <Input type="password"
                  id="password-confirm"
                  ref="passwordConfirm"
-                 :validator="passwordConfirmValidator"
-                 :error-message="state.passwordConfirmErrorMessage"/>
+                 :validator="passwordConfirmValidator"/>
         </label>
 
         <ButtonGroup>
@@ -45,11 +43,11 @@
 <script setup lang="ts">
   import { Button, ButtonGroup, Input, LinkButton, Stack } from "../components";
   import { InputComponent, RegisterData } from "../types.ts";
-  import { reactive, ref } from "vue";
+  import { ref } from "vue";
   import { useAuth } from "../composables";
   import { useRouter } from "vue-router";
-  import { passwordValidator, usernameValidator } from "../validators";
-  import { emailValidator, passwordConfirmValidator } from "../validators/auth.validator.ts";
+  import { emailValidator, passwordConfirmValidator, passwordValidator, usernameValidator } from "../validators";
+  import { messages } from "../utils";
 
   const router = useRouter();
 
@@ -57,11 +55,6 @@
   const email = ref<InputComponent>();
   const password = ref<InputComponent>();
   const passwordConfirm = ref<InputComponent>();
-
-  const state = reactive({
-    passwordErrorMessage: '',
-    passwordConfirmErrorMessage: '',
-  });
 
   const isRegistering = ref(false);
 
@@ -103,9 +96,9 @@
       setFormHasError();
     }
 
-    if (registerData.password !== registerData.password_confirm) {
-      password.value?.setError(true, 'The passwords do not match');
-      passwordConfirm.value?.setError(true, 'The passwords do not match');
+    if (registerData.password && (registerData.password !== registerData.password_confirm)) {
+      password.value?.setError(true, messages.user.passwords_not_match);
+      passwordConfirm.value?.setError(true, messages.user.passwords_not_match);
       setFormHasError();
     }
 

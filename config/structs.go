@@ -8,8 +8,9 @@ import (
 // list of global structs used in the app
 type (
 	ApiResponse struct {
-		Code    int    `json:"code"`
-		Message string `json:"message"`
+		Code        int    `json:"code"`
+		Message     string `json:"message,omitempty"`
+		MessageCode string `json:"message_code,omitempty"`
 	}
 
 	BaseModel struct {
