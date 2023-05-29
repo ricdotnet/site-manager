@@ -14,7 +14,7 @@ func Routes(v1 *echo.Group, db *gorm.DB, cfg *config.Config) {
 
 	sites := v1.Group("/sites", middlewares.AuthMiddleware())
 
-	sites.GET("/all/:type", api.all)
+	sites.GET("/all", api.all)
 	sites.GET("/single/:id", api.single)
 	sites.POST("/single", api.create)
 	sites.PATCH("/single/:id", api.update)

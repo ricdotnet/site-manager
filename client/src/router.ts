@@ -28,6 +28,32 @@ const routes = [
       requiresAuth: false,
       isAuthPage: true,
     }
+  },
+  {
+    path: '/dashboard', component: pages.Dashboard, meta: {
+      requiresAuth: true,
+    }, children: [
+      {
+        path: '',
+        component: pages.Overview,
+      },
+      {
+        path: 'sites',
+        component: pages.Sites,
+      },
+      {
+        path: 'sites/:id',
+        component: pages.Site,
+      },
+      {
+        path: 'domains',
+        component: pages.Domains,
+      },
+      {
+        path: 'settings',
+        component: pages.Settings,
+      }
+    ]
   }
 ];
 

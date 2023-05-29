@@ -18,9 +18,9 @@ func NewRepository(db *gorm.DB, cfg *config.Config) *Repository {
 	}
 }
 
-func (r *Repository) GetAll(user int) (*[]Site, error) {
+func (r *Repository) GetAll(user uint) (*[]Site, error) {
 	sites := new([]Site)
-	if err := r.db.Find(&sites, "user = ?", user).Error; err != nil {
+	if err := r.db.Find(&sites, "user_id = ?", user).Error; err != nil {
 		return nil, err
 	}
 
@@ -28,13 +28,13 @@ func (r *Repository) GetAll(user int) (*[]Site, error) {
 	return sites, nil
 }
 
-func (r *Repository) GetOne(id int, user int) (*Site, error) {
+func (r *Repository) GetOne(id int, user uint) (*Site, error) {
 	site := &Site{}
 	if err := r.db.First(site, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	if site != nil {
-		r.logger.Info("Found 1 site record with id of %d for user %d", id, user)
+		r.logger.Infof("Found 1 site record with id of %d for user %d", id, user)
 	}
 
 	return site, nil

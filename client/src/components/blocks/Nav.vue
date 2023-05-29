@@ -14,6 +14,7 @@
           <LinkButton href="register" text="Register"/>
         </template>
         <template v-else>
+          <LinkButton href="/dashboard" text="Dashboard"/>
           <LinkButton @on-link-click="doLogout" text="Logout"/>
         </template>
       </div>
@@ -36,6 +37,7 @@
     localStorage.removeItem('token');
     userStore.setUsername('');
     userStore.setIsAuthed(false);
+    userStore.setUserId('');
     router.push('/login');
   }
 

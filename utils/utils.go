@@ -13,7 +13,7 @@ import (
 
 func MakeToken(user *models.User) string {
 	claims := &config.JwtCustomClaims{
-		Id:       int(user.ID),
+		UserID:   user.ID,
 		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
