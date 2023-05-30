@@ -20,7 +20,7 @@ type (
 	}
 
 	JwtCustomClaims struct {
-		Id       int    `json:"id"`
+		UserID   uint   `json:"id"`
 		Username string `json:"username"`
 		jwt.RegisteredClaims
 	}

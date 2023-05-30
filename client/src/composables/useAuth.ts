@@ -19,6 +19,7 @@ const useAuth = () => {
       localStorage.setItem("token", data.token);
 
       userStore.setIsAuthed(true);
+      userStore.setUserId(data.id);
       userStore.setUsername(data.username);
     } catch (err: any) {
       error.value = err.response.data;

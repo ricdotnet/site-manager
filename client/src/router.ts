@@ -28,7 +28,43 @@ const routes = [
       requiresAuth: false,
       isAuthPage: true,
     }
-  }
+  },
+  {
+    path: '/dashboard', component: pages.Dashboard, meta: {
+      requiresAuth: true,
+    }, children: [
+      {
+        path: '',
+        component: pages.Overview,
+        name: 'overview',
+      },
+      {
+        path: 'sites',
+        component: pages.Sites,
+        name: 'sites',
+      },
+      {
+        path: 'sites/:id',
+        component: pages.Site,
+        name: 'site-details',
+      },
+      {
+        path: 'domains',
+        component: pages.Domains,
+        name: 'domains',
+      },
+      {
+        path: 'settings',
+        component: pages.Settings,
+        name: 'settings',
+      }
+    ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: pages.NotFound,
+    name: 'not-found',
+  },
 ];
 
 const router = createRouter({

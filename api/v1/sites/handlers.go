@@ -1,9 +1,7 @@
 package sites
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
-	"github.com/ricdotnet/goenvironmental"
 	"net/http"
 	"os/exec"
 	"ricr.dev/site-manager/config"
@@ -25,7 +23,9 @@ type Response struct {
 // all
 // get all sites that belong to a specific user
 func (a *API) all(ctx echo.Context) error {
-	userSites, err := a.repository.GetAll(2)
+	userCtx := utils.GetTokenClaims(ctx)
+
+	userSites, err := a.repository.GetAll(userCtx.UserID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when trying to find all sites")
 	}
@@ -45,35 +45,32 @@ func (a *API) single(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	site, err := a.repository.GetOne(id, userCtx.Id)
+	site, err := a.repository.GetOne(id, userCtx.UserID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Something went wrong when trying to find the site")
+		return echo.NewHTTPError(http.StatusNotFound, "site_not_found")
 	}
 
-	// if the site doesn't exist it will set the site to 0?
-	if site.ID == 0 {
-		return echo.NewHTTPError(http.StatusNotFound, "The site you tried to look for does not exist")
-	}
-
-	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
-	vhosts, err := a.sitesService.ReadSingle(apacheDir+"sites-available/", site.ConfigName)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:    400,
-				Message: "We have a database record for that name but could not read the file",
-			},
-		})
-	}
-	_vhosts := fmt.Sprintf("%s", vhosts)
+	// TODO: the below code will be removed and vhosts files will be mapped to a site-data table
+	// .... using a stub to generate new vhosts when the user updates or adds a new site
+	//apacheDir, _ := goenvironmental.Get("APACHE_DIR")
+	//vhosts, err := a.sitesService.ReadSingle(apacheDir+"sites-available/", site.ConfigName)
+	//if err != nil {
+	//	return echo.NewHTTPError(http.StatusBadRequest, &Response{
+	//		ApiResponse: config.ApiResponse{
+	//			Code:    400,
+	//			Message: "We have a database record for that name but could not read the file",
+	//		},
+	//	})
+	//}
+	//_vhosts := fmt.Sprintf("%s", vhosts)
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
-			Code:    200,
-			Message: "We found the site you are looking for",
+			Code:    http.StatusOK,
+			Message: "site_found",
 		},
-		Site:   site,
-		Vhosts: _vhosts,
+		Site: site,
+		//Vhosts: _vhosts,
 	})
 }
 
@@ -118,7 +115,7 @@ func (a *API) update(ctx echo.Context) error {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	site.ID = uint(id)
 	if site.ConfigName != "" {
-		oldSite, _ := a.repository.GetOne(id, userCtx.Id)
+		oldSite, _ := a.repository.GetOne(id, userCtx.UserID)
 		err = a.sitesService.UpdateName(oldSite.ConfigName, site.ConfigName)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Something went wrong when updating this site")

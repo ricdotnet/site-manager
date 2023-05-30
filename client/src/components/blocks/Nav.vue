@@ -1,7 +1,7 @@
 <template>
   <div class="w-full border-b dark:border-dark-border border-light-border">
     <div class="content h-12 flex py-2 px-4 justify-between items-center">
-      <span>Site-Manager</span>
+      <span class="text-xl">Site-Manager</span>
 
       <div class="flex space-x-3">
         <Toggle @ontoggle="toggleTheme"
@@ -14,6 +14,7 @@
           <LinkButton href="register" text="Register"/>
         </template>
         <template v-else>
+          <LinkButton href="/dashboard" text="Dashboard"/>
           <LinkButton @on-link-click="doLogout" text="Logout"/>
         </template>
       </div>
@@ -36,6 +37,7 @@
     localStorage.removeItem('token');
     userStore.setUsername('');
     userStore.setIsAuthed(false);
+    userStore.setUserId('');
     router.push('/login');
   }
 

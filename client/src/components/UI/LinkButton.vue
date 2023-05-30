@@ -1,11 +1,11 @@
 <template>
   <template v-if="href">
-    <router-link :to="href" class="flex items-center px-2 hover">
+    <router-link :to="href" class="link-button hover">
       {{ text }}
     </router-link>
   </template>
   <template v-else>
-    <button @click="onClick" ref="button" type="button" class="hover">{{ text }}</button>
+    <button @click="onClick" ref="button" type="button" class="link-button hover">{{ text }}</button>
   </template>
 </template>
 
@@ -28,10 +28,22 @@
   }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  .link-button {
+    @apply
+    flex
+    items-center
+    px-2
+    text-dark-darker
+    dark:text-light;
+  }
+
   .hover {
-    /*@apply outline-none hover:outline hover:outline-light-dim dark:hover:outline-dark-dim;*/
-    @apply dark:hover:text-light-dim hover:text-dark-dim;
-    @apply ease-in-out duration-300 rounded-md;
+    @apply
+    dark:hover:text-light-dim
+    hover:text-dark-dim
+    ease-in-out
+    duration-300
+    rounded-md;
   }
 </style>

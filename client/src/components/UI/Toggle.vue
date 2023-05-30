@@ -9,7 +9,7 @@
            :title="props.title">
     <template v-if="isThemeToggle">
       <span :class="toggledClasses"
-            class="w-5 top-[2px] absolute transition-all ease-in-out duration-200">
+            class="w-5 top-[3px] absolute transition-all ease-in-out duration-200">
         <MoonIcon class="w-4 relative top-[2px]" v-if="isChecked"/>
         <SunIcon class="text-dark-dim" v-else/>
       </span>
@@ -35,7 +35,7 @@
 
   const toggledClasses = computed(() => {
     if (props.isThemeToggle) {
-      return props.isChecked ? 'left-[18px] text-cobalt-green' : 'left-[2px]';
+      return props.isChecked ? 'left-[18px] text-cobalt-green' : 'left-[3px]';
     }
     return props.isChecked ? 'left-[20px] bg-cobalt-green' : 'left-[5px] bg-light-dim dark:bg-dark-dim';
   });
