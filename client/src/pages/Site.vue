@@ -1,6 +1,7 @@
 <template>
+  <div class="mt-10"></div>
   <Suspense>
-    <Site/>
+    <SiteItem/>
     <template #fallback>
       Loading site...
     </template>
@@ -8,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-  import { Site } from "../components";
+  import { SiteItem } from "../components";
 </script>
 
 <style scoped lang="scss">

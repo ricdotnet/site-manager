@@ -1,6 +1,9 @@
 <template>
+  <div class="py-5 grid place-content-end">
+    <Button text="Add Site" color="primary" value="add-site" name="add-site"/>
+  </div>
   <Suspense>
-    <Sites/>
+    <SitesTable/>
     <template #fallback>
       <div>Loading your sites...</div>
     </template>
@@ -8,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { Sites } from "../components";
+  import { Button, SitesTable } from "../components";
 </script>
 
 <style scoped lang="scss">

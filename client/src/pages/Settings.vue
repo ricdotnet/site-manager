@@ -1,4 +1,5 @@
 <template>
+  <div class="h-10"></div>
   <Empty message="Your settings page"/>
 </template>
 

@@ -1,13 +1,41 @@
+@use "inter-ui/default" with (
+  $inter-font-display: swap,
+  $inter-font-path: 'inter-ui/Inter (web)'
+);
+@use "inter-ui/variable" with (
+  $inter-font-display: swap,
+  $inter-font-path: 'inter-ui/Inter (web)'
+);
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@include default.all;
+@include variable.all;
+
+html {
+  font-family: "Inter", "system-ui";
+  font-size: 0.875rem;
+}
+
+@supports (font-variation-settings: normal) {
+  html {
+    font-family: "Inter var", "system-ui";
+    font-size: 0.875rem;
+  }
+}
 
 body {
   @apply bg-light text-dark dark:bg-dark-darker dark:text-light;
 }
 
+a {
+  @apply text-cobalt-green hover:text-cobalt-green-darker transition-colors duration-150 ease-in-out;
+}
+
 .content {
-  @apply w-full md:max-w-[640px] lg:max-w-[1280px] mx-auto;
+  @apply w-full md:max-w-[640px] lg:max-w-[1080px] mx-auto;
 }
 
 .button-hover-effect {

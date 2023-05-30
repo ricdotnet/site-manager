@@ -6,7 +6,7 @@
     <Empty message="You have no sites to show"/>
   </template>
   <template v-else>
-    <div class="dark:bg-dark bg-white p-5 overflow-x-auto">
+    <div class="dark:bg-dark bg-white p-5 overflow-x-auto rounded-md shadow">
       <table class="table">
         <thead class="table__head">
         <tr>
@@ -20,7 +20,10 @@
           <td class="table__body--row">
             <span class="w-2.5 h-2.5 rounded-full mr-2 inline-block"
                   :class="site.enabled ? 'bg-cobalt-green' : 'bg-red-500'"></span>
-            <router-link :to="'/dashboard/sites/' + site.ID">{{ site.domain }}</router-link>
+            <router-link :to="'/dashboard/sites/' + site.ID" class="table__body--row--link">{{
+                site.domain
+              }}
+            </router-link>
           </td>
           <td class="table__body--row">{{ site.config_name }}</td>
           <td class="table__body--row">{{ site.has_ssl ? 'Yes' : 'No' }}</td>
@@ -60,10 +63,28 @@
     }
 
     &__body {
-      @apply divide-y dark:divide-dark-border divide-light-border;
+      @apply divide-y divide-light-border dark:divide-dark-border;
 
       &--row {
-        @apply px-3 py-5 dark:group-hover:bg-dark-darker group-hover:bg-light-lighter transition ease-in-out duration-200 whitespace-nowrap;
+        @apply
+        px-3
+        py-5
+        transition
+        ease-in-out
+        duration-200
+        whitespace-nowrap
+        group-hover:bg-light-lighter
+        dark:group-hover:bg-dark-darker;
+
+        &--link {
+          @apply
+          underline
+          underline-offset-2
+          decoration-dashed
+          decoration-1
+          decoration-dark/60
+          dark:decoration-white/40;
+        }
       }
     }
   }
