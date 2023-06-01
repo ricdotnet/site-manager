@@ -4,6 +4,7 @@
            :class="errorClasses"
            :id="id"
            :type="type ?? 'text'"
+           :placeholder="placeholder"
            ref="inputRef"
            @keyup="setError(false)"/>
     <Transition name="slide-down">
