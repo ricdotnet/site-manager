@@ -17,6 +17,10 @@ export const messages = {
     register_success: 'New user registered successfully',
     valid_token: 'A valid token was used to authorize',
   },
+  site: {
+    site_create_success: 'The new site was created with success',
+    site_create_error: 'We were unable to create a new site',
+  },
   generic: {
     not_implemented: 'This functionality is not fully working yet',
   },

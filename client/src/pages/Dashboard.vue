@@ -4,10 +4,10 @@
       Hello <span class="text-cobalt-green">{{ userStore.username }}</span>, welcome
     </div>
     <div class="header__nav">
-      <LinkButton :class="isActive('overview') ? 'active' : ''" href="/dashboard" text="Overview"/>
-      <LinkButton :class="isActive(['sites', 'site-details']) ? 'active' : ''" href="/dashboard/sites" text="Sites"/>
-      <LinkButton :class="isActive('domains') ? 'active' : ''" href="/dashboard/domains" text="Domains"/>
-      <LinkButton :class="isActive('settings') ? 'active' : ''" href="/dashboard/settings" text="Settings"/>
+      <LinkButton :class="{ active: isActive('overview') }" href="/dashboard" text="Overview"/>
+      <LinkButton :class="{ active: isActive(['sites', 'site-details']) }" href="/dashboard/sites" text="Sites"/>
+      <LinkButton :class="{ active: isActive('domains') }" href="/dashboard/domains" text="Domains"/>
+      <LinkButton :class="{ active: isActive('settings') }" href="/dashboard/settings" text="Settings"/>
     </div>
   </div>
   <router-view></router-view>
