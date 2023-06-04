@@ -1,4 +1,5 @@
 export * from './auth.validator.ts';
+export * from './site.validator.ts';
 
 type Presence = {
   allowEmpty: boolean;

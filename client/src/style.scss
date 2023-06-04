@@ -47,3 +47,15 @@ a {
     @apply bg-gradient-to-b from-white/50 to-white/50;
   }
 }
+
+/// Transitions
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.25s ease;
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+}

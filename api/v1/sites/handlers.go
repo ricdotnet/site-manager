@@ -77,27 +77,35 @@ func (a *API) single(ctx echo.Context) error {
 // create
 // get the body content and add a new site to the db and vhosts file
 func (a *API) create(ctx echo.Context) error {
+	a.logger.Info("Entering create a site")
+
+	userCtx := utils.GetTokenClaims(ctx)
+
 	site := new(Site)
 	if err := ctx.Bind(site); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+	site.UserID = userCtx.UserID
 
-	create, err := a.repository.Create(site)
+	newSite, err := a.repository.Create(site)
 	if err != nil {
+		a.logger.Warningf("Failed to create a site with the domain %s", site.Domain)
+		a.logger.Info("Exiting create a site")
 		return ctx.JSON(http.StatusBadRequest, Response{
 			ApiResponse: config.ApiResponse{
-				Code:    400,
-				Message: "Unable to create a new site",
+				Code:        http.StatusBadRequest,
+				MessageCode: "site_create_error",
 			},
 		})
 	}
 
+	a.logger.Info("Exiting create a site")
 	return ctx.JSON(http.StatusCreated, Response{
 		ApiResponse: config.ApiResponse{
-			Code:    201,
-			Message: "Site created with success",
+			Code:    http.StatusCreated,
+			Message: "site_create_success",
 		},
-		Site: create,
+		Site: newSite,
 	})
 }
 

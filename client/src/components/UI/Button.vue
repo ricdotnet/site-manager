@@ -5,9 +5,9 @@
           :value="value"
           :type="buttonType"
           :disabled="disabled || isActioning">
-    <span>{{ text }}</span>
-    <ArrowPathIcon v-if="isActioning" class="w-5 animate-spin"/>
     <slot/>
+    <span v-if="text">{{ text }}</span>
+    <ArrowPathIcon v-if="isActioning" class="w-5 animate-spin"/>
   </button>
 </template>
 
@@ -19,8 +19,8 @@
   const props = defineProps<{
     value: string;
     name: string;
-    text: string;
     color: ButtonColor;
+    text?: string;
     disabled?: boolean;
     size?: ButtonSize;
     type?: ButtonType;
