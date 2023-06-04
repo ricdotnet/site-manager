@@ -9,17 +9,36 @@
     </template>
   </Suspense>
 
-  <Dialog :is-open="isAddingSite" @on-close-dialog="isAddingSite = false"/>
+  <Dialog title="Add a Site"
+          confirm-label="Add"
+          :is-open="isAddingSite"
+          :is-actioning="isPostingSite"
+          @on-close-dialog="isAddingSite = false"
+          @on-confirm-dialog="onClickConfirmDialog">
+    <div class="flex flex-col gap-5">
+      <Input id="domain" placeholder="Domain"/>
+      <Input id="config" placeholder="Config"/>
+    </div>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
-  import { Button, Dialog, SitesTable } from "../components";
+  import { Button, Dialog, Input, SitesTable } from "../components";
   import { ref } from "vue";
 
   const isAddingSite = ref(false);
+  const isPostingSite = ref(false);
 
   const onClickAddSite = () => {
     isAddingSite.value = true;
+  }
+
+  const onClickConfirmDialog = () => {
+    isPostingSite.value = true;
+    setTimeout(() => {
+      isPostingSite.value = false;
+      isAddingSite.value = false;
+    }, 5000);
   }
 </script>
 
