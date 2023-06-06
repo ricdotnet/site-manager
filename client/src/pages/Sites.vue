@@ -2,12 +2,7 @@
   <div class="py-5 grid place-content-end">
     <Button text="Add Site" color="primary" value="add-site" name="add-site" @click="onClickAddSite"/>
   </div>
-  <Suspense>
-    <SitesTable/>
-    <template #fallback>
-      <div>Loading your sites...</div>
-    </template>
-  </Suspense>
+  <SitesTable/>
 
   <AddSiteDialog :is-adding-site="isAddingSite"
                  :close-dialog="closeAddSiteDialog"

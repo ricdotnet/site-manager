@@ -12,7 +12,6 @@ type RequestOptions<T = any> = {
 };
 
 interface UseRequestResult<TResult, TError = any> {
-  isLoading: boolean;
   error: TError;
   data: TResult;
 }
@@ -20,7 +19,6 @@ interface UseRequestResult<TResult, TError = any> {
 export const useRequest = async <TResult>(options: RequestOptions): Promise<UseRequestResult<TResult | undefined, any>> => {
   const api = import.meta.env.VITE_API;
 
-  const isLoading = ref(false);
   const error = ref<unknown>(null);
   const data = ref<TResult | null>(null) as Ref<TResult | null>;
 
@@ -40,9 +38,7 @@ export const useRequest = async <TResult>(options: RequestOptions): Promise<UseR
     data.value = response.data;
   } catch (e) {
     error.value = e;
-  } finally {
-    isLoading.value = false;
   }
 
-  return { isLoading: unwrap(isLoading) as boolean, error: unwrap(error), data: unwrap(data) as TResult };
+  return { error: unwrap(error), data: unwrap(data) as TResult };
 }

@@ -1,7 +1,5 @@
 <template>
-  <template v-if="error">
-    Something went wrong
-  </template>
+  <template v-if="isLoading">Loading sites...</template>
   <template v-else-if="!sitesStore.sites">
     <Empty message="You have no sites to show"/>
   </template>
@@ -40,29 +38,24 @@
 </template>
 
 <script setup lang="ts">
-  import { useRequest } from "../../composables";
-  import { TSitesResponse } from "../../types.ts";
+  import { onMounted, ref } from "vue";
   import { Button, Empty } from "../";
   import { TrashIcon } from "@heroicons/vue/20/solid";
   import { useSitesStore } from "../../stores/sites.store.ts";
 
   const sitesStore = useSitesStore();
 
-  // wait 30 seconds until doing another fetch... a refresh will always fetch
-  // TODO: move this to the store instead
-  if (sitesStore.lastFetch === 0 || (Date.now() - sitesStore.lastFetch > 30000)) {
-    const { data, error } = await useRequest<TSitesResponse>({
-      endpoint: '/sites/all',
-      needsAuth: true,
-    });
+  const fetchError = ref(false);
+  const isLoading = ref(false);
 
-    if (error) {
-      throw new Error('Something went wrong when fetching your sites...');
-    }
+  onMounted(async () => {
+    isLoading.value = true;
 
-    sitesStore.sites = [...data?.sites];
-    sitesStore.setLastFetch();
-  }
+    const error = await sitesStore.fetchSites();
+    if (error) fetchError.value = true;
+
+    isLoading.value = false;
+  });
 </script>
 
 <style scoped lang="scss">
