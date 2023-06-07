@@ -1,5 +1,7 @@
 <template>
-  <template v-if="isLoading">Loading sites...</template>
+  <template v-if="isLoading">
+    <TableLoading/>
+  </template>
   <template v-else-if="!sitesStore.sites">
     <Empty message="You have no sites to show"/>
   </template>
@@ -39,7 +41,7 @@
 
 <script setup lang="ts">
   import { onMounted, ref } from "vue";
-  import { Button, Empty } from "../";
+  import { Button, Empty, TableLoading } from "../";
   import { TrashIcon } from "@heroicons/vue/20/solid";
   import { useSitesStore } from "../../stores/sites.store.ts";
 
@@ -67,6 +69,14 @@
 
       &--col {
         @apply p-3 text-left pl-4;
+
+        &:first-child {
+          @apply rounded-l-md;
+        }
+
+        &:last-child {
+          @apply rounded-r-md;
+        }
       }
     }
 
