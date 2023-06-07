@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"os/exec"
+	"regexp"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
 	"ricr.dev/site-manager/utils"
@@ -22,20 +23,24 @@ type Response struct {
 
 // all
 // get all sites that belong to a specific user
+// TODO: Add pagination
 func (a *API) all(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 
-	userSites, err := a.repository.GetAll(userCtx.UserID)
+	sites, err := a.repository.GetAll(userCtx)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when trying to find all sites")
+		return ctx.JSON(http.StatusInternalServerError, config.ApiResponse{
+			Code:        http.StatusInternalServerError,
+			MessageCode: "sites_fetch_error",
+		})
 	}
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
-			Code:    200,
-			Message: "Here are all your sites",
+			Code:        http.StatusOK,
+			MessageCode: "sites_fetch_success",
 		},
-		Sites: userSites,
+		Sites: sites,
 	})
 }
 
@@ -45,7 +50,7 @@ func (a *API) single(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	site, err := a.repository.GetOne(id, userCtx.UserID)
+	site, err := a.repository.GetOne(id, userCtx)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "site_not_found")
 	}
@@ -79,12 +84,18 @@ func (a *API) single(ctx echo.Context) error {
 func (a *API) create(ctx echo.Context) error {
 	a.logger.Info("Entering create a site")
 
-	userCtx := utils.GetTokenClaims(ctx)
-
 	site := new(Site)
 	if err := ctx.Bind(site); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+	if errorCode := a.validateSite(site); errorCode != nil {
+		return ctx.JSON(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: *errorCode,
+		})
+	}
+
+	userCtx := utils.GetTokenClaims(ctx)
 	site.UserID = userCtx.UserID
 
 	newSite, err := a.repository.Create(site)
@@ -123,7 +134,7 @@ func (a *API) update(ctx echo.Context) error {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	site.ID = uint(id)
 	if site.ConfigName != "" {
-		oldSite, _ := a.repository.GetOne(id, userCtx.UserID)
+		oldSite, _ := a.repository.GetOne(id, userCtx)
 		err = a.sitesService.UpdateName(oldSite.ConfigName, site.ConfigName)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Something went wrong when updating this site")
@@ -188,4 +199,35 @@ func (a *API) delete(ctx echo.Context) error {
 			Message: "Record deleted from the system",
 		},
 	})
+}
+
+func (a *API) validateSite(site *Site) *string {
+	domainRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$"
+	configRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*.[A-Za-z]{2,}.conf$"
+
+	if site.Domain == "" {
+		a.logger.Warning("Tried to add a site with no domain")
+		errCode := "site_missing_domain"
+		return &errCode
+	}
+
+	if match, _ := regexp.MatchString(domainRegex, site.Domain); !match {
+		a.logger.Warningf("Tried to add a site with an invalid domain %s", site.Domain)
+		errCode := "site_invalid_domain"
+		return &errCode
+	}
+
+	if site.ConfigName == "" {
+		a.logger.Warning("Tried to add a site with no config name")
+		errCode := "site_missing_config"
+		return &errCode
+	}
+
+	if match, _ := regexp.MatchString(configRegex, site.ConfigName); !match {
+		a.logger.Warningf("Tried to add a site with an invalid config name %s", site.ConfigName)
+		errCode := "site_invalid_config"
+		return &errCode
+	}
+
+	return nil
 }

@@ -6,7 +6,7 @@ export const domainValidator: Validator = {
     message: 'Please enter a domain',
   },
   match: {
-    pattern: /^[A-Za-z0-9.]+$/g,
+    pattern: /^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/g,
     message: 'The domain is not a valid domain',
   },
 };
@@ -17,7 +17,7 @@ export const configValidator: Validator = {
     message: 'Please enter a config filename',
   },
   match: {
-    pattern: /^[A-Za-z0-9.]+$/g,
-    message: 'The filename is not a valid filename',
+    pattern: /^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}.conf$/g,
+    message: 'The filename is not a valid filename. It needs to end in .conf',
   },
 };
