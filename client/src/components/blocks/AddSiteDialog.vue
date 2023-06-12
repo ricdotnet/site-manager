@@ -69,7 +69,7 @@
       needsAuth: true,
       payload: {
         domain: domainInput.value?.getValue(),
-        config_name: domainInput.value?.getValue(),
+        config_name: configInput.value?.getValue(),
       },
     });
 

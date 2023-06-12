@@ -13,7 +13,6 @@
           <th class="table__head--col">Domain</th>
           <th class="table__head--col">Config</th>
           <th class="table__head--col">Has SSL</th>
-          <th class="table__head--col w-0"></th>
         </tr>
         </thead>
         <tbody class="table__body">
@@ -27,11 +26,6 @@
           </td>
           <td class="table__body--col">{{ site.config_name }}</td>
           <td class="table__body--col">{{ site.has_ssl ? 'Yes' : 'No' }}</td>
-          <td class="table__body--col">
-            <Button name="delete" value="delete" id="delete" color="danger">
-              <TrashIcon class="w-5"/>
-            </Button>
-          </td>
         </tr>
         </tbody>
       </table>
@@ -41,8 +35,7 @@
 
 <script setup lang="ts">
   import { onMounted, ref } from "vue";
-  import { Button, Empty, TableLoading } from "../";
-  import { TrashIcon } from "@heroicons/vue/20/solid";
+  import { Empty, TableLoading } from "../";
   import { useSitesStore } from "../../stores/sites.store.ts";
 
   const sitesStore = useSitesStore();
