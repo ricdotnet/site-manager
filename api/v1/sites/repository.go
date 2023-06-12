@@ -18,23 +18,23 @@ func NewRepository(db *gorm.DB, cfg *config.Config) *Repository {
 	}
 }
 
-func (r *Repository) GetAll(user uint) (*[]Site, error) {
+func (r *Repository) GetAll(user *config.JwtCustomClaims) (*[]Site, error) {
 	sites := new([]Site)
-	if err := r.db.Find(&sites, "user_id = ?", user).Error; err != nil {
+	if err := r.db.Find(&sites, "user_id = ?", user.UserID).Error; err != nil {
 		return nil, err
 	}
 
-	r.logger.Infof("Found %d site records for user with id %d", len(*sites), user)
+	r.logger.Infof("Found %d site records for user %s", len(*sites), user.Username)
 	return sites, nil
 }
 
-func (r *Repository) GetOne(id int, user uint) (*Site, error) {
+func (r *Repository) GetOne(id int, user *config.JwtCustomClaims) (*Site, error) {
 	site := &Site{}
-	if err := r.db.First(site, "id = ?", id).Error; err != nil {
+	if err := r.db.First(site, "id = ? AND user_id = ?", id, user.UserID).Error; err != nil {
 		return nil, err
 	}
 	if site != nil {
-		r.logger.Infof("Found 1 site record with id of %d for user %d", id, user)
+		r.logger.Infof("Found 1 site record with id %d for user %s", id, user.Username)
 	}
 
 	return site, nil

@@ -19,7 +19,7 @@ export const messages = {
   },
   site: {
     site_create_success: 'The new site was created with success',
-    site_create_error: 'We were unable to create a new site',
+    site_create_error: 'Could not add a new site. Please check your data and try again.<br>Hint: config names must be unique.',
   },
   generic: {
     not_implemented: 'This functionality is not fully working yet',

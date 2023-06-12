@@ -6,7 +6,7 @@ export const useUserStore = defineStore('user', () => {
   const api = import.meta.env.VITE_API;
 
   const isAuthed = ref(false);
-  const userId =ref('');
+  const userId = ref('');
   const username = ref('');
   const isAdmin = ref(false);
 

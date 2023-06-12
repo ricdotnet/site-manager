@@ -100,15 +100,4 @@
     @apply w-full py-3 px-4 bg-white border border-light-border rounded-md transition-[outline] ease-in-out duration-200;
     @apply dark:bg-dark dark:border-dark-border;
   }
-
-  .slide-down-enter-active,
-  .slide-down-leave-active {
-    transition: all 0.2s ease;
-  }
-
-  .slide-down-enter-from,
-  .slide-down-leave-to {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
 </style>

@@ -1,8 +1,8 @@
 <template>
-  <template v-if="error">
-    Something went wrong
+  <template v-if="isLoading">
+    <TableLoading/>
   </template>
-  <template v-else-if="sites && !sites.length">
+  <template v-else-if="!sitesStore.sites">
     <Empty message="You have no sites to show"/>
   </template>
   <template v-else>
@@ -10,23 +10,22 @@
       <table class="table">
         <thead class="table__head">
         <tr>
-          <th class="table__head--row">Domain</th>
-          <th class="table__head--row">Config</th>
-          <th class="table__head--row">Has SSL</th>
+          <th class="table__head--col">Domain</th>
+          <th class="table__head--col">Config</th>
+          <th class="table__head--col">Has SSL</th>
         </tr>
         </thead>
         <tbody class="table__body">
-        <tr v-for="site in sites" class="group">
-          <td class="table__body--row">
+        <tr v-for="site in sitesStore.sites" class="group">
+          <td class="table__body--col">
             <span class="w-2.5 h-2.5 rounded-full mr-2 inline-block"
                   :class="site.enabled ? 'bg-cobalt-green' : 'bg-red-500'"></span>
-            <router-link :to="'/dashboard/sites/' + site.ID" class="table__body--row--link">{{
-                site.domain
-              }}
+            <router-link :to="'/dashboard/sites/' + site.ID" class="table__body--col--link">
+              {{ site.domain }}
             </router-link>
           </td>
-          <td class="table__body--row">{{ site.config_name }}</td>
-          <td class="table__body--row">{{ site.has_ssl ? 'Yes' : 'No' }}</td>
+          <td class="table__body--col">{{ site.config_name }}</td>
+          <td class="table__body--col">{{ site.has_ssl ? 'Yes' : 'No' }}</td>
         </tr>
         </tbody>
       </table>
@@ -35,19 +34,23 @@
 </template>
 
 <script setup lang="ts">
-  import { useRequest } from "../../composables";
-  import { ref } from "vue";
-  import { TSite, TSitesResponse } from "../../types.ts";
-  import { Empty } from "../";
+  import { onMounted, ref } from "vue";
+  import { Empty, TableLoading } from "../";
+  import { useSitesStore } from "../../stores/sites.store.ts";
 
-  const sites = ref<TSite[]>();
+  const sitesStore = useSitesStore();
 
-  const { data, error } = await useRequest<TSitesResponse>({
-    endpoint: '/sites/all',
-    needsAuth: true,
+  const fetchError = ref(false);
+  const isLoading = ref(false);
+
+  onMounted(async () => {
+    isLoading.value = true;
+
+    const error = await sitesStore.fetchSites();
+    if (error) fetchError.value = true;
+
+    isLoading.value = false;
   });
-
-  sites.value = data.value?.sites;
 </script>
 
 <style scoped lang="scss">
@@ -57,15 +60,23 @@
     &__head {
       @apply uppercase text-sm bg-light-lighter dark:bg-dark-darker;
 
-      &--row {
+      &--col {
         @apply p-3 text-left pl-4;
+
+        &:first-child {
+          @apply rounded-l-md;
+        }
+
+        &:last-child {
+          @apply rounded-r-md;
+        }
       }
     }
 
     &__body {
       @apply divide-y divide-light-border dark:divide-dark-border;
 
-      &--row {
+      &--col {
         @apply
         px-3
         py-5
