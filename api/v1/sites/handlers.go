@@ -203,7 +203,7 @@ func (a *API) delete(ctx echo.Context) error {
 
 func (a *API) validateSite(site *Site) *string {
 	domainRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$"
-	configRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*.[A-Za-z]{2,}.conf$"
+	configRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*.[A-Za-z]{2,}\\.conf$"
 
 	if site.Domain == "" {
 		a.logger.Warning("Tried to add a site with no domain")
