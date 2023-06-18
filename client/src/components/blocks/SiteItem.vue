@@ -18,11 +18,11 @@
   const site = ref<TSite>();
 
   const { data, error } = await useRequest<TSIteResponse>({
-    endpoint: `/sites/single/${route.params['id']}`,
+    endpoint: `/site/${route.params['id']}`,
     needsAuth: true,
   });
 
-  site.value = data.value?.site;
+  site.value = data?.site;
 </script>
 
 <style scoped lang="scss">

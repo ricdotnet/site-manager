@@ -6,7 +6,11 @@
           @on-close-dialog="onCloseDialog"
           @on-confirm-dialog="onClickConfirmDialog">
     <div class="flex flex-col gap-5">
-      <Input ref="domainInput" id="domain" placeholder="Domain" :validator="domainValidator"/>
+      <Input ref="domainInput"
+             id="domain"
+             placeholder="Domain"
+             :validator="domainValidator"
+             @on-key-up="onDomainKeyUp"/>
       <Input ref="configInput" id="config" placeholder="Config" :validator="configValidator"/>
       <Transition name="slide-down">
         <div v-if="generalErrorMessage" class="text-center text-red-500" v-html="generalErrorMessage"></div>
@@ -64,7 +68,7 @@
     if (formHasError.value) return;
 
     const { data, error } = await useRequest<AddSiteResponse>({
-      endpoint: '/sites/single',
+      endpoint: '/site/',
       method: 'POST',
       needsAuth: true,
       payload: {
@@ -82,6 +86,14 @@
       sitesStore.addSite(data.site);
     }
     props.closeDialog();
+  }
+
+  const onDomainKeyUp = () => {
+    const domainValue = domainInput.value?.getValue();
+
+    if (domainValue) {
+      configInput.value?.setValue(domainValue + '.conf');
+    }
   }
 </script>
 

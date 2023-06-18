@@ -2,7 +2,7 @@
   <template v-if="isLoading">
     <TableLoading/>
   </template>
-  <template v-else-if="!sitesStore.sites">
+  <template v-else-if="!sitesStore.sites.length">
     <Empty message="You have no sites to show"/>
   </template>
   <template v-else>
@@ -13,11 +13,12 @@
           <th class="table__head--col">
             <Checkbox id="site-all"
                       name="site-all"
-                      :checked="!allChecked"
+                      :checked="allChecked"
                       @change="onCheckAll"/>
           </th>
           <th class="table__head--col">Domain</th>
           <th class="table__head--col">Config</th>
+          <th class="table__head--col">Created on</th>
           <th class="table__head--col">Has SSL</th>
         </tr>
         </thead>
@@ -37,6 +38,7 @@
             </router-link>
           </td>
           <td class="table__body--col">{{ site.config_name }}</td>
+          <td class="table__body--col">{{ new Date(site.created_at).toDateString() }}</td>
           <td class="table__body--col">{{ site.has_ssl ? 'Yes' : 'No' }}</td>
         </tr>
         </tbody>
@@ -55,7 +57,7 @@
   const fetchError = ref(false);
   const isLoading = ref(false);
 
-  const allChecked = computed(() => sitesStore.sites.find((site) => !site.checked));
+  const allChecked = computed(() => !sitesStore.sites.filter((site) => !site.checked).length);
 
   onMounted(async () => {
     isLoading.value = true;
@@ -77,7 +79,7 @@
 
 <style scoped lang="scss">
   .table {
-    @apply table-auto w-full;
+    @apply w-full;
 
     &__head {
       @apply uppercase text-sm bg-light-lighter dark:bg-dark-darker;
@@ -101,11 +103,13 @@
       &--col {
         &:not(:first-child) {
           @apply
+          w-auto
           px-3
           py-5;
         }
 
         @apply
+        w-12
         pl-3
         transition
         ease-in-out

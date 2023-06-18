@@ -6,7 +6,7 @@
            :type="type ?? 'text'"
            :placeholder="placeholder"
            ref="inputRef"
-           @keyup="setError(false)"/>
+           @keyup="onKeyUp"/>
     <Transition name="slide-down">
       <span v-if="errorMessageRef"
             class="text-red-500 text-sm px-4">{{ errorMessageRef }}</span>
@@ -17,6 +17,9 @@
 <script setup lang="ts">
   import { computed, onUnmounted, reactive, ref } from "vue";
   import { validate, Validator } from "../../validators";
+  import { useDebounce } from "../../composables";
+
+  const debounce = useDebounce();
 
   const props = defineProps<{
     id: string;
@@ -61,6 +64,7 @@
 
   const emits = defineEmits<{
     (event: 'onResetError', key: string): void;
+    (event: 'onKeyUp', value: string): void;
   }>();
 
   const getValue = () => {
@@ -73,6 +77,15 @@
       }
     }
     return value;
+  }
+
+  const setValue = (value: string) => {
+    inputRef.value!.value = value;
+  }
+
+  const onKeyUp = () => {
+    setError(false);
+    debounce(() => emits('onKeyUp', inputRef.value!.value));
   }
 
   const setError = (bool: boolean, message?: string) => {
@@ -92,7 +105,7 @@
     clearTimeout(timeout.value);
   });
 
-  defineExpose({ getValue, setError });
+  defineExpose({ getValue, setValue, setError });
 </script>
 
 <style scoped lang="scss">

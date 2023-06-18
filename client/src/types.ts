@@ -4,6 +4,7 @@ export type ButtonColor = 'primary' | 'gray' | 'danger';
 
 export type InputComponent = {
   getValue: () => string;
+  setValue: (value: string) => void;
   setError: (bool: boolean, message?: string) => void;
 }
 
