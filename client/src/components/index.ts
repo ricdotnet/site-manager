@@ -3,6 +3,7 @@ export { default as Toggle } from './UI/Toggle.vue';
 export { default as Button } from './UI/Button.vue';
 export { default as LinkButton } from './UI/LinkButton.vue';
 export { default as Input } from './UI/Input.vue';
+export { default as Checkbox } from './UI/Checkbox.vue';
 export { default as Dialog } from './UI/Dialog.vue';
 
 // Blocks

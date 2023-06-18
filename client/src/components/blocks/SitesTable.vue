@@ -10,6 +10,12 @@
       <table class="table">
         <thead class="table__head">
         <tr>
+          <th class="table__head--col">
+            <Checkbox id="site-all"
+                      name="site-all"
+                      :checked="!allChecked"
+                      @change="onCheckAll"/>
+          </th>
           <th class="table__head--col">Domain</th>
           <th class="table__head--col">Config</th>
           <th class="table__head--col">Has SSL</th>
@@ -17,6 +23,12 @@
         </thead>
         <tbody class="table__body">
         <tr v-for="site in sitesStore.sites" class="group">
+          <td class="table__body--col">
+            <Checkbox :id="'site-'+site.ID"
+                      :name="'site-'+site.ID"
+                      :checked="site.checked ?? false"
+                      @on-change="onCheckSite(site.ID)"/>
+          </td>
           <td class="table__body--col">
             <span class="w-2.5 h-2.5 rounded-full mr-2 inline-block"
                   :class="site.enabled ? 'bg-cobalt-green' : 'bg-red-500'"></span>
@@ -34,14 +46,16 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from "vue";
-  import { Empty, TableLoading } from "../";
+  import { computed, onMounted, ref } from "vue";
+  import { Checkbox, Empty, TableLoading } from "../";
   import { useSitesStore } from "../../stores/sites.store.ts";
 
   const sitesStore = useSitesStore();
 
   const fetchError = ref(false);
   const isLoading = ref(false);
+
+  const allChecked = computed(() => sitesStore.sites.find((site) => !site.checked));
 
   onMounted(async () => {
     isLoading.value = true;
@@ -51,6 +65,14 @@
 
     isLoading.value = false;
   });
+
+  const onCheckSite = (id: number) => {
+    sitesStore.checkSite(id);
+  }
+
+  const onCheckAll = (e: Event & { target: HTMLInputElement }) => {
+    sitesStore.checkAll(e.target.checked);
+  }
 </script>
 
 <style scoped lang="scss">
@@ -61,7 +83,7 @@
       @apply uppercase text-sm bg-light-lighter dark:bg-dark-darker;
 
       &--col {
-        @apply p-3 text-left pl-4;
+        @apply py-3 pl-3 text-left;
 
         &:first-child {
           @apply rounded-l-md;
@@ -77,9 +99,14 @@
       @apply divide-y divide-light-border dark:divide-dark-border;
 
       &--col {
+        &:not(:first-child) {
+          @apply
+          px-3
+          py-5;
+        }
+
         @apply
-        px-3
-        py-5
+        pl-3
         transition
         ease-in-out
         duration-200

@@ -22,6 +22,7 @@ export type TSite = {
   has_ssl: boolean;
   created_at: string;
   updated_at: string;
+  checked?: boolean;
 }
 
 export type TSitesResponse = {

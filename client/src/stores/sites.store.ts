@@ -33,5 +33,16 @@ export const useSitesStore = defineStore('sites', () => {
     setLastFetch();
   }
 
-  return { sites, lastFetch, addSite, fetchSites, setLastFetch };
+  const checkSite = (id: number): void => {
+    const site = sites.value.find(site => site.ID === id);
+    if (site) {
+      site.checked = !site.checked;
+    }
+  }
+
+  const checkAll = (checked: boolean): void => {
+    sites.value.forEach((site) => site.checked = checked);
+  }
+
+  return { sites, lastFetch, addSite, fetchSites, setLastFetch, checkSite, checkAll };
 });
