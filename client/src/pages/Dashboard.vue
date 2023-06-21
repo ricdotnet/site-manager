@@ -14,9 +14,9 @@
 </template>
 
 <script setup lang="ts">
-  import { useUserStore } from "../stores/user.store.ts";
-  import { LinkButton } from "../components";
   import { useRoute } from "vue-router";
+  import { useUserStore } from "@stores";
+  import { LinkButton } from "@components";
 
   const userStore = useUserStore();
   const route = useRoute();

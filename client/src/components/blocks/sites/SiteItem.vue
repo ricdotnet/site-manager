@@ -9,10 +9,10 @@
 
 <script setup lang="ts">
   import { ref } from "vue";
-  import { TSite, TSIteResponse } from "../../types.ts";
-  import { useRequest } from "../../composables";
   import { useRoute } from "vue-router";
-  import {Empty} from "../";
+  import { TSite, TSIteResponse } from "@types";
+  import { useRequest } from "@composables";
+  import { Empty } from "@components";
 
   const route = useRoute();
   const site = ref<TSite>();

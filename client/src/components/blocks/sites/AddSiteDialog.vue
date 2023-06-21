@@ -21,12 +21,12 @@
 
 <script setup lang="ts">
   import { ref } from "vue";
-  import { configValidator, domainValidator } from "../../validators";
-  import { Dialog, Input } from "../";
-  import { InputComponent, TSite } from "../../types.ts";
-  import { useRequest } from "../../composables";
-  import { useSitesStore } from "../../stores/sites.store.ts";
-  import { messages } from "../../utils";
+  import { configValidator, domainValidator } from "@validators";
+  import { Dialog, Input } from "@components";
+  import { InputComponent, TSite } from "@types";
+  import { useRequest } from "@composables";
+  import { useSitesStore } from "@stores";
+  import { messages } from "@utils";
 
   const sitesStore = useSitesStore();
 

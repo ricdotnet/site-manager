@@ -49,8 +49,8 @@
 
 <script setup lang="ts">
   import { computed, onMounted, ref } from "vue";
-  import { Checkbox, Empty, TableLoading } from "../";
-  import { useSitesStore } from "../../stores/sites.store.ts";
+  import { Checkbox, Empty, TableLoading } from "@components";
+  import { useSitesStore } from "@stores";
 
   const sitesStore = useSitesStore();
 

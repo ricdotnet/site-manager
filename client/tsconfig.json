@@ -14,8 +14,17 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@pages": ["./src/pages"],
+      "@components": ["./src/components"],
+      "@composables": ["./src/composables"],
+      "@stores": ["./src/stores"],
+      "@utils": ["./src/utils"],
+      "@validators": ["./src/validators"],
+      "@types": ["./src/types.ts"],
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [{ "path": "./tsconfig.node.json" }],
 }

@@ -16,8 +16,8 @@
 
 <script setup lang="ts">
   import { computed, onUnmounted, reactive, ref } from "vue";
-  import { validate, Validator } from "../../validators";
-  import { useDebounce } from "../../composables";
+  import { validate, Validator } from "@validators";
+  import { useDebounce } from "@composables";
 
   const debounce = useDebounce();
 

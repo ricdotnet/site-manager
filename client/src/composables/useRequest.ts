@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Ref, ref } from "vue";
-import { unwrap } from "../utils";
+import { unwrap } from "@utils";
 
 type RequestVerb = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
