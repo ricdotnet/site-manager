@@ -4,6 +4,7 @@ export type ButtonColor = 'primary' | 'gray' | 'danger';
 
 export type InputComponent = {
   getValue: () => string;
+  setValue: (value: string) => void;
   setError: (bool: boolean, message?: string) => void;
 }
 
@@ -22,6 +23,7 @@ export type TSite = {
   has_ssl: boolean;
   created_at: string;
   updated_at: string;
+  checked?: boolean;
 }
 
 export type TSitesResponse = {

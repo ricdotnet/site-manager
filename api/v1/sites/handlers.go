@@ -21,6 +21,10 @@ type Response struct {
 	Vhosts any     `json:"vhosts,omitempty"`
 }
 
+type DeleteSites struct {
+	Sites *[]uint
+}
+
 // all
 // get all sites that belong to a specific user
 // TODO: Add pagination
@@ -182,21 +186,25 @@ func (a *API) status(ctx echo.Context) error {
 // delete
 // remove an entry from the database as well as the actual vhosts file and disable the site too
 func (a *API) delete(ctx echo.Context) error {
-	id := ctx.Param("id")
+	a.logger.Info("Entering delete sites handler")
 
-	_id, err := strconv.Atoi(id)
+	sites := &DeleteSites{}
+	err := ctx.Bind(sites)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "The id must be of type integer")
+		a.logger.Error(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
 
-	if err = a.repository.Delete(_id); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Unable to delete site")
+	if err = a.repository.Delete(sites.Sites); err != nil {
+		a.logger.Error(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
 
+	a.logger.Info("Exiting delete sites handler")
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
-			Code:    200,
-			Message: "Record deleted from the system",
+			Code:    http.StatusOK,
+			Message: "delete_sites_success",
 		},
 	})
 }

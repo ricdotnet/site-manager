@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-  import { Empty } from "../components";
+  import { Empty } from "@components";
 </script>
 
 <style scoped lang="scss">

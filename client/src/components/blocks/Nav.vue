@@ -24,10 +24,10 @@
 
 <script setup lang="ts">
   import { computed } from 'vue';
-  import { LinkButton, Toggle } from "../";
-  import { useTheme } from '../../composables';
-  import { useUserStore } from "../../stores/user.store.ts";
   import { useRouter } from "vue-router";
+  import { LinkButton, Toggle } from "@components";
+  import { useTheme } from '@composables';
+  import { useUserStore } from "@stores";
 
   const router = useRouter();
   const { toggleTheme, currentTheme } = useTheme();

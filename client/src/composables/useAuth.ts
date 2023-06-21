@@ -1,7 +1,7 @@
-import { RegisterData } from "../types.ts";
 import axios from "axios";
 import { ref } from "vue";
-import { useUserStore } from "../stores/user.store.ts";
+import { useUserStore } from "@stores";
+import { RegisterData } from "@types";
 
 const useAuth = () => {
   const api = import.meta.env.VITE_API;

@@ -9,20 +9,20 @@
 
 <script setup lang="ts">
   import { ref } from "vue";
-  import { TSite, TSIteResponse } from "../../types.ts";
-  import { useRequest } from "../../composables";
   import { useRoute } from "vue-router";
-  import {Empty} from "../";
+  import { TSite, TSIteResponse } from "@types";
+  import { useRequest } from "@composables";
+  import { Empty } from "@components";
 
   const route = useRoute();
   const site = ref<TSite>();
 
   const { data, error } = await useRequest<TSIteResponse>({
-    endpoint: `/sites/single/${route.params['id']}`,
+    endpoint: `/site/${route.params['id']}`,
     needsAuth: true,
   });
 
-  site.value = data.value?.site;
+  site.value = data?.site;
 </script>
 
 <style scoped lang="scss">

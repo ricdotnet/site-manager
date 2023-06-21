@@ -12,12 +12,12 @@ import (
 func Routes(v1 *echo.Group, db *gorm.DB, cfg *config.Config) {
 	api := New(db, cfg)
 
-	sites := v1.Group("/sites", middlewares.AuthMiddleware())
+	sites := v1.Group("/site", middlewares.AuthMiddleware())
 
 	sites.GET("/all", api.all)
-	sites.GET("/single/:id", api.single)
-	sites.POST("/single", api.create)
-	sites.PATCH("/single/:id", api.update)
-	sites.PATCH("/single/:id/status", api.status)
-	sites.DELETE("/single/:id", api.delete)
+	sites.GET("/:id", api.single)
+	sites.POST("/", api.create)
+	sites.PATCH("/:id", api.update)
+	sites.PATCH("/:id/status", api.status)
+	sites.DELETE("/", api.delete)
 }

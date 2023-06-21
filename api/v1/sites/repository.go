@@ -69,10 +69,18 @@ func (r *Repository) Enable(site *Site) error {
 	return nil
 }
 
-func (r *Repository) Delete(id int) error {
-	if err := r.db.Delete(&Site{}, id).Error; err != nil {
-		return err
-	}
+func (r *Repository) Delete(sites *[]uint) error {
+	err := r.db.Transaction(func(tx *gorm.DB) error {
+		for _, site := range *sites {
+			r.logger.Debugf("Deleting site with id %d", site)
 
-	return nil
+			if err := r.db.Delete(&Site{}, site).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	return err
 }

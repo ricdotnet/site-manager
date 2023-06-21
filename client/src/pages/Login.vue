@@ -30,11 +30,11 @@
 
 <script setup lang="ts">
   import { ref } from "vue";
-  import { Button, ButtonGroup, Input, LinkButton, Stack } from "../components";
-  import { InputComponent } from "../types";
-  import { useAuth } from "../composables";
   import { useRouter } from "vue-router";
-  import { messages } from "../utils";
+  import { Button, ButtonGroup, Input, LinkButton, Stack } from "@components";
+  import { InputComponent } from "@types";
+  import { useAuth } from "@composables";
+  import { messages } from "@utils";
 
   const username = ref<InputComponent>();
   const password = ref<InputComponent>();

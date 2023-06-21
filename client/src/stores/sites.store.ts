@@ -12,6 +12,13 @@ export const useSitesStore = defineStore('sites', () => {
     sites.value?.push(site);
   }
 
+  const removeSites = (ids: number[]): void => {
+    sites.value = sites.value.reduce((filtered: TSite[], site: TSite) => {
+      if (!ids.includes(site.ID)) filtered.push(site);
+      return filtered;
+    }, []);
+  }
+
   const setLastFetch = () => {
     lastFetch.value = Date.now();
   }
@@ -20,7 +27,7 @@ export const useSitesStore = defineStore('sites', () => {
     if (Date.now() - lastFetch.value < 30000) return;
 
     const { data, error } = await useRequest<TSitesResponse>({
-      endpoint: '/sites/all',
+      endpoint: '/site/all',
       needsAuth: true,
     });
 
@@ -33,5 +40,16 @@ export const useSitesStore = defineStore('sites', () => {
     setLastFetch();
   }
 
-  return { sites, lastFetch, addSite, fetchSites, setLastFetch };
+  const checkSite = (id: number): void => {
+    const site = sites.value.find(site => site.ID === id);
+    if (site) {
+      site.checked = !site.checked;
+    }
+  }
+
+  const checkAll = (checked: boolean): void => {
+    sites.value.forEach((site) => site.checked = checked);
+  }
+
+  return { sites, lastFetch, addSite, fetchSites, setLastFetch, checkSite, checkAll, removeSites };
 });

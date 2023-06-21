@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
   import { computed } from "vue";
-  import { ButtonColor, ButtonSize, ButtonType } from "../../types.ts";
+  import { ButtonColor, ButtonSize, ButtonType } from "@types";
   import { ArrowPathIcon } from "@heroicons/vue/20/solid";
 
   const props = defineProps<{

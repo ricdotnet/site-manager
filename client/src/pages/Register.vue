@@ -41,13 +41,13 @@
 </template>
 
 <script setup lang="ts">
-  import { Button, ButtonGroup, Input, LinkButton, Stack } from "../components";
-  import { InputComponent, RegisterData } from "../types.ts";
   import { ref } from "vue";
-  import { useAuth } from "../composables";
   import { useRouter } from "vue-router";
-  import { emailValidator, passwordConfirmValidator, passwordValidator, usernameValidator } from "../validators";
-  import { messages } from "../utils";
+  import { Button, ButtonGroup, Input, LinkButton, Stack } from "@components";
+  import { InputComponent, RegisterData } from "@types";
+  import { useAuth } from "@composables";
+  import { emailValidator, passwordConfirmValidator, passwordValidator, usernameValidator } from "@validators";
+  import { messages } from "@utils";
 
   const router = useRouter();
 

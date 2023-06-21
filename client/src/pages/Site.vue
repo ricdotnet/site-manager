@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-  import { SiteItem } from "../components";
+  import { SiteItem } from "@components";
 </script>
 
 <style scoped lang="scss">

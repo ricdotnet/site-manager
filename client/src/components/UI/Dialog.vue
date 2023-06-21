@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
   import { computed, watch } from "vue";
-  import { Button } from "../";
+  import { Button } from "@components";
 
   interface DialogProps {
     isOpen: boolean;
