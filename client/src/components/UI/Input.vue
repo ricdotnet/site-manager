@@ -5,8 +5,11 @@
            :id="id"
            :type="type ?? 'text'"
            :placeholder="placeholder"
+           :disabled="disabled"
+           :readonly="readonly"
            ref="inputRef"
-           @keyup="onKeyUp"/>
+           @keyup="onKeyUp"
+           @dblclick="onDoubleClick"/>
     <Transition name="slide-down">
       <span v-if="errorMessageRef"
             class="text-red-500 text-sm px-4">{{ errorMessageRef }}</span>
@@ -28,6 +31,8 @@
     errorMessage?: string;
     timeout?: number;
     validator?: Validator | Function;
+    disabled?: boolean;
+    readonly?: boolean;
   }>();
 
   const state = reactive({
@@ -65,6 +70,7 @@
   const emits = defineEmits<{
     (event: 'onResetError', key: string): void;
     (event: 'onKeyUp', value: string): void;
+    (event: 'onDoubleClick'): void;
   }>();
 
   const getValue = () => {
@@ -86,6 +92,10 @@
   const onKeyUp = () => {
     setError(false);
     debounce(() => emits('onKeyUp', inputRef.value!.value));
+  }
+
+  const onDoubleClick = () => {
+    emits('onDoubleClick');
   }
 
   const setError = (bool: boolean, message?: string) => {
@@ -112,5 +122,12 @@
   .input {
     @apply w-full py-3 px-4 bg-white border border-light-border rounded-md transition-[outline] ease-in-out duration-200;
     @apply dark:bg-dark dark:border-dark-border;
+    @apply
+    read-only:dark:border-dark-border/70
+    read-only:border-light-border/50
+    read-only:dark:text-dark-dim
+    read-only:text-dark-dim/70
+    read-only:outline-none
+    read-only:cursor-default;
   }
 </style>

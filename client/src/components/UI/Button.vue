@@ -17,10 +17,10 @@
   import { ArrowPathIcon } from "@heroicons/vue/20/solid";
 
   const props = defineProps<{
-    value: string;
     name: string;
     color: ButtonColor;
     text?: string;
+    value?: string;
     disabled?: boolean;
     size?: ButtonSize;
     type?: ButtonType;

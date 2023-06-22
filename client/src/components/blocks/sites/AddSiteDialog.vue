@@ -11,7 +11,17 @@
              placeholder="Domain"
              :validator="domainValidator"
              @on-key-up="onDomainKeyUp"/>
-      <Input ref="configInput" id="config" placeholder="Config" :validator="configValidator"/>
+      <div class="flex gap-2">
+        <Input class="w-full" ref="configInput"
+               id="config"
+               placeholder="Config"
+               :validator="configValidator"
+               :readonly="!isEditingConf"
+               @on-double-click="onConfigDoubleClick"/>
+        <Button v-if="isEditingConf" name="save" id="save" color="primary" @click="onClickSaveConfig">
+          <CheckIcon class="w-5 h-5"/>
+        </Button>
+      </div>
       <Transition name="slide-down">
         <div v-if="generalErrorMessage" class="text-center text-red-500" v-html="generalErrorMessage"></div>
       </Transition>
@@ -22,11 +32,12 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import { configValidator, domainValidator } from "@validators";
-  import { Dialog, Input } from "@components";
+  import { Button, Dialog, Input } from "@components";
   import { InputComponent, TSite } from "@types";
   import { useRequest } from "@composables";
   import { useSitesStore } from "@stores";
   import { messages } from "@utils";
+  import { CheckIcon } from "@heroicons/vue/20/solid";
 
   const sitesStore = useSitesStore();
 
@@ -41,6 +52,8 @@
 
   const formHasError = ref(false);
   const generalErrorMessage = ref('');
+
+  const isEditingConf = ref(false);
 
   interface AddSiteResponse {
     code: number;
@@ -94,6 +107,14 @@
     if (domainValue) {
       configInput.value?.setValue(domainValue + '.conf');
     }
+  }
+
+  const onConfigDoubleClick = () => {
+    isEditingConf.value = true;
+  }
+
+  const onClickSaveConfig = () => {
+    isEditingConf.value = false;
   }
 </script>
 
