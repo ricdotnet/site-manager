@@ -17,7 +17,7 @@ export const configValidator: Validator = {
     message: 'Please enter a config filename',
   },
   match: {
-    pattern: /^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}.conf$/g,
-    message: 'The filename is not a valid filename. It needs to end in .conf',
+    pattern: /^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.conf$/g,
+    message: 'The filename is not a valid filename. Hint: it needs to end in .conf',
   },
 };

@@ -11,17 +11,14 @@
              placeholder="Domain"
              :validator="domainValidator"
              @on-key-up="onDomainKeyUp"/>
-      <div class="flex gap-2">
-        <Input class="w-full" ref="configInput"
-               id="config"
-               placeholder="Config"
-               :validator="configValidator"
-               :readonly="!isEditingConf"
-               @on-double-click="onConfigDoubleClick"/>
-        <Button v-if="isEditingConf" name="save" id="save" color="primary" @click="onClickSaveConfig">
-          <CheckIcon class="w-5 h-5"/>
-        </Button>
-      </div>
+      <Input class="w-full" ref="configInput"
+             id="config"
+             placeholder="Config"
+             :validator="configValidator"
+             :readonly="!isEditingConf"
+             :is-editing="isEditingConf"
+             @on-double-click="onConfigDoubleClick"
+             @on-save="onSaveConfig"/>
       <Transition name="slide-down">
         <div v-if="generalErrorMessage" class="text-center text-red-500" v-html="generalErrorMessage"></div>
       </Transition>
@@ -32,12 +29,11 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import { configValidator, domainValidator } from "@validators";
-  import { Button, Dialog, Input } from "@components";
+  import { Dialog, Input } from "@components";
   import { InputComponent, TSite } from "@types";
   import { useRequest } from "@composables";
   import { useSitesStore } from "@stores";
   import { messages } from "@utils";
-  import { CheckIcon } from "@heroicons/vue/20/solid";
 
   const sitesStore = useSitesStore();
 
@@ -63,6 +59,7 @@
 
   const onCloseDialog = () => {
     generalErrorMessage.value = '';
+    isEditingConf.value = false;
   }
 
   const onClickConfirmDialog = async () => {
@@ -113,7 +110,7 @@
     isEditingConf.value = true;
   }
 
-  const onClickSaveConfig = () => {
+  const onSaveConfig = () => {
     isEditingConf.value = false;
   }
 </script>

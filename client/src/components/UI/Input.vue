@@ -1,15 +1,21 @@
 <template>
-  <div class="flex flex-col space-y-2">
-    <input class="input"
-           :class="errorClasses"
-           :id="id"
-           :type="type ?? 'text'"
-           :placeholder="placeholder"
-           :disabled="disabled"
-           :readonly="readonly"
-           ref="inputRef"
-           @keyup="onKeyUp"
-           @dblclick="onDoubleClick"/>
+  <div class="flex flex-col gap-2">
+    <div class="flex gap-2">
+      <input class="input"
+             :class="errorClasses"
+             :id="id"
+             :type="type ?? 'text'"
+             :placeholder="placeholder"
+             :disabled="disabled"
+             :readonly="readonly"
+             ref="inputRef"
+             @keyup="onKeyUp"
+             @dblclick="onDoubleClick"
+             @focusout="onFocusOut"/>
+      <Button v-if="isEditing" name="save" id="save" color="primary" @click="onClickSave">
+        <CheckIcon class="w-5 h-5"/>
+      </Button>
+    </div>
     <Transition name="slide-down">
       <span v-if="errorMessageRef"
             class="text-red-500 text-sm px-4">{{ errorMessageRef }}</span>
@@ -21,6 +27,8 @@
   import { computed, onUnmounted, reactive, ref } from "vue";
   import { validate, Validator } from "@validators";
   import { useDebounce } from "@composables";
+  import { Button } from "@components";
+  import { CheckIcon } from "@heroicons/vue/20/solid";
 
   const debounce = useDebounce();
 
@@ -33,6 +41,7 @@
     validator?: Validator | Function;
     disabled?: boolean;
     readonly?: boolean;
+    isEditing?: boolean;
   }>();
 
   const state = reactive({
@@ -51,6 +60,7 @@
   const inputRef = ref<HTMLInputElement>();
   const hasError = ref(false);
   const timeout = ref<NodeJS.Timeout>();
+  const oldValue = ref('');
 
   const errorClasses = computed(() => {
     if (hasError.value) {
@@ -71,6 +81,7 @@
     (event: 'onResetError', key: string): void;
     (event: 'onKeyUp', value: string): void;
     (event: 'onDoubleClick'): void;
+    (event: 'onSave'): void;
   }>();
 
   const getValue = () => {
@@ -89,13 +100,30 @@
     inputRef.value!.value = value;
   }
 
-  const onKeyUp = () => {
+  const onKeyUp = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setValue(oldValue.value);
+      inputRef.value?.blur();
+      emits('onSave');
+      e.stopPropagation();
+    }
+
     setError(false);
+    if (inputRef.value!.value === '') return;
     debounce(() => emits('onKeyUp', inputRef.value!.value));
   }
 
   const onDoubleClick = () => {
     emits('onDoubleClick');
+    oldValue.value = inputRef.value!.value;
+  }
+
+  const onFocusOut = () => {
+    emits('onSave');
+  }
+
+  const onClickSave = () => {
+    emits('onSave');
   }
 
   const setError = (bool: boolean, message?: string) => {
@@ -120,9 +148,18 @@
 
 <style scoped lang="scss">
   .input {
-    @apply w-full py-3 px-4 bg-white border border-light-border rounded-md transition-[outline] ease-in-out duration-200;
-    @apply dark:bg-dark dark:border-dark-border;
     @apply
+    w-full
+    py-3
+    px-4
+    bg-white
+    border
+    border-light-border
+    rounded-md
+    transition-[outline]
+    ease-in-out
+    duration-200
+    dark:bg-dark dark:border-dark-border
     read-only:dark:border-dark-border/70
     read-only:border-light-border/50
     read-only:dark:text-dark-dim
