@@ -1,10 +1,13 @@
 <template>
   <div ref="dropdownRef" tabindex="0" class="dropdown">
-    <Button id="dropdown_button" name="dropdown" :color="color ?? 'primary'" @click="emits('onClick')">
-      <span>Dropdown</span>
-      <ChevronDownIcon v-if="!isOpen" class="w-5"/>
-      <ChevronUpIcon v-if="isOpen" class="w-5"/>
-    </Button>
+    <slot name="caller"/>
+    <template v-if="!slots.caller">
+      <Button :id="id" :name="name" :color="color ?? 'primary'" @click="emits('onClick')">
+        <span>{{ text }}</span>
+        <ChevronDownIcon v-if="!isOpen" class="w-5"/>
+        <ChevronUpIcon v-if="isOpen" class="w-5"/>
+      </Button>
+    </template>
 
     <Transition name="slide-down">
       <div ref="itemsRef" v-if="isOpen && slots.items" class="dropdown__items" :class="itemsPosition">
@@ -21,8 +24,11 @@
   import { ButtonColor } from "@types";
 
   const props = defineProps<{
-    isOpen: boolean;
+    id?: string;
+    name?: string;
+    text?: string;
     color?: ButtonColor;
+    isOpen: boolean;
   }>();
 
   const emits = defineEmits<{
