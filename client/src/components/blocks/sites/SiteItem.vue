@@ -24,6 +24,3 @@
 
   site.value = data?.site;
 </script>
-
-<style scoped lang="scss">
-</style>
