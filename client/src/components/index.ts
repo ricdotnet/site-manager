@@ -5,6 +5,8 @@ export { default as LinkButton } from './UI/LinkButton.vue';
 export { default as Input } from './UI/Input.vue';
 export { default as Checkbox } from './UI/Checkbox.vue';
 export { default as Dialog } from './UI/Dialog.vue';
+export { default as Dropdown } from './UI/Dropdown/Dropdown.vue';
+export { default as DropdownItem } from './UI/Dropdown/DropdownItem.vue';
 
 // Blocks
 export { default as Nav } from './blocks/Nav.vue';
