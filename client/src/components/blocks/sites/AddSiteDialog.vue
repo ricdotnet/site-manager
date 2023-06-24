@@ -11,7 +11,14 @@
              placeholder="Domain"
              :validator="domainValidator"
              @on-key-up="onDomainKeyUp"/>
-      <Input ref="configInput" id="config" placeholder="Config" :validator="configValidator"/>
+      <Input class="w-full" ref="configInput"
+             id="config"
+             placeholder="Config"
+             :validator="configValidator"
+             :readonly="!isEditingConf"
+             :is-editing="isEditingConf"
+             @on-double-click="onConfigDoubleClick"
+             @on-save="onSaveConfig"/>
       <Transition name="slide-down">
         <div v-if="generalErrorMessage" class="text-center text-red-500" v-html="generalErrorMessage"></div>
       </Transition>
@@ -42,6 +49,8 @@
   const formHasError = ref(false);
   const generalErrorMessage = ref('');
 
+  const isEditingConf = ref(false);
+
   interface AddSiteResponse {
     code: number;
     message_code: '';
@@ -50,6 +59,7 @@
 
   const onCloseDialog = () => {
     generalErrorMessage.value = '';
+    isEditingConf.value = false;
   }
 
   const onClickConfirmDialog = async () => {
@@ -95,7 +105,12 @@
       configInput.value?.setValue(domainValue + '.conf');
     }
   }
-</script>
 
-<style scoped lang="scss">
-</style>
+  const onConfigDoubleClick = () => {
+    isEditingConf.value = true;
+  }
+
+  const onSaveConfig = () => {
+    isEditingConf.value = false;
+  }
+</script>
