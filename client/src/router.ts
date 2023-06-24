@@ -1,7 +1,7 @@
 import 'vue-router';
 import { createRouter, createWebHistory } from "vue-router";
+import { useUserStore } from "@stores";
 import * as pages from "./pages";
-import { useUserStore } from "./stores/user.store.ts";
 
 declare module 'vue-router' {
   interface RouteMeta {

@@ -1,26 +1,16 @@
 <template>
-  <template v-if="error">
-    <Empty message="This site does not exist"/>
-  </template>
-  <template v-else>
-    {{ site && site.domain }}
-  </template>
+  <div class="p-5">
+    <h1 class="text-2xl mb-5">VHosts config</h1>
+    <div>Here you can edit your vhosts config file linked to this domain.
+      When saving your site will be updated with the new configs.</div>
+
+<!--    {{ getSite() }}-->
+  </div>
 </template>
 
 <script setup lang="ts">
-  import { ref } from "vue";
-  import { useRoute } from "vue-router";
-  import { TSite, TSIteResponse } from "@types";
-  import { useRequest } from "@composables";
-  import { Empty } from "@components";
+  import { useSitesStore } from "@stores";
 
-  const route = useRoute();
-  const site = ref<TSite>();
-
-  const { data, error } = await useRequest<TSIteResponse>({
-    endpoint: `/site/${route.params['id']}`,
-    needsAuth: true,
-  });
-
-  site.value = data?.site;
+  const sitesStore = useSitesStore();
+  const { getSite } = sitesStore;
 </script>

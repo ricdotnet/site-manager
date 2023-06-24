@@ -1,16 +1,30 @@
 <template>
-  <div class="mt-10"></div>
-  <Suspense>
+  <template v-if="isLoading">
+    Loading...
+  </template>
+  <template v-else-if="fetchError">
+    something went wrong...
+  </template>
+  <template v-else>
+    <SiteInfo/>
     <SiteItem/>
-    <template #fallback>
-      Loading site...
-    </template>
-  </Suspense>
+  </template>
 </template>
 
 <script setup lang="ts">
-  import { SiteItem } from "@components";
-</script>
+  import { onMounted, ref } from "vue";
+  import { SiteInfo, SiteItem } from "@components";
+  import { useSitesStore } from "@stores";
 
-<style scoped lang="scss">
-</style>
+  const sitesStore = useSitesStore();
+
+  const isLoading = ref(true);
+  const fetchError = ref(false);
+
+  onMounted(async () => {
+    const error = await sitesStore.fetchSite();
+    if (error) fetchError.value = true;
+
+    isLoading.value = false;
+  });
+</script>
