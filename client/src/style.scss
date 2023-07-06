@@ -34,6 +34,14 @@ a {
   @apply text-cobalt-green hover:text-cobalt-green-darker transition-colors duration-150 ease-in-out;
 }
 
+::-moz-selection {
+  @apply bg-cobalt-green text-dark;
+}
+
+::selection {
+  @apply bg-cobalt-green text-dark;
+}
+
 .content {
   @apply w-full md:max-w-[640px] lg:max-w-[1080px] mx-auto;
 }
