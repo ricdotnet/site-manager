@@ -34,7 +34,7 @@ func main() {
 		dbPass, _ := goenvironmental.Get("DB_PASSWORD")
 		dbName, _ := goenvironmental.Get("DB_NAME")
 
-		dns := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPass, dbName)
+		dns := fmt.Sprintf("%s:%s@tcp(admin.ricr.dev:5000)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPass, dbName)
 		dbConn, err := gorm.Open(mysql.Open(dns), &gorm.Config{})
 		if err != nil {
 			panic(err.Error())

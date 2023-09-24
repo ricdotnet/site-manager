@@ -32,7 +32,7 @@
           </td>
           <td class="table__body--col">
             <span class="w-2.5 h-2.5 rounded-full mr-2 inline-block"
-                  :class="site.enabled ? 'bg-cobalt-green' : 'bg-red-500'"></span>
+                  :class="site.enabled ? 'bg-cobalt-green' : 'bg-red-500'" :title="isEnabled(site.enabled)"></span>
             <router-link :to="'/dashboard/sites/' + site.ID" class="table__body--col--link">
               {{ site.domain }}
             </router-link>
@@ -74,6 +74,10 @@
 
   const onCheckAll = (e: Event & { target: HTMLInputElement }) => {
     sitesStore.checkAll(e.target.checked);
+  }
+
+  const isEnabled = (isEnabled: boolean) => {
+    return isEnabled ? 'Site enabled' : 'Site disabled';
   }
 </script>
 
