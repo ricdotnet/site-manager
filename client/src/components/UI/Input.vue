@@ -101,7 +101,7 @@
   }
 
   const onKeyUp = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
+    if (e.key === 'Escape' && props.isEditing) {
       setValue(oldValue.value);
       inputRef.value?.blur();
       emits('onSave');
