@@ -12,3 +12,6 @@
 
 # sites-available script output
 db_inserts.sql
+
+# build
+bin

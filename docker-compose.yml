@@ -10,15 +10,15 @@ volumes:
 services:
   api:
     image: site-manager:latest
+    container_name: site-manager
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - "3001:3000"
+      - "3000:3001"
+      - "3001:80"
     restart: unless-stopped
     env_file:
       - .env
-    depends_on:
-      - db
     networks:
       - site-manager
