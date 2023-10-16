@@ -2,7 +2,8 @@
   <div ref="dropdownRef" tabindex="0" class="dropdown">
     <slot name="caller"/>
     <template v-if="!slots.caller">
-      <Button :id="id" :name="name" :color="color ?? 'primary'" @click="emits('onClick')">
+      <!-- TODO find another way to handle an undefined name -->
+      <Button :id="id" :name="name ?? ''" :color="color ?? 'primary'" @click="emits('onClick')">
         <span>{{ text }}</span>
         <ChevronDownIcon v-if="!isOpen" class="w-5"/>
         <ChevronUpIcon v-if="isOpen" class="w-5"/>

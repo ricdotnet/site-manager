@@ -47,7 +47,9 @@
   const state = reactive({
     errorMessage: computed({
       get() {
-        return props.errorMessage;
+        // TODO: handle this '' error message...
+        // check again the computed definition (getter does not return undefined???? did before????)
+        return props.errorMessage ?? '';
       },
       set(v: string) {
         errorMessageRef.value = v;

@@ -1,4 +1,4 @@
-export const messages = {
+export const messages: { [key: string]: { [key: string]: string } } = {
   user: {
     username_not_found: 'A user with that username does not exit',
     missing_username: 'Username cannot be missing',
