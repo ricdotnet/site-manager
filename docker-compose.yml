@@ -4,21 +4,17 @@ networks:
   site-manager:
     driver: bridge
 
-volumes:
-  site-manager-db:
-
 services:
   api:
-    image: site-manager:latest
+    image: site-manager-api:latest
+    container_name: site-manager-api
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - "3001:3000"
+      - "3000:3000"
     restart: unless-stopped
     env_file:
       - .env
-    depends_on:
-      - db
     networks:
       - site-manager

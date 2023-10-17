@@ -23,7 +23,7 @@
 
   const isActive = (name: string | string[]) => {
     if (name instanceof Array) {
-      return name.includes(route.name);
+      return name.includes(route.name as string);
     }
     return route.name === name;
   }

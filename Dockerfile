@@ -1,13 +1,13 @@
-FROM golang:1.20
-
-WORKDIR /app
-
+FROM golang:1.20 as builder
+WORKDIR /builder
 COPY . .
-
 RUN go get
+RUN go build -o server .
 
-RUN go build -o bin .
+FROM builder as prod
+WORKDIR /production
+COPY --from=builder /builder/.env /production
+COPY --from=builder /builder/server /production
 
 EXPOSE 3000
-
-CMD ["./bin", "-run"]
+CMD ["./server", "-run"]
