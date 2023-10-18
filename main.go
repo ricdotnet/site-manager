@@ -17,23 +17,23 @@ import (
 )
 
 func main() {
-	env := os.Getenv("GO_ENV")
+	sa := flag.Bool("sa", false, "map config files to their domains")
+	run := flag.Bool("run", false, "start the app")
+	env := flag.String("env", "dev", "environment to run the app with") // runs in dev as default
+	flag.Parse()
 
-	switch env {
-	case "development":
+	switch *env {
+	case "development", "dev":
 		goenvironmental.ParseEnv(".env.development")
+		println("Running in development mode")
 	case "production":
 		goenvironmental.ParseEnv()
 	default:
-		goenvironmental.ParseEnv(".env.development")
+		goenvironmental.ParseEnv(".env.development") // nothing defined will run in dev
 	}
 
 	goenvironmental.ParseEnv()
 	cfg := config.NewConfig()
-
-	sa := flag.Bool("sa", false, "map config files to their domains")
-	run := flag.Bool("run", false, "start the app")
-	flag.Parse()
 
 	if *sa {
 		sitesAvailable(cfg.Logger)

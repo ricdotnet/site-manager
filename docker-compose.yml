@@ -19,4 +19,4 @@ services:
     networks:
       - site-manager
     volumes:
-      - ${APACHE_PATH}:/sites-available
+      - ${SITES_AVAILABLE_PATH}:/sites-available
