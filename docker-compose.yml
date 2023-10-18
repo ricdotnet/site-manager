@@ -18,3 +18,5 @@ services:
       - .env
     networks:
       - site-manager
+    volumes:
+      - ${APACHE_PATH}:/sites-available

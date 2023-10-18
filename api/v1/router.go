@@ -1,10 +1,11 @@
 package v1
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
-	"net/http"
 	"ricr.dev/site-manager/api/v1/sites"
 	"ricr.dev/site-manager/api/v1/user"
 	"ricr.dev/site-manager/config"

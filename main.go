@@ -3,19 +3,31 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/op/go-logging"
 	"github.com/ricdotnet/goenvironmental"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"os"
 	router "ricr.dev/site-manager/api/v1"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/db"
 	"ricr.dev/site-manager/scripts"
-	"time"
 )
 
 func main() {
+	env := os.Getenv("GO_ENV")
+
+	switch env {
+	case "development":
+		goenvironmental.ParseEnv(".env.development")
+	case "production":
+		goenvironmental.ParseEnv()
+	default:
+		goenvironmental.ParseEnv(".env.development")
+	}
+
 	goenvironmental.ParseEnv()
 	cfg := config.NewConfig()
 
