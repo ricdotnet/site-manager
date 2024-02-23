@@ -3,17 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
-	"time"
-
-	"github.com/op/go-logging"
+	"github.com/charmbracelet/log"
 	"github.com/ricdotnet/goenvironmental"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"os"
 	router "ricr.dev/site-manager/api/v1"
-	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/db"
 	"ricr.dev/site-manager/scripts"
+	"time"
 )
 
 func main() {
@@ -25,7 +23,7 @@ func main() {
 	switch *env {
 	case "development", "dev":
 		goenvironmental.ParseEnv(".env.development")
-		println("Running in development mode")
+		log.Info("Running in development mode")
 	case "production":
 		goenvironmental.ParseEnv()
 	default:
@@ -33,10 +31,9 @@ func main() {
 	}
 
 	goenvironmental.ParseEnv()
-	cfg := config.NewConfig()
 
 	if *sa {
-		sitesAvailable(cfg.Logger)
+		sitesAvailable()
 		return
 	}
 
@@ -60,7 +57,7 @@ func main() {
 		}
 
 		// define the echo router and run
-		v1 := router.New(cfg, dbConn)
+		v1 := router.NewRouter(dbConn)
 		v1.Logger.Fatal(v1.Start(fmt.Sprintf(":%s", port)))
 	}
 
@@ -68,10 +65,10 @@ func main() {
 }
 
 // TODO: extract this into its own package
-func sitesAvailable(l *logging.Logger) {
+func sitesAvailable() {
 	start := time.Now()
 
-	sitesMap := scripts.Init(l).MapSites()
+	sitesMap := scripts.Init().MapSites()
 	file, _ := os.Create("db_inserts.sql")
 
 	for k, v := range sitesMap {
@@ -79,7 +76,7 @@ func sitesAvailable(l *logging.Logger) {
 		// ignore the errors :-)
 		_, err := file.WriteString(line)
 		if err != nil {
-			l.Fatalf("Writing failed while writing sql insert for %s", v)
+			log.Fatalf("Writing failed while writing sql insert for %s", v)
 		}
 	}
 

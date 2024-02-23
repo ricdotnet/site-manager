@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"github.com/charmbracelet/log"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"os/exec"
@@ -86,7 +87,7 @@ func (a *API) single(ctx echo.Context) error {
 // create
 // get the body content and add a new site to the db and vhosts file
 func (a *API) create(ctx echo.Context) error {
-	a.logger.Info("Entering create a site")
+	log.Info("Entering create a site")
 
 	site := new(Site)
 	if err := ctx.Bind(site); err != nil {
@@ -104,8 +105,7 @@ func (a *API) create(ctx echo.Context) error {
 
 	newSite, err := a.repository.Create(site)
 	if err != nil {
-		a.logger.Warningf("Failed to create a site with the domain %s", site.Domain)
-		a.logger.Info("Exiting create a site")
+		log.Warnf("Failed to create a site with the domain %s", site.Domain)
 		return ctx.JSON(http.StatusBadRequest, Response{
 			ApiResponse: config.ApiResponse{
 				Code:        http.StatusBadRequest,
@@ -114,7 +114,7 @@ func (a *API) create(ctx echo.Context) error {
 		})
 	}
 
-	a.logger.Info("Exiting create a site")
+	log.Info("Exiting create a site")
 	return ctx.JSON(http.StatusCreated, Response{
 		ApiResponse: config.ApiResponse{
 			Code:    http.StatusCreated,
@@ -173,7 +173,7 @@ func (a *API) status(ctx echo.Context) error {
 
 	cmd := exec.Command("systemctl", "reload", "apache2")
 	stdout, _ := cmd.Output()
-	a.logger.Info(stdout)
+	log.Info(stdout)
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
@@ -186,21 +186,21 @@ func (a *API) status(ctx echo.Context) error {
 // delete
 // remove an entry from the database as well as the actual vhosts file and disable the site too
 func (a *API) delete(ctx echo.Context) error {
-	a.logger.Info("Entering delete sites handler")
+	log.Info("Entering delete sites handler")
 
 	sites := &DeleteSites{}
 	err := ctx.Bind(sites)
 	if err != nil {
-		a.logger.Error(err.Error())
+		//LOGGER a.logger.Error(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
 
 	if err = a.repository.Delete(sites.Sites); err != nil {
-		a.logger.Error(err.Error())
+		log.Error(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
 
-	a.logger.Info("Exiting delete sites handler")
+	log.Info("Exiting delete sites handler")
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
 			Code:    http.StatusOK,
@@ -214,25 +214,25 @@ func (a *API) validateSite(site *Site) *string {
 	configRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*.[A-Za-z]{2,}\\.conf$"
 
 	if site.Domain == "" {
-		a.logger.Warning("Tried to add a site with no domain")
+		log.Warn("Tried to add a site with no domain")
 		errCode := "site_missing_domain"
 		return &errCode
 	}
 
 	if match, _ := regexp.MatchString(domainRegex, site.Domain); !match {
-		a.logger.Warningf("Tried to add a site with an invalid domain %s", site.Domain)
+		log.Warnf("Tried to add a site with an invalid domain %s", site.Domain)
 		errCode := "site_invalid_domain"
 		return &errCode
 	}
 
 	if site.ConfigName == "" {
-		a.logger.Warning("Tried to add a site with no config name")
+		log.Warn("Tried to add a site with no config name")
 		errCode := "site_missing_config"
 		return &errCode
 	}
 
 	if match, _ := regexp.MatchString(configRegex, site.ConfigName); !match {
-		a.logger.Warningf("Tried to add a site with an invalid config name %s", site.ConfigName)
+		log.Warnf("Tried to add a site with an invalid config name %s", site.ConfigName)
 		errCode := "site_invalid_config"
 		return &errCode
 	}
