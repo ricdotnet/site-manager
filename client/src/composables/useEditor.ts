@@ -16,6 +16,11 @@ export const useEditor = () => {
       language: 'nginx',
       theme: 'vs-dark',
       tabSize: 2,
+      lineNumbers: 'relative',
+      scrollBeyondLastLine: false,
+      lineNumbersMinChars: 4,
+      padding: { top: 10, bottom: 10 },
+      minimap: { enabled: false },
       value: config,
     });
   };
