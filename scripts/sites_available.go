@@ -2,7 +2,6 @@ package scripts
 
 import (
 	"bufio"
-	"github.com/op/go-logging"
 	"github.com/ricdotnet/goenvironmental"
 	"os"
 	"strings"
@@ -11,21 +10,18 @@ import (
 type sitesA map[string]string
 
 type SitesAvailable struct {
-	logger *logging.Logger
 }
 
-func Init(logger *logging.Logger) *SitesAvailable {
-	return &SitesAvailable{
-		logger: logger,
-	}
+func Init() *SitesAvailable {
+	return &SitesAvailable{}
 }
 
 func (sa *SitesAvailable) MapSites() sitesA {
-	sa.logger.Info("Entering mapSites")
+	//log.Info("Entering mapSites")
 
 	apacheDir, err := goenvironmental.Get("APACHE_DIR")
 	if err != nil {
-		sa.logger.Fatal("Could not read the APACHE_DIR env variable")
+		//sa.logger.Fatal("Could not read the APACHE_DIR env variable")
 		return nil
 	}
 
@@ -38,27 +34,26 @@ func (sa *SitesAvailable) MapSites() sitesA {
 		}
 	}
 
-	sa.logger.Infof("Finished parsing and mapping a total of %d files", len(files))
+	//sa.logger.Infof("Finished parsing and mapping a total of %d files", len(files))
 	return sitesAvailable
 }
 
 func (sa *SitesAvailable) parseFile(path string, fileName string, sitesA sitesA) {
-	sa.logger.Infof("Started parsing %s", fileName)
+	//sa.logger.Infof("Started parsing %s", fileName)
 
 	lines, _ := os.Open(path + fileName)
+	defer lines.Close()
 
 	reader := bufio.NewScanner(lines)
 	reader.Split(bufio.ScanLines)
 	for reader.Scan() {
 		pair := strings.Split(strings.TrimSpace(reader.Text()), " ")
 		if pair[0] == "ServerName" {
-			sa.logger.Infof("Mapping %s to %s\n", fileName, pair[1])
+			//sa.logger.Infof("Mapping %s to %s\n", fileName, pair[1])
 			sitesA[fileName] = pair[1]
 			break
 		}
 	}
 
-	lines.Close()
-
-	sa.logger.Infof("Finished parsing %s", fileName)
+	//sa.logger.Infof("Finished parsing %s", fileName)
 }

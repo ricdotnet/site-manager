@@ -5,7 +5,7 @@ type ThemeString = 'light' | 'dark';
 type TUseTheme = {
   toggleTheme: () => void;
   currentTheme: Ref<ThemeString>;
-}
+};
 
 const useTheme = (): TUseTheme => {
   // prefer light first
@@ -23,8 +23,10 @@ const useTheme = (): TUseTheme => {
     }
   };
 
-  if (localStorage.theme === 'dark' || (!('theme' in localStorage) &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  if (
+    localStorage.theme === 'dark' ||
+    (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  ) {
     setDark(true);
   } else {
     setDark(false);

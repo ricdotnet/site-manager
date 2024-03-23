@@ -1,7 +1,7 @@
 version: "3.8"
 
 networks:
-  site-manager:
+  mysql-net:
     driver: bridge
 
 services:
@@ -16,5 +16,7 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    volumes:
+      - ${SITES_AVAILABLE_PATH}:/sites-available
     networks:
-      - site-manager
+      - mysql-net

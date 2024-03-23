@@ -1,5 +1,5 @@
-import { Validator } from "./index.ts";
-import { messages } from "../utils";
+import { Validator } from './index.ts';
+import { messages } from '../utils';
 
 export const usernameValidator: Validator = {
   presence: {
@@ -25,7 +25,7 @@ export const emailValidator: Validator = {
   match: {
     pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-.]+\.[A-Za-z]{2,}$/g,
     message: messages.user.invalid_email,
-  }
+  },
 };
 
 export const passwordValidator: Validator = {

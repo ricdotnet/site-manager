@@ -5,4 +5,4 @@ export const useDebounce = () => {
     if (timer) clearTimeout(timer);
     timer = setTimeout(fn, delay);
   };
-}
+};

@@ -4,12 +4,12 @@ export * from './site.validator.ts';
 type Presence = {
   allowEmpty: boolean;
   message?: string;
-}
+};
 
 type Match = {
   pattern: RegExp;
   message?: string;
-}
+};
 
 type Length = {
   minimum?: number;
@@ -43,7 +43,8 @@ export function validate(validator: Validator | Function, data: any) {
 
   if (validator.length) {
     if (validator.length.minimum && data.length < validator.length.minimum) {
-      if (!validator.length.message) return `your data cannot be of length shorter than ${validator.length.minimum} characters`;
+      if (!validator.length.message)
+        return `your data cannot be of length shorter than ${validator.length.minimum} characters`;
       return validator.length.message;
     }
 

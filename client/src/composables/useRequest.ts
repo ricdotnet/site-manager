@@ -1,9 +1,10 @@
-import axios from "axios";
-import { Ref, ref } from "vue";
-import { unwrap } from "@utils";
+import axios from 'axios';
+import { Ref, ref } from 'vue';
+import { unwrap } from '@utils';
 
 type RequestVerb = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
+// biome-ignore lint/suspicious/noExplicitAny: allow any type for payload
 type RequestOptions<T = any> = {
   endpoint: string;
   method?: RequestVerb;
@@ -11,21 +12,24 @@ type RequestOptions<T = any> = {
   payload?: T;
 };
 
+// biome-ignore lint/suspicious/noExplicitAny: allow any type for error
 interface UseRequestResult<TResult, TError = any> {
   error: TError;
   data: TResult;
 }
 
-export const useRequest = async <TResult>(options: RequestOptions): Promise<UseRequestResult<TResult | undefined, any>> => {
+// biome-ignore lint/suspicious/noExplicitAny: allow any type for payload
+export const useRequest = async <TResult>(
+  options: RequestOptions,
+): Promise<UseRequestResult<TResult | undefined, any>> => {
   const api = import.meta.env.VITE_API;
 
   const error = ref<unknown>(null);
   const data = ref<TResult | null>(null) as Ref<TResult | null>;
 
   const headers = {
-    ...options.needsAuth === true
-      ? { authorization: 'Bearer ' + localStorage.getItem('token') } : {}
-  }
+    ...(options.needsAuth === true ? { authorization: `Bearer ${localStorage.getItem('token')}` } : {}),
+  };
 
   try {
     const response = await axios.request({
@@ -41,4 +45,4 @@ export const useRequest = async <TResult>(options: RequestOptions): Promise<UseR
   }
 
   return { error: unwrap(error), data: unwrap(data) as TResult };
-}
+};

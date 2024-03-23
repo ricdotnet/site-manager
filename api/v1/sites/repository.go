@@ -1,20 +1,18 @@
 package sites
 
 import (
-	"github.com/op/go-logging"
+	"github.com/charmbracelet/log"
 	"gorm.io/gorm"
 	"ricr.dev/site-manager/config"
 )
 
 type Repository struct {
-	db     *gorm.DB
-	logger *logging.Logger
+	db *gorm.DB
 }
 
-func NewRepository(db *gorm.DB, cfg *config.Config) *Repository {
+func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{
-		db:     db,
-		logger: cfg.Logger,
+		db: db,
 	}
 }
 
@@ -24,7 +22,7 @@ func (r *Repository) GetAll(user *config.JwtCustomClaims) (*[]Site, error) {
 		return nil, err
 	}
 
-	r.logger.Infof("Found %d site records for user %s", len(*sites), user.Username)
+	log.Infof("Found %d site records for user %s", len(*sites), user.Username)
 	return sites, nil
 }
 
@@ -34,7 +32,7 @@ func (r *Repository) GetOne(id int, user *config.JwtCustomClaims) (*Site, error)
 		return nil, err
 	}
 	if site != nil {
-		r.logger.Infof("Found 1 site record with id %d for user %s", id, user.Username)
+		log.Infof("Found 1 site record with id %d for user %s", id, user.Username)
 	}
 
 	return site, nil
@@ -72,7 +70,7 @@ func (r *Repository) Enable(site *Site) error {
 func (r *Repository) Delete(sites *[]uint) error {
 	err := r.db.Transaction(func(tx *gorm.DB) error {
 		for _, site := range *sites {
-			r.logger.Debugf("Deleting site with id %d", site)
+			log.Infof("Deleting site with id %d", site)
 
 			if err := r.db.Delete(&Site{}, site).Error; err != nil {
 				return err

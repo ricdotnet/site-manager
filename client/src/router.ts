@@ -1,7 +1,7 @@
 import 'vue-router';
-import { createRouter, createWebHistory } from "vue-router";
-import * as pages from "./pages";
-import { useUserStore } from "./stores/user.store.ts";
+import { createRouter, createWebHistory } from 'vue-router';
+import { useUserStore } from '@stores';
+import * as pages from './pages';
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -13,26 +13,35 @@ declare module 'vue-router' {
 
 const routes = [
   {
-    path: '/', component: pages.Home, meta: {
+    path: '/',
+    component: pages.Home,
+    meta: {
       requiresAuth: false,
-    }
+    },
   },
   {
-    path: '/login', component: pages.Login, meta: {
-      requiresAuth: false,
-      isAuthPage: true,
-    }
-  },
-  {
-    path: '/register', component: pages.Register, meta: {
+    path: '/login',
+    component: pages.Login,
+    meta: {
       requiresAuth: false,
       isAuthPage: true,
-    }
+    },
   },
   {
-    path: '/dashboard', component: pages.Dashboard, meta: {
+    path: '/register',
+    component: pages.Register,
+    meta: {
+      requiresAuth: false,
+      isAuthPage: true,
+    },
+  },
+  {
+    path: '/dashboard',
+    component: pages.Dashboard,
+    meta: {
       requiresAuth: true,
-    }, children: [
+    },
+    children: [
       {
         path: '',
         component: pages.Overview,
@@ -57,8 +66,8 @@ const routes = [
         path: 'settings',
         component: pages.Settings,
         name: 'settings',
-      }
-    ]
+      },
+    ],
   },
   {
     path: '/:pathMatch(.*)*',
