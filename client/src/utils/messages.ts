@@ -19,7 +19,8 @@ export const messages: { [key: string]: { [key: string]: string } } = {
   },
   site: {
     site_create_success: 'The new site was created with success',
-    site_create_error: 'Could not add a new site. Please check your data and try again.<br>Hint: config names must be unique.',
+    site_create_error:
+      'Could not add a new site. Please check your data and try again.<br>Hint: config names must be unique.',
   },
   generic: {
     not_implemented: 'This functionality is not fully working yet',

@@ -1,7 +1,7 @@
-import axios from "axios";
-import { ref } from "vue";
-import { useUserStore } from "@stores";
-import { RegisterData } from "@types";
+import axios from 'axios';
+import { ref } from 'vue';
+import { useUserStore } from '@stores';
+import { RegisterData } from '@types';
 
 const useAuth = () => {
   const api = import.meta.env.VITE_API;
@@ -13,10 +13,11 @@ const useAuth = () => {
 
     try {
       const { data } = await axios.post(`${api}/user/login`, {
-        username: username, password: password,
+        username: username,
+        password: password,
       });
 
-      localStorage.setItem("token", data.token);
+      localStorage.setItem('token', data.token);
 
       userStore.setIsAuthed(true);
       userStore.setUserId(data.id);
@@ -26,7 +27,7 @@ const useAuth = () => {
     }
 
     return { error: error.value };
-  }
+  };
 
   const register = async (registerData: RegisterData) => {
     const error = ref<any>();
@@ -41,9 +42,9 @@ const useAuth = () => {
     }
 
     return { error: error.value };
-  }
+  };
 
-  return { login, register }
-}
+  return { login, register };
+};
 
 export { useAuth };

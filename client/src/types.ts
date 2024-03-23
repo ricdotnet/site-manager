@@ -6,14 +6,14 @@ export type InputComponent = {
   getValue: () => string;
   setValue: (value: string) => void;
   setError: (bool: boolean, message?: string) => void;
-}
+};
 
 export type RegisterData = {
   username: string;
   email: string;
   password: string;
   password_confirm: string;
-}
+};
 
 export type TSite = {
   ID: number;
@@ -25,7 +25,7 @@ export type TSite = {
   updated_at: string;
   config?: string;
   checked?: boolean;
-}
+};
 
 export type TSitesResponse = {
   code: number;
@@ -38,4 +38,4 @@ export type TSIteResponse = {
   message: string;
   site: TSite;
   config: string;
-}
+};

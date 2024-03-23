@@ -1,6 +1,6 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import axios from "axios";
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import axios from 'axios';
 
 export const useUserStore = defineStore('user', () => {
   const api = import.meta.env.VITE_API;
@@ -14,8 +14,8 @@ export const useUserStore = defineStore('user', () => {
     try {
       const response = await axios.get(`${api}/user/auth`, {
         headers: {
-          'authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       });
 
       setIsAuthed(true);
@@ -24,19 +24,19 @@ export const useUserStore = defineStore('user', () => {
     } catch (error) {
       localStorage.removeItem('token');
     }
-  }
+  };
 
   const setIsAuthed = (v: boolean) => {
     isAuthed.value = v;
-  }
+  };
 
   const setUserId = (v: string) => {
     userId.value = v;
-  }
+  };
 
   const setUsername = (v: string) => {
     username.value = v;
-  }
+  };
 
   return { isAuthed, userId, username, isAdmin, tokenAuth, setIsAuthed, setUserId, setUsername };
 });
