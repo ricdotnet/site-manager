@@ -3,6 +3,7 @@ package sites
 import (
 	"github.com/charmbracelet/log"
 	"github.com/labstack/echo/v4"
+	"github.com/ricdotnet/goenvironmental"
 	"net/http"
 	"os/exec"
 	"regexp"
@@ -19,15 +20,18 @@ type Response struct {
 	config.ApiResponse
 	Site   *Site   `json:"site,omitempty"`
 	Sites  *[]Site `json:"sites,omitempty"`
-	Vhosts any     `json:"vhosts,omitempty"`
+	Config string  `json:"config,omitempty"`
+}
+
+type RequestBody struct {
+	Site   *Site  `json:"site"`
+	Config string `json:"config"`
 }
 
 type DeleteSites struct {
 	Sites *[]uint
 }
 
-// all
-// get all sites that belong to a specific user
 // TODO: Add pagination
 func (a *API) all(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
@@ -49,8 +53,6 @@ func (a *API) all(ctx echo.Context) error {
 	})
 }
 
-// single
-// read the contents of the specified file
 func (a *API) single(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 
@@ -60,32 +62,27 @@ func (a *API) single(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, "site_not_found")
 	}
 
-	// TODO: the below code will be removed and vhosts files will be mapped to a site-data table
-	// .... using a stub to generate new vhosts when the user updates or adds a new site
-	//apacheDir, _ := goenvironmental.Get("APACHE_DIR")
-	//vhosts, err := a.sitesService.ReadSingle(apacheDir+"sites-available/", site.ConfigName)
-	//if err != nil {
-	//	return echo.NewHTTPError(http.StatusBadRequest, &Response{
-	//		ApiResponse: config.ApiResponse{
-	//			Code:    400,
-	//			Message: "We have a database record for that name but could not read the file",
-	//		},
-	//	})
-	//}
-	//_vhosts := fmt.Sprintf("%s", vhosts)
+	nginxDir, _ := goenvironmental.Get("SITES_AVAILABLE_PATH")
+	conf, err := a.sitesService.ReadSingle(nginxDir, site.ConfigName)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, &Response{
+			ApiResponse: config.ApiResponse{
+				Code:    400,
+				Message: "We have a database record for that name but could not read the file",
+			},
+		})
+	}
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
 			Code:    http.StatusOK,
 			Message: "site_found",
 		},
-		Site: site,
-		//Vhosts: _vhosts,
+		Site:   site,
+		Config: string(conf),
 	})
 }
 
-// create
-// get the body content and add a new site to the db and vhosts file
 func (a *API) create(ctx echo.Context) error {
 	log.Info("Entering create a site")
 
@@ -124,40 +121,36 @@ func (a *API) create(ctx echo.Context) error {
 	})
 }
 
-// update
-// endpoint to change an existing site data (not the vhosts file)
 func (a *API) update(ctx echo.Context) error {
-	site := &Site{}
-	err := ctx.Bind(site)
+	requestBody := &RequestBody{}
+	err := ctx.Bind(requestBody)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
 	}
 
-	userCtx := utils.GetTokenClaims(ctx)
-
-	id, _ := strconv.Atoi(ctx.Param("id"))
-	site.ID = uint(id)
-	if site.ConfigName != "" {
-		oldSite, _ := a.repository.GetOne(id, userCtx)
-		err = a.sitesService.UpdateName(oldSite.ConfigName, site.ConfigName)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Something went wrong when updating this site")
-		}
-	}
-
-	updated, _ := a.repository.Update(site)
+	//userCtx := utils.GetTokenClaims(ctx)
+	//
+	//id, _ := strconv.Atoi(ctx.Param("id"))
+	//site.ID = uint(id)
+	//if site.ConfigName != "" {
+	//	oldSite, _ := a.repository.GetOne(id, userCtx)
+	//	err = a.sitesService.UpdateName(oldSite.ConfigName, site.ConfigName)
+	//	if err != nil {
+	//		return echo.NewHTTPError(http.StatusBadRequest, "Something went wrong when updating this site")
+	//	}
+	//}
+	//
+	//updated, _ := a.repository.Update(site)
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
 			Code:    200,
 			Message: "Site updated successfully",
 		},
-		Site: updated,
+		//Site: updated,
 	})
 }
 
-// enable
-// endpoint to enable disable a site
 func (a *API) status(ctx echo.Context) error {
 	site := &Site{}
 	err := ctx.Bind(site)
@@ -183,8 +176,6 @@ func (a *API) status(ctx echo.Context) error {
 	})
 }
 
-// delete
-// remove an entry from the database as well as the actual vhosts file and disable the site too
 func (a *API) delete(ctx echo.Context) error {
 	log.Info("Entering delete sites handler")
 

@@ -4,19 +4,22 @@ import { unwrap } from "@utils";
 
 type RequestVerb = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
-type RequestOptions<T = any> = {
+// biome-ignore lint/suspicious/noExplicitAny: allow any type for payload
+type  RequestOptions<T = any> = {
   endpoint: string;
   method?: RequestVerb;
   needsAuth?: boolean;
   payload?: T;
 };
 
-interface UseRequestResult<TResult, TError = any> {
+// biome-ignore lint/suspicious/noExplicitAny: allow any type for error
+interface  UseRequestResult<TResult, TError = any> {
   error: TError;
   data: TResult;
 }
 
-export const useRequest = async <TResult>(options: RequestOptions): Promise<UseRequestResult<TResult | undefined, any>> => {
+// biome-ignore lint/suspicious/noExplicitAny: allow any type for payload
+export  const useRequest = async <TResult>(options: RequestOptions): Promise<UseRequestResult<TResult | undefined, any>> => {
   const api = import.meta.env.VITE_API;
 
   const error = ref<unknown>(null);
@@ -24,7 +27,7 @@ export const useRequest = async <TResult>(options: RequestOptions): Promise<UseR
 
   const headers = {
     ...options.needsAuth === true
-      ? { authorization: 'Bearer ' + localStorage.getItem('token') } : {}
+      ? { authorization: `Bearer ${localStorage.getItem('token')}` } : {}
   }
 
   try {

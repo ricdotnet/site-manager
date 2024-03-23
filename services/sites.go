@@ -16,9 +16,6 @@ func NewSitesService() *SitesService {
 	return &SitesService{}
 }
 
-// GetAll
-// dir would refer to what dir to look into: available or enabled
-// sites-available or sites-enabled
 func (ss *SitesService) GetAll(dir string) ([]string, error) {
 	log.Info("Entered SitesService getAll")
 
@@ -37,19 +34,17 @@ func (ss *SitesService) GetAll(dir string) ([]string, error) {
 	return files, nil
 }
 
-// ReadSingle
-// reads the vhosts of a site and returns the []byte array to be sent on the response to the client
 func (ss *SitesService) ReadSingle(dir string, name string) ([]byte, error) {
 	log.Info("Entered SitesService readSingle")
 
-	vhost, err := os.ReadFile(dir + name)
+	conf, err := os.ReadFile(filepath.Join(dir, name))
 	if err != nil {
 		log.Errorf("Failed to read a vhosts: %s", name)
 		return nil, err
 	}
 
 	log.Info("Exited SitesService readSingle")
-	return vhost, nil
+	return conf, nil
 }
 
 // TODO: Update this to write based on site_data
@@ -79,10 +74,10 @@ func (ss *SitesService) UpdateName(curr string, new string) error {
 		return fmt.Errorf("the filename used %s is not a valid filename", new)
 	}
 
-	apachePath := utils.BuildApachePath("sites-available/")
+	nginxDir, _ := goenvironmental.Get("SITES_AVAILABLE_PATH")
 
-	oldPath := filepath.Join(apachePath, curr)
-	newPath := filepath.Join(apachePath, new)
+	oldPath := filepath.Join(nginxDir, curr)
+	newPath := filepath.Join(nginxDir, new)
 
 	if err := os.Rename(oldPath, newPath); err != nil {
 		return err

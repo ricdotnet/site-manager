@@ -18,5 +18,6 @@ func dbModels() []interface{} {
 		&models.User{},
 		&models.Site{},
 		&models.SiteData{},
+		&models.ThirdParty{},
 	}
 }
