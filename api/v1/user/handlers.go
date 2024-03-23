@@ -34,7 +34,6 @@ func (a *API) auth(ctx echo.Context) error {
 }
 
 func (a *API) login(ctx echo.Context) error {
-	//LOGGER a.logger.Info("Entering /login handler")
 	log.Info("Entering the /login handler")
 
 	user := new(User)
@@ -137,54 +136,54 @@ func (a *API) registerValidationHelper(user *User) string {
 	emailRegex := "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-.]+\\.[A-Za-z]{2,}$"
 
 	if user.Username == "" {
-		//LOGGER a.logger.Warning("A user tried to register without username")
+		log.Warn("A user tried to register without username")
 		return "missing_username"
 	}
 
 	if user.Email == "" {
-		//LOGGER a.logger.Warning("A user tried to register without email address")
+		log.Warn("A user tried to register without email address")
 		return "missing_email"
 	}
 
 	if user.Password == "" {
-		//LOGGER a.logger.Warning("A user tried to register without password")
+		log.Warn("A user tried to register without password")
 		return "missing_password"
 	}
 
 	if len(user.Username) < 5 || len(user.Username) > 30 {
-		//LOGGER a.logger.Warningf("Username %s is of invalid length", user.Username)
+		log.Warnf("Username %s is invalid: %s", user.Username, "INVALID_LENGTH")
 		return "invalid_username_length"
 	}
 
 	if match, _ := regexp.MatchString(usernameRegex, user.Username); !match {
-		//LOGGER a.logger.Warningf("Username %s does not pass regex validation", user.Username)
+		log.Warnf("Username %s is invalid", user.Username)
 		return "invalid_username"
 	}
 
 	if match, _ := regexp.MatchString(emailRegex, user.Email); !match {
-		//LOGGER a.logger.Warningf("Email address %s does not pass regex validation", user.Email)
+		log.Warnf("Email address %s is invalid", user.Email)
 		return "invalid_email"
 	}
 
 	if len(user.Password) <= 8 {
-		//LOGGER a.logger.Warningf("User %s tried to register with a password of invalid length", user.Username)
+		log.Warnf("User %s entered an invalid password: %s", user.Username, "INVALID_LENGTH")
 		return "invalid_password_length"
 	}
 
 	if user.Password != user.PasswordConfirm {
-		//LOGGER a.logger.Warningf("User %s tried to register without confirming their password", user.Username)
+		log.Warnf("User %s tried to register without matching passwords", user.Username)
 		return "passwords_not_match"
 	}
 
 	existingUsername, _ := a.repository.GetOne(user.Username, false)
 	if existingUsername != nil {
-		//LOGGER a.logger.Warningf("User %s tried to register with an existing username", user.Username)
+		log.Warnf("Username %s is already registered", user.Username)
 		return "username_exists"
 	}
 
 	existingEmail, _ := a.repository.GetOne(user.Email, true)
 	if existingEmail != nil {
-		//LOGGER a.logger.Infof("User %s tried to register with an existing email address", user.Email)
+		log.Warnf("Email %s is already registered", user.Email)
 		return "email_exists"
 	}
 

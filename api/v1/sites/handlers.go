@@ -191,7 +191,7 @@ func (a *API) delete(ctx echo.Context) error {
 	sites := &DeleteSites{}
 	err := ctx.Bind(sites)
 	if err != nil {
-		//LOGGER a.logger.Error(err.Error())
+		log.Error(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
 

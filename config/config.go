@@ -5,7 +5,6 @@ import (
 )
 
 type Config struct {
-	//Logger *logging.Logger
 }
 
 func (cfg *Config) ConfigMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
