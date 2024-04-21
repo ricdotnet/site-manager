@@ -47,12 +47,10 @@ func (ss *SitesService) ReadSingle(dir string, name string) ([]byte, error) {
 	return conf, nil
 }
 
-// TODO: Update this to write based on site_data
 func (ss *SitesService) WriteSingle(name string, content string) error {
-	apacheDir, _ := goenvironmental.Get("APACHE_DIR")
-	apacheDir += "sites-available/"
+	nginxDir, _ := goenvironmental.Get("SITES_AVAILABLE_PATH")
 
-	err := os.WriteFile(apacheDir+name, []byte(content), 0666)
+	err := os.WriteFile(filepath.Join(nginxDir, name), []byte(content), 0666)
 	if err != nil {
 		return err
 	}
@@ -68,6 +66,7 @@ func (ss *SitesService) DeleteSingle(dir string, name string) {
 // UpdateName
 // update the name of a .conf file
 func (ss *SitesService) UpdateName(curr string, new string) error {
+	log.Infof("Updating the name of %s to %s", curr, new)
 
 	if !utils.IsValidFilename(new) {
 		log.Errorf("The filename used %s is not valid", new)
@@ -83,5 +82,6 @@ func (ss *SitesService) UpdateName(curr string, new string) error {
 		return err
 	}
 
+	log.Infof("Finished updating the name of %s to %s", curr, new)
 	return nil
 }

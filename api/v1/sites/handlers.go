@@ -111,6 +111,11 @@ func (a *API) create(ctx echo.Context) error {
 		})
 	}
 
+	if err = a.sitesService.WriteSingle(site.ConfigName, ""); err != nil {
+		log.Errorf("Failed to write the new site config: %s", err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write the new site config")
+	}
+
 	log.Info("Exiting create a site")
 	return ctx.JSON(http.StatusCreated, Response{
 		ApiResponse: config.ApiResponse{
@@ -128,26 +133,33 @@ func (a *API) update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
 	}
 
-	//userCtx := utils.GetTokenClaims(ctx)
-	//
-	//id, _ := strconv.Atoi(ctx.Param("id"))
-	//site.ID = uint(id)
-	//if site.ConfigName != "" {
-	//	oldSite, _ := a.repository.GetOne(id, userCtx)
-	//	err = a.sitesService.UpdateName(oldSite.ConfigName, site.ConfigName)
-	//	if err != nil {
-	//		return echo.NewHTTPError(http.StatusBadRequest, "Something went wrong when updating this site")
-	//	}
-	//}
-	//
-	//updated, _ := a.repository.Update(site)
+	oldSite, err := a.repository.GetOne(int(requestBody.Site.ID), utils.GetTokenClaims(ctx))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "This site does not exist")
+	}
+
+	newSite, err := a.repository.Update(requestBody.Site)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
+	}
+
+	if oldSite.ConfigName != newSite.ConfigName {
+		err = a.sitesService.UpdateName(oldSite.ConfigName, newSite.ConfigName)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
+		}
+	}
+
+	err = a.sitesService.WriteSingle(requestBody.Site.ConfigName, requestBody.Config)
+	if err != nil {
+		println(err.Error())
+	}
 
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
 			Code:    200,
 			Message: "Site updated successfully",
 		},
-		//Site: updated,
 	})
 }
 

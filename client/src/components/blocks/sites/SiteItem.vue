@@ -21,7 +21,7 @@
 
     <div class="mb-5">
       <h1 class="text-2xl mb-5">Nginx config</h1>
-      <div ref="monacoRef" class="h-[500px]"></div>
+      <div ref="monacoRef" class="h-[500px] p-1 rounded-md bg-[#1E1E1E]"></div>
     </div>
 
     <Button type="button" name="save" color="primary" text="Save" @click="onClick"/>
@@ -35,11 +35,9 @@
   import { domainValidator } from "@validators";
   import { InputComponent } from "@types";
   import { useRequest, useEditor } from "@composables";
-  import Button from "../../UI/Button.vue";
-  import Input from "../../UI/Input.vue";
+  import { Button, Input } from "@components";
 
-  const sitesStore = useSitesStore();
-  const { getSite } = sitesStore;
+  const { getSite } = useSitesStore();
 
   const domainInputRef = ref<InputComponent>();
   const configNameInputRef = ref<InputComponent>();
@@ -57,12 +55,15 @@
 
   const onClick = async () => {
     const { error } = await useRequest<any>({
-      endpoint: `/site/${getSite().id}`,
+      endpoint: `/site/${getSite().ID}`,
       method: 'PATCH',
       needsAuth: true,
       payload: {
-        domain: domainInputRef.value?.getValue(),
-        config_name: configNameInputRef.value?.getValue(),
+        site: {
+          id: getSite().ID,
+          domain: domainInputRef.value?.getValue(),
+          config_name: configNameInputRef.value?.getValue(),
+        },
         config: monaco.editor.getModels()[0].getValue(),
       },
     });

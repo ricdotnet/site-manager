@@ -22,6 +22,7 @@ export const useEditor = () => {
       padding: { top: 10, bottom: 10 },
       minimap: { enabled: false },
       value: config,
+      automaticLayout: true,
     });
   };
 
