@@ -4,15 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"github.com/charmbracelet/log"
-	"os"
-	"time"
-
 	"github.com/ricdotnet/goenvironmental"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"os"
 	router "ricr.dev/site-manager/api/v1"
 	"ricr.dev/site-manager/db"
 	"ricr.dev/site-manager/scripts"
+	"time"
 )
 
 func main() {
@@ -22,7 +21,6 @@ func main() {
 	flag.Parse()
 
 	goenvironmental.ParseEnv(*envFile)
-	cfg := config.NewConfig()
 
 	if *sa {
 		sitesAvailable()

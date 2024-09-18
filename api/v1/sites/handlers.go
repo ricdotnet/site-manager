@@ -1,15 +1,15 @@
 package sites
 
 import (
-	"github.com/charmbracelet/log"
-	"github.com/labstack/echo/v4"
-	"github.com/ricdotnet/goenvironmental"
 	"net/http"
 	"os/exec"
 	"regexp"
 	"strconv"
 
+	"github.com/charmbracelet/log"
 	"github.com/labstack/echo/v4"
+	"github.com/ricdotnet/goenvironmental"
+
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
 	"ricr.dev/site-manager/utils"
@@ -55,8 +55,6 @@ func (api *API) getAllSites(ctx echo.Context) error {
 	})
 }
 
-// single
-// read the contents of the specified file
 func (api *API) getSite(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 
@@ -67,7 +65,7 @@ func (api *API) getSite(ctx echo.Context) error {
 	}
 
 	nginxDir, _ := goenvironmental.Get("SITES_AVAILABLE_PATH")
-	conf, err := a.sitesService.ReadSingle(nginxDir, site.ConfigName)
+	conf, err := api.sitesService.ReadSingle(nginxDir, site.ConfigName)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, &Response{
 			ApiResponse: config.ApiResponse{
@@ -87,8 +85,6 @@ func (api *API) getSite(ctx echo.Context) error {
 	})
 }
 
-// create
-// get the body content and add a new site to the db and vhosts file
 func (api *API) createSite(ctx echo.Context) error {
 	log.Info("Entering create a site")
 
@@ -118,7 +114,7 @@ func (api *API) createSite(ctx echo.Context) error {
 		})
 	}
 
-	if err = a.sitesService.WriteSingle(site.ConfigName, ""); err != nil {
+	if err = api.sitesService.WriteSingle(site.ConfigName, ""); err != nil {
 		log.Errorf("Failed to write the new site config: %s", err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write the new site config")
 	}
@@ -134,9 +130,6 @@ func (api *API) createSite(ctx echo.Context) error {
 	})
 }
 
-
-// update
-// endpoint to change an existing site data (not the vhosts file)
 func (api *API) updateSite(ctx echo.Context) error {
 	site := &Site{}
 	err := ctx.Bind(site)
@@ -144,24 +137,24 @@ func (api *API) updateSite(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
 	}
 
-	oldSite, err := api.findFirst(int(requestBody.Site.ID), utils.GetTokenClaims(ctx))
+	oldSite, err := api.findFirst(int(site.ID), utils.GetTokenClaims(ctx))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "This site does not exist")
 	}
 
-	newSite, err := api.update(requestBody.Site)
+	newSite, err := api.update(site)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
 	}
 
 	if oldSite.ConfigName != newSite.ConfigName {
-		err = a.sitesService.UpdateName(oldSite.ConfigName, newSite.ConfigName)
+		err = api.sitesService.UpdateName(oldSite.ConfigName, newSite.ConfigName)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
 		}
 	}
 
-	err = api.sitesService.WriteSingle(requestBody.Site.ConfigName, requestBody.Config)
+	err = api.sitesService.WriteSingle(site.ConfigName, "")
 	if err != nil {
 		println(err.Error())
 	}
@@ -174,9 +167,6 @@ func (api *API) updateSite(ctx echo.Context) error {
 	})
 }
 
-
-// enable
-// endpoint to enable disable a site
 func (api *API) updateSiteStatus(ctx echo.Context) error {
 	site := &Site{}
 	err := ctx.Bind(site)
@@ -203,8 +193,6 @@ func (api *API) updateSiteStatus(ctx echo.Context) error {
 	})
 }
 
-// delete
-// remove an entry from the database as well as the actual vhosts file and disable the site too
 func (api *API) deleteSite(ctx echo.Context) error {
 	log.Info("Entering delete sites handler")
 
@@ -230,7 +218,7 @@ func (api *API) deleteSite(ctx echo.Context) error {
 	})
 }
 
-func (a *API) validateSite(site *Site) *string {
+func (api *API) validateSite(site *Site) *string {
 	domainRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$"
 	configRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*.[A-Za-z]{2,}\\.conf$"
 

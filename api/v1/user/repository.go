@@ -4,7 +4,6 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-
 func (api *API) findFirst(value string, isEmail bool) (*User, error) {
 	user := new(User)
 
@@ -13,13 +12,11 @@ func (api *API) findFirst(value string, isEmail bool) (*User, error) {
 			return nil, err
 		}
 		log.Infof("Found 1 user record with the email %s", user.Email)
-
 	} else {
 		if err := api.db.First(user, "username = ?", value).Error; err != nil {
 			return nil, err
 		}
 		log.Infof("Found 1 user record with the username %s", user.Username)
-
 	}
 
 	return user, nil

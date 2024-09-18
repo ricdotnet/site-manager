@@ -1,14 +1,13 @@
 package user
 
 import (
-	"github.com/alexedwards/argon2id"
-	"github.com/charmbracelet/log"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"regexp"
 
 	"github.com/alexedwards/argon2id"
+	"github.com/charmbracelet/log"
 	"github.com/labstack/echo/v4"
+
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
 	"ricr.dev/site-manager/utils"

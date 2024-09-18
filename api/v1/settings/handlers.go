@@ -12,7 +12,13 @@ type Setting = models.Settings
 
 func (api *API) getApiKey(c echo.Context) error {
 	setting := &Setting{}
-	api.findFirst(setting, c.Param("key"))
+	err := api.findFirst(setting, c.Param("key"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, config.ApiResponse{
+			Code:        http.StatusNotFound,
+			MessageCode: "setting_not_found",
+		})
+	}
 
 	return c.JSON(http.StatusOK, setting)
 }
