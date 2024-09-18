@@ -1,10 +1,11 @@
 package user
 
 import (
-	"github.com/alexedwards/argon2id"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"regexp"
+
+	"github.com/alexedwards/argon2id"
+	"github.com/labstack/echo/v4"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
 	"ricr.dev/site-manager/utils"
@@ -19,7 +20,7 @@ type Response struct {
 	Token    string `json:"token,omitempty"`
 }
 
-func (a *API) auth(ctx echo.Context) error {
+func (api *API) authUser(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 
 	return ctx.JSON(http.StatusOK, Response{
@@ -32,15 +33,15 @@ func (a *API) auth(ctx echo.Context) error {
 	})
 }
 
-func (a *API) login(ctx echo.Context) error {
-	a.logger.Info("Entering /login handler")
+func (api *API) loginUser(ctx echo.Context) error {
+	api.logger.Info("Entering /login handler")
 
 	user := new(User)
 	_ = ctx.Bind(user)
 
 	username := user.Username
 	if username == "" {
-		a.logger.Warning("A user tried to login without username")
+		api.logger.Warning("A user tried to login without username")
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
 			Code:        http.StatusBadRequest,
 			MessageCode: "missing_username",
@@ -49,14 +50,14 @@ func (a *API) login(ctx echo.Context) error {
 
 	password := user.Password
 	if password == "" {
-		a.logger.Warningf("User %s tried to login without password", username)
+		api.logger.Warningf("User %s tried to login without password", username)
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
 			Code:        http.StatusBadRequest,
 			MessageCode: "missing_password",
 		})
 	}
 
-	result, _ := a.repository.GetOne(username, false)
+	result, _ := api.findFirst(username, false)
 	if result == nil {
 		return ctx.JSON(http.StatusBadRequest, &Response{
 			ApiResponse: config.ApiResponse{
@@ -68,7 +69,7 @@ func (a *API) login(ctx echo.Context) error {
 
 	correctPassword, _, _ := argon2id.CheckHash(password, result.Password)
 	if !correctPassword {
-		a.logger.Warningf("User %s tried to login with an incorrect password", username)
+		api.logger.Warningf("User %s tried to login with an incorrect password", username)
 		return ctx.JSON(http.StatusBadRequest, &Response{
 			ApiResponse: config.ApiResponse{
 				Code:        http.StatusBadRequest,
@@ -79,7 +80,7 @@ func (a *API) login(ctx echo.Context) error {
 
 	token := utils.MakeToken(result)
 
-	a.logger.Info("Exiting /login handler")
+	api.logger.Info("Exiting /login handler")
 	return ctx.JSON(http.StatusOK, Response{
 		ID:       result.ID,
 		Username: result.Username,
@@ -91,16 +92,16 @@ func (a *API) login(ctx echo.Context) error {
 	})
 }
 
-func (a *API) register(ctx echo.Context) error {
-	a.logger.Info("Entering the /register handler")
+func (api *API) registerUser(ctx echo.Context) error {
+	api.logger.Info("Entering the /register handler")
 
 	user := new(User)
 	_ = ctx.Bind(user)
 
-	messageCode := a.registerValidationHelper(user)
+	messageCode := api.registerValidationHelper(user)
 
 	if messageCode != "" {
-		a.logger.Info("Exiting the /register handler")
+		api.logger.Info("Exiting the /register handler")
 		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
 			Code:        http.StatusBadRequest,
 			MessageCode: messageCode,
@@ -109,80 +110,80 @@ func (a *API) register(ctx echo.Context) error {
 
 	password, _ := argon2id.CreateHash(user.Password, argon2id.DefaultParams)
 	user.Password = password
-	a.repository.CreateOne(user)
+	api.insert(user)
 
-	a.logger.Info("Exiting the /register handler")
+	api.logger.Info("Exiting the /register handler")
 	return ctx.JSON(http.StatusOK, config.ApiResponse{
 		Code:        http.StatusOK,
 		MessageCode: "register_success",
 	})
 }
 
-func (a *API) update(ctx echo.Context) error {
-	a.logger.Info("Entering the /update handler")
+func (api *API) updateUser(ctx echo.Context) error {
+	api.logger.Info("Entering the /update handler")
 
 	// do the update stuff
 
-	a.logger.Info("Exiting the /update handler")
+	api.logger.Info("Exiting the /update handler")
 	return ctx.JSON(http.StatusNotImplemented, config.ApiResponse{
 		Code:        http.StatusNotImplemented,
 		MessageCode: "not_implemented",
 	})
 }
 
-func (a *API) registerValidationHelper(user *User) string {
+func (api *API) registerValidationHelper(user *User) string {
 	usernameRegex := "^[A-Za-z0-9_$]+$"
 	emailRegex := "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-.]+\\.[A-Za-z]{2,}$"
 
 	if user.Username == "" {
-		a.logger.Warning("A user tried to register without username")
+		api.logger.Warning("A user tried to register without username")
 		return "missing_username"
 	}
 
 	if user.Email == "" {
-		a.logger.Warning("A user tried to register without email address")
+		api.logger.Warning("A user tried to register without email address")
 		return "missing_email"
 	}
 
 	if user.Password == "" {
-		a.logger.Warning("A user tried to register without password")
+		api.logger.Warning("A user tried to register without password")
 		return "missing_password"
 	}
 
 	if len(user.Username) < 5 || len(user.Username) > 30 {
-		a.logger.Warningf("Username %s is of invalid length", user.Username)
+		api.logger.Warningf("Username %s is of invalid length", user.Username)
 		return "invalid_username_length"
 	}
 
 	if match, _ := regexp.MatchString(usernameRegex, user.Username); !match {
-		a.logger.Warningf("Username %s does not pass regex validation", user.Username)
+		api.logger.Warningf("Username %s does not pass regex validation", user.Username)
 		return "invalid_username"
 	}
 
 	if match, _ := regexp.MatchString(emailRegex, user.Email); !match {
-		a.logger.Warningf("Email address %s does not pass regex validation", user.Email)
+		api.logger.Warningf("Email address %s does not pass regex validation", user.Email)
 		return "invalid_email"
 	}
 
 	if len(user.Password) <= 8 {
-		a.logger.Warningf("User %s tried to register with a password of invalid length", user.Username)
+		api.logger.Warningf("User %s tried to register with a password of invalid length", user.Username)
 		return "invalid_password_length"
 	}
 
 	if user.Password != user.PasswordConfirm {
-		a.logger.Warningf("User %s tried to register without confirming their password", user.Username)
+		api.logger.Warningf("User %s tried to register without confirming their password", user.Username)
 		return "passwords_not_match"
 	}
 
-	existingUsername, _ := a.repository.GetOne(user.Username, false)
+	existingUsername, _ := api.findFirst(user.Username, false)
 	if existingUsername != nil {
-		a.logger.Warningf("User %s tried to register with an existing username", user.Username)
+		api.logger.Warningf("User %s tried to register with an existing username", user.Username)
 		return "username_exists"
 	}
 
-	existingEmail, _ := a.repository.GetOne(user.Email, true)
+	existingEmail, _ := api.findFirst(user.Email, true)
 	if existingEmail != nil {
-		a.logger.Infof("User %s tried to register with an existing email address", user.Email)
+		api.logger.Infof("User %s tried to register with an existing email address", user.Email)
 		return "email_exists"
 	}
 

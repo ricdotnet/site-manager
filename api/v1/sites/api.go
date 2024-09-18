@@ -8,14 +8,14 @@ import (
 )
 
 type API struct {
-	repository   *Repository
+	db           *gorm.DB
 	logger       *logging.Logger
 	sitesService *services.SitesService
 }
 
 func New(db *gorm.DB, cfg *config.Config) *API {
 	return &API{
-		repository:   NewRepository(db, cfg),
+		db:           db,
 		logger:       cfg.Logger,
 		sitesService: services.NewSitesService(cfg),
 	}

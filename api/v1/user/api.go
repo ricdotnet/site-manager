@@ -7,13 +7,13 @@ import (
 )
 
 type API struct {
-	repository *Repository
-	logger     *logging.Logger
+	db     *gorm.DB
+	logger *logging.Logger
 }
 
 func New(db *gorm.DB, cfg *config.Config) *API {
 	return &API{
-		repository: NewRepository(db, cfg.Logger),
-		logger:     cfg.Logger,
+		db:     db,
+		logger: cfg.Logger,
 	}
 }

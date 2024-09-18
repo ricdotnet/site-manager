@@ -1,50 +1,33 @@
 package user
 
-import (
-	"github.com/op/go-logging"
-	"gorm.io/gorm"
-)
-
-type Repository struct {
-	db     *gorm.DB
-	logger *logging.Logger
-}
-
-func NewRepository(db *gorm.DB, logger *logging.Logger) *Repository {
-	return &Repository{
-		db:     db,
-		logger: logger,
-	}
-}
-
-func (r *Repository) GetOne(value string, isEmail bool) (*User, error) {
+func (api *API) findFirst(value string, isEmail bool) (*User, error) {
 	user := new(User)
 
 	if isEmail {
-		if err := r.db.First(user, "email = ?", value).Error; err != nil {
+		if err := api.db.First(user, "email = ?", value).Error; err != nil {
 			return nil, err
 		}
-		r.logger.Infof("Found 1 user record with the email %s", user.Email)
+		api.logger.Infof("Found 1 user record with the email %s", user.Email)
 	} else {
-		if err := r.db.First(user, "username = ?", value).Error; err != nil {
+		if err := api.db.First(user, "username = ?", value).Error; err != nil {
 			return nil, err
 		}
-		r.logger.Infof("Found 1 user record with the username %s", user.Username)
+		api.logger.Infof("Found 1 user record with the username %s", user.Username)
 	}
 
 	return user, nil
 }
 
-func (r *Repository) CreateOne(user *User) {
-	err := r.db.Create(user).Error
+func (api *API) insert(user *User) {
+	err := api.db.Create(user).Error
 
 	if err != nil {
-		r.logger.Errorf("Could not create a new user with the username %s", user.Username)
+		api.logger.Errorf("Could not create a new user with the username %s", user.Username)
 	}
 
-	r.logger.Infof("Created a new user with the username %s", user.Username)
+	api.logger.Infof("Created a new user with the username %s", user.Username)
 }
 
-func (r *Repository) UpdateOne(user *User) {
+func (api *API) UpdateOne(user *User) {
 	// query to update the user
 }

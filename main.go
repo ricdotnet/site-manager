@@ -3,25 +3,27 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/op/go-logging"
 	"github.com/ricdotnet/goenvironmental"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"os"
 	router "ricr.dev/site-manager/api/v1"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/db"
 	"ricr.dev/site-manager/scripts"
-	"time"
 )
 
 func main() {
-	goenvironmental.ParseEnv()
-	cfg := config.NewConfig()
-
 	sa := flag.Bool("sa", false, "map config files to their domains")
 	run := flag.Bool("run", false, "start the app")
+	envFile := flag.String("env-file", ".env", "environment to run the app in")
 	flag.Parse()
+
+	goenvironmental.ParseEnv(*envFile)
+	cfg := config.NewConfig()
 
 	if *sa {
 		sitesAvailable(cfg.Logger)

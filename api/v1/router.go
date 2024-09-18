@@ -1,10 +1,12 @@
 package v1
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
-	"net/http"
+	"ricr.dev/site-manager/api/v1/settings"
 	"ricr.dev/site-manager/api/v1/sites"
 	"ricr.dev/site-manager/api/v1/user"
 	"ricr.dev/site-manager/config"
@@ -18,7 +20,7 @@ func New(cfg *config.Config, db *gorm.DB) *echo.Echo {
 	e.GET("/ping", func(ctx echo.Context) error {
 		return ctx.JSON(http.StatusOK, config.ApiResponse{
 			Code:    200,
-			Message: "here is a pong",
+			Message: "pong",
 		})
 	})
 
@@ -27,6 +29,7 @@ func New(cfg *config.Config, db *gorm.DB) *echo.Echo {
 	v1 := api.Group("/v1") // /v1 group
 	sites.Routes(v1, db, cfg)
 	user.Routes(v1, db, cfg)
+	settings.Routes(v1, db, cfg)
 
 	return e
 }

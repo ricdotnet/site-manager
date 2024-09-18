@@ -1,5 +1,3 @@
-// TODO: I will test this type of migrations, if I don't like I will convert all this into normal sql files and run on every launch
-
 package db
 
 import (
@@ -18,5 +16,6 @@ func dbModels() []interface{} {
 		&models.User{},
 		&models.Site{},
 		&models.SiteData{},
+		&models.Settings{},
 	}
 }

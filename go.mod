@@ -1,6 +1,6 @@
 module ricr.dev/site-manager
 
-go 1.19
+go 1.23.0
 
 require (
 	github.com/alexedwards/argon2id v0.0.0-20230305115115-4b3c3280a736
