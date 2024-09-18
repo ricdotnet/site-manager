@@ -131,18 +131,18 @@ func (api *API) createSite(ctx echo.Context) error {
 }
 
 func (api *API) updateSite(ctx echo.Context) error {
-	site := &Site{}
-	err := ctx.Bind(site)
+	body := &RequestBody{}
+	err := ctx.Bind(body)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
 	}
 
-	oldSite, err := api.findFirst(int(site.ID), utils.GetTokenClaims(ctx))
+	oldSite, err := api.findFirst(int(body.Site.ID), utils.GetTokenClaims(ctx))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "This site does not exist")
 	}
 
-	newSite, err := api.update(site)
+	newSite, err := api.update(body.Site)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
 	}
@@ -154,7 +154,7 @@ func (api *API) updateSite(ctx echo.Context) error {
 		}
 	}
 
-	err = api.sitesService.WriteSingle(site.ConfigName, "")
+	err = api.sitesService.WriteSingle(body.Site.ConfigName, body.Config)
 	if err != nil {
 		println(err.Error())
 	}
