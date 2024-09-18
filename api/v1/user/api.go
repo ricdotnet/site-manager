@@ -3,11 +3,11 @@ package user
 import "gorm.io/gorm"
 
 type API struct {
-	repository *Repository
+	db     *gorm.DB
 }
 
 func New(db *gorm.DB) *API {
 	return &API{
-		repository: NewRepository(db),
+		db:     db,
 	}
 }

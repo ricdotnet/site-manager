@@ -6,19 +6,9 @@ import (
 	"ricr.dev/site-manager/config"
 )
 
-type Repository struct {
-	db *gorm.DB
-}
-
-func NewRepository(db *gorm.DB) *Repository {
-	return &Repository{
-		db: db,
-	}
-}
-
-func (r *Repository) GetAll(user *config.JwtCustomClaims) (*[]Site, error) {
+func (api *API) findAll(user *config.JwtCustomClaims) (*[]Site, error) {
 	sites := new([]Site)
-	if err := r.db.Find(&sites, "user_id = ?", user.UserID).Error; err != nil {
+	if err := api.db.Find(&sites, "user_id = ?", user.UserID).Error; err != nil {
 		return nil, err
 	}
 
@@ -26,9 +16,9 @@ func (r *Repository) GetAll(user *config.JwtCustomClaims) (*[]Site, error) {
 	return sites, nil
 }
 
-func (r *Repository) GetOne(id int, user *config.JwtCustomClaims) (*Site, error) {
+func (api *API) findFirst(id int, user *config.JwtCustomClaims) (*Site, error) {
 	site := &Site{}
-	if err := r.db.First(site, "id = ? AND user_id = ?", id, user.UserID).Error; err != nil {
+	if err := api.db.First(site, "id = ? AND user_id = ?", id, user.UserID).Error; err != nil {
 		return nil, err
 	}
 	if site != nil {
@@ -38,27 +28,28 @@ func (r *Repository) GetOne(id int, user *config.JwtCustomClaims) (*Site, error)
 	return site, nil
 }
 
-func (r *Repository) Create(site *Site) (*Site, error) {
-	if err := r.db.Create(site).Error; err != nil {
+func (api *API) insert(site *Site) (*Site, error) {
+	if err := api.db.Create(site).Error; err != nil {
 		return nil, err
 	}
 	return site, nil
 }
 
-func (r *Repository) Update(site *Site) (*Site, error) {
+func (api *API) update(site *Site) (*Site, error) {
 	updated := &Site{}
 	var err error
-	if err = r.db.Updates(site).Error; err != nil {
+	if err = api.db.Updates(site).Error; err != nil {
 		return nil, err
 	}
-	if err = r.db.First(updated, "id = ?", site.ID).Error; err != nil {
+	if err = api.db.First(updated, "id = ?", site.ID).Error; err != nil {
 		return nil, err
 	}
 	return updated, nil
 }
 
-func (r *Repository) Enable(site *Site) error {
-	if err := r.db.Model(site).
+// TODO: maybe merge this with above?
+func (api *API) updateEnabled(site *Site) error {
+	if err := api.db.Model(site).
 		Where("id = ?", site.ID).
 		Update("enabled", site.Enabled).Error; err != nil {
 		return err
@@ -67,12 +58,12 @@ func (r *Repository) Enable(site *Site) error {
 	return nil
 }
 
-func (r *Repository) Delete(sites *[]uint) error {
-	err := r.db.Transaction(func(tx *gorm.DB) error {
+func (api *API) delete(sites *[]uint) error {
+	err := api.db.Transaction(func(tx *gorm.DB) error {
 		for _, site := range *sites {
 			log.Infof("Deleting site with id %d", site)
 
-			if err := r.db.Delete(&Site{}, site).Error; err != nil {
+			if err := api.db.Delete(&Site{}, site).Error; err != nil {
 				return err
 			}
 		}

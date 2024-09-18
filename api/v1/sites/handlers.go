@@ -7,10 +7,12 @@ import (
 	"net/http"
 	"os/exec"
 	"regexp"
+	"strconv"
+
+	"github.com/labstack/echo/v4"
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
 	"ricr.dev/site-manager/utils"
-	"strconv"
 )
 
 type Site = models.Site
@@ -33,10 +35,10 @@ type DeleteSites struct {
 }
 
 // TODO: Add pagination
-func (a *API) all(ctx echo.Context) error {
+func (api *API) getAllSites(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 
-	sites, err := a.repository.GetAll(userCtx)
+	sites, err := api.findAll(userCtx)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, config.ApiResponse{
 			Code:        http.StatusInternalServerError,
@@ -53,11 +55,13 @@ func (a *API) all(ctx echo.Context) error {
 	})
 }
 
-func (a *API) single(ctx echo.Context) error {
+// single
+// read the contents of the specified file
+func (api *API) getSite(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	site, err := a.repository.GetOne(id, userCtx)
+	site, err := api.findFirst(id, userCtx)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "site_not_found")
 	}
@@ -83,14 +87,16 @@ func (a *API) single(ctx echo.Context) error {
 	})
 }
 
-func (a *API) create(ctx echo.Context) error {
+// create
+// get the body content and add a new site to the db and vhosts file
+func (api *API) createSite(ctx echo.Context) error {
 	log.Info("Entering create a site")
 
 	site := new(Site)
 	if err := ctx.Bind(site); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if errorCode := a.validateSite(site); errorCode != nil {
+	if errorCode := api.validateSite(site); errorCode != nil {
 		return ctx.JSON(http.StatusBadRequest, &config.ApiResponse{
 			Code:        http.StatusBadRequest,
 			MessageCode: *errorCode,
@@ -100,9 +106,10 @@ func (a *API) create(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 	site.UserID = userCtx.UserID
 
-	newSite, err := a.repository.Create(site)
+	newSite, err := api.insert(site)
 	if err != nil {
 		log.Warnf("Failed to create a site with the domain %s", site.Domain)
+
 		return ctx.JSON(http.StatusBadRequest, Response{
 			ApiResponse: config.ApiResponse{
 				Code:        http.StatusBadRequest,
@@ -117,6 +124,7 @@ func (a *API) create(ctx echo.Context) error {
 	}
 
 	log.Info("Exiting create a site")
+
 	return ctx.JSON(http.StatusCreated, Response{
 		ApiResponse: config.ApiResponse{
 			Code:    http.StatusCreated,
@@ -126,19 +134,22 @@ func (a *API) create(ctx echo.Context) error {
 	})
 }
 
-func (a *API) update(ctx echo.Context) error {
-	requestBody := &RequestBody{}
-	err := ctx.Bind(requestBody)
+
+// update
+// endpoint to change an existing site data (not the vhosts file)
+func (api *API) updateSite(ctx echo.Context) error {
+	site := &Site{}
+	err := ctx.Bind(site)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
 	}
 
-	oldSite, err := a.repository.GetOne(int(requestBody.Site.ID), utils.GetTokenClaims(ctx))
+	oldSite, err := api.findFirst(int(requestBody.Site.ID), utils.GetTokenClaims(ctx))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "This site does not exist")
 	}
 
-	newSite, err := a.repository.Update(requestBody.Site)
+	newSite, err := api.update(requestBody.Site)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
 	}
@@ -150,7 +161,7 @@ func (a *API) update(ctx echo.Context) error {
 		}
 	}
 
-	err = a.sitesService.WriteSingle(requestBody.Site.ConfigName, requestBody.Config)
+	err = api.sitesService.WriteSingle(requestBody.Site.ConfigName, requestBody.Config)
 	if err != nil {
 		println(err.Error())
 	}
@@ -163,7 +174,10 @@ func (a *API) update(ctx echo.Context) error {
 	})
 }
 
-func (a *API) status(ctx echo.Context) error {
+
+// enable
+// endpoint to enable disable a site
+func (api *API) updateSiteStatus(ctx echo.Context) error {
 	site := &Site{}
 	err := ctx.Bind(site)
 	if err != nil {
@@ -172,12 +186,13 @@ func (a *API) status(ctx echo.Context) error {
 
 	id, _ := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	site.ID = uint(id)
-	if err = a.repository.Enable(site); err != nil {
+	if err = api.updateEnabled(site); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Unable to update site status")
 	}
 
 	cmd := exec.Command("systemctl", "reload", "apache2")
 	stdout, _ := cmd.Output()
+
 	log.Info(stdout)
 
 	return ctx.JSON(http.StatusOK, Response{
@@ -188,7 +203,9 @@ func (a *API) status(ctx echo.Context) error {
 	})
 }
 
-func (a *API) delete(ctx echo.Context) error {
+// delete
+// remove an entry from the database as well as the actual vhosts file and disable the site too
+func (api *API) deleteSite(ctx echo.Context) error {
 	log.Info("Entering delete sites handler")
 
 	sites := &DeleteSites{}
@@ -198,12 +215,13 @@ func (a *API) delete(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
 
-	if err = a.repository.Delete(sites.Sites); err != nil {
+	if err = api.delete(sites.Sites); err != nil {
 		log.Error(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
 
 	log.Info("Exiting delete sites handler")
+
 	return ctx.JSON(http.StatusOK, Response{
 		ApiResponse: config.ApiResponse{
 			Code:    http.StatusOK,

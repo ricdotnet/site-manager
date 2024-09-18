@@ -4,33 +4,25 @@ import (
 	"flag"
 	"fmt"
 	"github.com/charmbracelet/log"
+	"os"
+	"time"
+
 	"github.com/ricdotnet/goenvironmental"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"os"
 	router "ricr.dev/site-manager/api/v1"
 	"ricr.dev/site-manager/db"
 	"ricr.dev/site-manager/scripts"
-	"time"
 )
 
 func main() {
 	sa := flag.Bool("sa", false, "map config files to their domains")
 	run := flag.Bool("run", false, "start the app")
-	env := flag.String("env", "dev", "environment to run the app with") // runs in dev as default
+	envFile := flag.String("env-file", ".env", "environment to run the app in")
 	flag.Parse()
 
-	switch *env {
-	case "development", "dev":
-		goenvironmental.ParseEnv(".env.development")
-		log.Info("Running in development mode")
-	case "production":
-		goenvironmental.ParseEnv()
-	default:
-		goenvironmental.ParseEnv(".env.development") // nothing defined will run in dev
-	}
-
-	goenvironmental.ParseEnv()
+	goenvironmental.ParseEnv(*envFile)
+	cfg := config.NewConfig()
 
 	if *sa {
 		sitesAvailable()

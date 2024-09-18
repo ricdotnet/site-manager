@@ -13,10 +13,10 @@ func Routes(v1 *echo.Group, db *gorm.DB) {
 
 	sites := v1.Group("/site", middlewares.AuthMiddleware())
 
-	sites.GET("/all", api.all)
-	sites.GET("/:id", api.single)
-	sites.POST("/", api.create)
-	sites.PATCH("/:id", api.update)
-	sites.PATCH("/:id/status", api.status)
-	sites.DELETE("/", api.delete)
+	sites.GET("/all", api.getAllSites)
+	sites.GET("/:id", api.getSite)
+	sites.POST("/", api.createSite)
+	sites.PATCH("/:id", api.updateSite)
+	sites.PATCH("/:id/status", api.updateSiteStatus) // a2ensite / a2dissite
+	sites.DELETE("/", api.deleteSite)
 }

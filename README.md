@@ -7,7 +7,7 @@
 #### Run
 
 ```sh
-go run . -run
+go run . -run --env-file .env.development
 ```
 
 Any database changes should be applied automatically. If it is the first time running, tables should be created.

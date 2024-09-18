@@ -6,13 +6,13 @@ import (
 )
 
 type API struct {
-	repository   *Repository
+	db           *gorm.DB
 	sitesService *services.SitesService
 }
 
 func New(db *gorm.DB) *API {
 	return &API{
+		db:           db,
 		sitesService: services.NewSitesService(),
-		repository:   NewRepository(db),
 	}
 }
