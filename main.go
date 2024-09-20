@@ -3,15 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/charmbracelet/log"
 	"github.com/ricdotnet/goenvironmental"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"os"
 	router "ricr.dev/site-manager/api/v1"
-	"ricr.dev/site-manager/db"
+	"ricr.dev/site-manager/database"
 	"ricr.dev/site-manager/scripts"
-	"time"
 )
 
 func main() {
@@ -28,18 +27,10 @@ func main() {
 	}
 
 	if *run {
-		// TODO: extract db related stuff maybe into the /db dir
-		dbHost, _ := goenvironmental.Get("DB_HOST")
-		dbUser, _ := goenvironmental.Get("DB_USER")
-		dbPass, _ := goenvironmental.Get("DB_PASSWORD")
-		dbName, _ := goenvironmental.Get("DB_NAME")
-
-		dns := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPass, dbHost, dbName)
-		dbConn, err := gorm.Open(mysql.Open(dns), &gorm.Config{})
+		conn, err := database.Connect()
 		if err != nil {
-			panic(err.Error())
+			panic(fmt.Sprintf("Could not connect to the database: %s", err.Error()))
 		}
-		db.RunMigrations(dbConn)
 
 		port, err := goenvironmental.Get("PORT")
 		if err != nil {
@@ -47,7 +38,7 @@ func main() {
 		}
 
 		// define the echo router and run
-		v1 := router.NewRouter(dbConn)
+		v1 := router.NewRouter(conn)
 		v1.Logger.Fatal(v1.Start(fmt.Sprintf(":%s", port)))
 	}
 
