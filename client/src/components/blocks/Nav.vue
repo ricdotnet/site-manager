@@ -41,7 +41,6 @@
     router.push('/login');
   }
 
-  // this theme toggle will be checked if the current theme is dark
   const isDark = computed(() => {
     return currentTheme.value === 'dark';
   });
