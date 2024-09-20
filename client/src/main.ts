@@ -7,6 +7,9 @@ import './style.scss';
 const app = createApp(App);
 const pinia = createPinia();
 
+const secretKey = Math.random();
+
+app.provide('secretKey', secretKey);
 app.provide('base', import.meta.env.VITE_BASE);
 app.provide('api', import.meta.env.VITE_API);
 
