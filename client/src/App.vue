@@ -5,9 +5,9 @@
     <router-view></router-view>
   </div>
 
-  <Toasts />
+  <Toaster />
 </template>
 
 <script setup lang="ts">
-import { Nav, Toasts } from '@components';
+import { Nav, Toaster } from '@components';
 </script>

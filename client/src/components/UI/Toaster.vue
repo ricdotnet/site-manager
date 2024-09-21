@@ -1,8 +1,8 @@
 <template>
   <div class="toast-container">
-    <div v-for="toast in toasts" class="toast" @click="toastStore.removeToast(toast.id)">
+    <div v-for="toast in toasts" class="toast" @click="removeToast(toast.id)">
       <div class="flex gap-x-2">
-        <component :class="`toast-${toast.type || 'info'}`" :is="getIcon(toast.type)" class="w-6 h-6" />
+        <component :class="`toast-${toast.type || 'info'}`" :is="getIcon(toast.type)" class="w-6 h-6"/>
         <span>{{ toast.message }}</span>
       </div>
     </div>
@@ -10,12 +10,10 @@
 </template>
 
 <script setup lang="ts">
-import { useToastStore } from '@stores';
-import { storeToRefs } from 'pinia';
-import { InformationCircleIcon, CheckCircleIcon, ExclamationCircleIcon, XCircleIcon } from '@heroicons/vue/20/solid';
+import { useToaster } from "@composables";
+import { CheckCircleIcon, ExclamationCircleIcon, InformationCircleIcon, XCircleIcon } from '@heroicons/vue/20/solid';
 
-const toastStore = useToastStore();
-const { toasts } = storeToRefs(toastStore);
+const { toasts, removeToast } = useToaster();
 
 function getIcon(type: string) {
   switch (type) {
@@ -45,12 +43,15 @@ function getIcon(type: string) {
 .toast-info {
   @apply text-blue-500;
 }
+
 .toast-success {
   @apply text-green-500;
 }
+
 .toast-warning {
   @apply text-yellow-500;
 }
+
 .toast-error {
   @apply text-red-500;
 }
