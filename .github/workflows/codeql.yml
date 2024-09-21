@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ (matrix.language == 'javascript' && './client') || '.' }
+        working-directory: ${{ (matrix.language == 'javascript' && './client') || '.' }}
     permissions:
       actions: read
       contents: read
