@@ -37,3 +37,10 @@ export type TSIteResponse = {
   message: string;
   site: TSite;
 }
+
+export type TToast = {
+  id: number;
+  title?: string;
+  message: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+};
