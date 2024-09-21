@@ -1,25 +1,25 @@
 import { ref } from 'vue';
+import { TToast } from "@types";
 
-type Toast = {
-    id: number;
-    message: string;
-    type: 'success' | 'error' | 'info' | 'warning';
-};
-
-const toasts = ref<Toast[]>([]);
+const toasts = ref<TToast[]>([]);
 
 export const useToaster = () => {
-    const addToast = (message: string, type: Toast['type']) => {
-        const id = Date.now();
-        toasts.value.push({ id, message, type });
-        setTimeout(() => {
-            removeToast(id);
-        }, 10000); // to be an env variable
-    };
+  function addToast(type: TToast['type'], message: string);
+  function addToast(type: TToast['type'], message: string, title?: string) {
+    const id = Date.now();
+    if (title) {
+      toasts.value.push({ id, title, message, type });
+    } else {
+      toasts.value.push({ id, message, type });
+    }
+    setTimeout(() => {
+      removeToast(id);
+    }, 10000); // to be an env variable
+  }
 
-    const removeToast = (id: number) => {
-        toasts.value = toasts.value.filter((toast) => toast.id !== id);
-    };
+  const removeToast = (id: number) => {
+    toasts.value = toasts.value.filter((toast) => toast.id !== id);
+  };
 
-    return { toasts, addToast, removeToast };
+  return { toasts, addToast, removeToast };
 };

@@ -7,7 +7,8 @@ export { default as Checkbox } from './UI/Checkbox.vue';
 export { default as Dialog } from './UI/Dialog.vue';
 export { default as Dropdown } from './UI/Dropdown/Dropdown.vue';
 export { default as DropdownItem } from './UI/Dropdown/DropdownItem.vue';
-export { default as Toaster } from './UI/Toaster.vue';
+export { default as Toaster } from './UI/Toaster/Toaster.vue';
+export { default as Toast } from './UI/Toaster/Toast.vue';
 
 // Blocks
 export { default as Nav } from './blocks/Nav.vue';
