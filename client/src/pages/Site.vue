@@ -12,19 +12,19 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from "vue";
-  import { SiteInfo, SiteItem } from "@components";
-  import { useSitesStore } from "@stores";
+import { SiteInfo, SiteItem } from '@components';
+import { useSitesStore } from '@stores';
+import { onMounted, ref } from 'vue';
 
-  const sitesStore = useSitesStore();
+const sitesStore = useSitesStore();
 
-  const isLoading = ref(true);
-  const fetchError = ref(false);
+const isLoading = ref(true);
+const fetchError = ref(false);
 
-  onMounted(async () => {
-    const error = await sitesStore.fetchSite();
-    if (error) fetchError.value = true;
+onMounted(async () => {
+  const error = await sitesStore.fetchSite();
+  if (error) fetchError.value = true;
 
-    isLoading.value = false;
-  });
+  isLoading.value = false;
+});
 </script>

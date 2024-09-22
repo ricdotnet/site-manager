@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor';
 import { ref } from 'vue';
-import theme from '../monaco/theme.ts';
 import { config, tokens } from '../monaco/syntax.ts';
+import theme from '../monaco/theme.ts';
 
 export const useEditor = () => {
   const monacoRef = ref<HTMLDivElement | null>(null);

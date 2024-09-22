@@ -24,53 +24,66 @@
       <div ref="monacoRef" class="h-[500px] p-1 rounded-md bg-[#1E1E1E]"></div>
     </div>
 
-    <Button type="button" name="save" color="primary" text="Save" @click="onClick"/>
+    <Button type="button" name="save" color="primary" text="Save" @click="onClick" :is-actioning="isSaving"/>
   </div>
 </template>
 
 <script setup lang="ts">
-  import * as monaco from 'monaco-editor';
-  import { useSitesStore } from "@stores";
-  import { onMounted, ref } from "vue";
-  import { domainValidator } from "@validators";
-  import { InputComponent } from "@types";
-  import { useRequest, useEditor } from "@composables";
-  import { Button, Input } from "@components";
+import { Button, Input } from '@components';
+import { useEditor, useRequest, useToaster } from '@composables';
+import { useSitesStore } from '@stores';
+import type { InputComponent } from '@types';
+import { domainValidator } from '@validators';
+import * as monaco from 'monaco-editor';
+import { onMounted, onUnmounted, ref } from 'vue';
 
-  const { getSite } = useSitesStore();
+const { getSite } = useSitesStore();
 
-  const domainInputRef = ref<InputComponent>();
-  const configNameInputRef = ref<InputComponent>();
+const isSaving = ref(false);
+const domainInputRef = ref<InputComponent>();
+const configNameInputRef = ref<InputComponent>();
 
-  const { buildEditor, monacoRef } = useEditor();
+const { buildEditor, monacoRef } = useEditor();
+const { addToast } = useToaster();
 
-  onMounted(async () => {
-    domainInputRef?.value.setValue(getSite().domain);
-    configNameInputRef?.value.setValue(getSite().config_name);
+onMounted(async () => {
+  domainInputRef?.value.setValue(getSite().domain);
+  configNameInputRef?.value.setValue(getSite().config_name);
 
-    if (monacoRef.value) {
-      buildEditor(getSite().config);
-    }
+  if (monacoRef.value) {
+    buildEditor(getSite().config);
+  }
+});
+
+onUnmounted(() => {
+  // necessary or else the editor will not be disposed, and we end up with multiple editors
+  monaco.editor.getModels()[0].dispose();
+});
+
+const onClick = async () => {
+  isSaving.value = true;
+
+  const { error } = await useRequest<any>({
+    endpoint: `/site/${getSite().ID}`,
+    method: 'PATCH',
+    needsAuth: true,
+    payload: {
+      site: {
+        id: getSite().ID,
+        domain: domainInputRef.value?.getValue(),
+        config_name: configNameInputRef.value?.getValue(),
+      },
+      config: monaco.editor.getModels()[0].getValue(),
+    },
   });
 
-  const onClick = async () => {
-    const { error } = await useRequest<any>({
-      endpoint: `/site/${getSite().ID}`,
-      method: 'PATCH',
-      needsAuth: true,
-      payload: {
-        site: {
-          id: getSite().ID,
-          domain: domainInputRef.value?.getValue(),
-          config_name: configNameInputRef.value?.getValue(),
-        },
-        config: monaco.editor.getModels()[0].getValue(),
-      },
-    });
-
-    if (error) {
-      console.log(error);
-      return;
-    }
+  if (error) {
+    addToast('error', 'Failed to update site');
+    isSaving.value = false;
+    return;
   }
+
+  addToast('success', 'Site updated successfully');
+  isSaving.value = false;
+};
 </script>

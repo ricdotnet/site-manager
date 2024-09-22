@@ -16,3 +16,6 @@ db_inserts.sql
 # build
 bin
 server
+
+# development
+test-sites
