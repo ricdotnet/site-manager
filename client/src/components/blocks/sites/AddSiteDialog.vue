@@ -27,90 +27,90 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from "vue";
-  import { configValidator, domainValidator } from "@validators";
-  import { Dialog, Input } from "@components";
-  import { InputComponent, TSite } from "@types";
-  import { useRequest } from "@composables";
-  import { useSitesStore } from "@stores";
-  import { messages } from "@utils";
+import { Dialog, Input } from '@components';
+import { useRequest } from '@composables';
+import { useSitesStore } from '@stores';
+import type { InputComponent, TSite } from '@types';
+import { messages } from '@utils';
+import { configValidator, domainValidator } from '@validators';
+import { ref } from 'vue';
 
-  const sitesStore = useSitesStore();
+const sitesStore = useSitesStore();
 
-  const props = defineProps<{
-    isAddingSite: boolean;
-    closeDialog: () => void;
-  }>();
-  const isPostingSite = ref(false);
+const props = defineProps<{
+  isAddingSite: boolean;
+  closeDialog: () => void;
+}>();
+const isPostingSite = ref(false);
 
-  const domainInput = ref<InputComponent>();
-  const configInput = ref<InputComponent>();
+const domainInput = ref<InputComponent>();
+const configInput = ref<InputComponent>();
 
-  const formHasError = ref(false);
-  const generalErrorMessage = ref('');
+const formHasError = ref(false);
+const generalErrorMessage = ref('');
 
-  const isEditingConf = ref(false);
+const isEditingConf = ref(false);
 
-  interface AddSiteResponse {
-    code: number;
-    message_code: '';
-    site: TSite;
+interface AddSiteResponse {
+  code: number;
+  message_code: '';
+  site: TSite;
+}
+
+const onCloseDialog = () => {
+  generalErrorMessage.value = '';
+  isEditingConf.value = false;
+};
+
+const onClickConfirmDialog = async () => {
+  formHasError.value = false;
+
+  if (!domainInput.value?.getValue()) {
+    domainInput.value?.setError(true);
+    formHasError.value = true;
   }
 
-  const onCloseDialog = () => {
-    generalErrorMessage.value = '';
-    isEditingConf.value = false;
+  if (!configInput.value?.getValue()) {
+    configInput.value?.setError(true);
+    formHasError.value = true;
   }
 
-  const onClickConfirmDialog = async () => {
-    formHasError.value = false;
+  if (formHasError.value) return;
 
-    if (!domainInput.value?.getValue()) {
-      domainInput.value?.setError(true);
-      formHasError.value = true;
-    }
+  const { data, error } = await useRequest<AddSiteResponse>({
+    endpoint: '/site/',
+    method: 'POST',
+    needsAuth: true,
+    payload: {
+      domain: domainInput.value?.getValue(),
+      config_name: configInput.value?.getValue(),
+    },
+  });
 
-    if (!configInput.value?.getValue()) {
-      configInput.value?.setError(true);
-      formHasError.value = true;
-    }
-
-    if (formHasError.value) return;
-
-    const { data, error } = await useRequest<AddSiteResponse>({
-      endpoint: '/site/',
-      method: 'POST',
-      needsAuth: true,
-      payload: {
-        domain: domainInput.value?.getValue(),
-        config_name: configInput.value?.getValue(),
-      },
-    });
-
-    if (error) {
-      generalErrorMessage.value = messages.site[error.response.data.message_code];
-      return;
-    }
-
-    if (data && data.site) {
-      sitesStore.addSite(data.site);
-    }
-    props.closeDialog();
+  if (error) {
+    generalErrorMessage.value = messages.site[error.response.data.message_code];
+    return;
   }
 
-  const onDomainKeyUp = () => {
-    const domainValue = domainInput.value?.getValue();
-
-    if (domainValue) {
-      configInput.value?.setValue(domainValue + '.conf');
-    }
+  if (data && data.site) {
+    sitesStore.addSite(data.site);
   }
+  props.closeDialog();
+};
 
-  const onConfigDoubleClick = () => {
-    isEditingConf.value = true;
-  }
+const onDomainKeyUp = () => {
+  const domainValue = domainInput.value?.getValue();
 
-  const onSaveConfig = () => {
-    isEditingConf.value = false;
+  if (domainValue) {
+    configInput.value?.setValue(domainValue + '.conf');
   }
+};
+
+const onConfigDoubleClick = () => {
+  isEditingConf.value = true;
+};
+
+const onSaveConfig = () => {
+  isEditingConf.value = false;
+};
 </script>

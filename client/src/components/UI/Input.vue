@@ -24,128 +24,138 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onUnmounted, reactive, ref } from "vue";
-  import { validate, Validator } from "@validators";
-  import { useDebounce } from "@composables";
-  import { Button } from "@components";
-  import { CheckIcon } from "@heroicons/vue/20/solid";
+import { Button } from '@components';
+import { useDebounce } from '@composables';
+import { CheckIcon } from '@heroicons/vue/20/solid';
+import { type Validator, validate } from '@validators';
+import { computed, onUnmounted, reactive, ref } from 'vue';
 
-  const debounce = useDebounce();
+const debounce = useDebounce();
 
-  const props = defineProps<{
-    id: string;
-    type?: string;
-    placeholder?: string;
-    errorMessage?: string;
-    timeout?: number;
-    validator?: Validator | Function;
-    disabled?: boolean;
-    readonly?: boolean;
-    isEditing?: boolean;
-  }>();
+const props = defineProps<{
+  id: string;
+  type?: string;
+  placeholder?: string;
+  errorMessage?: string;
+  timeout?: number;
+  validator?: Validator | Function;
+  disabled?: boolean;
+  readonly?: boolean;
+  isEditing?: boolean;
+}>();
 
-  const state = reactive({
-    errorMessage: computed({
-      get() {
-        // TODO: handle this '' error message...
-        // check again the computed definition (getter does not return undefined???? did before????)
-        return props.errorMessage ?? '';
-      },
-      set(v: string) {
-        errorMessageRef.value = v;
-      },
-    }),
-  });
+const state = reactive({
+  errorMessage: computed({
+    get() {
+      // TODO: handle this '' error message...
+      // check again the computed definition (getter does not return undefined???? did before????)
+      return props.errorMessage ?? '';
+    },
+    set(v: string) {
+      errorMessageRef.value = v;
+    },
+  }),
+});
 
-  const errorMessageRef = ref(state.errorMessage);
+const errorMessageRef = ref(state.errorMessage);
 
-  const inputRef = ref<HTMLInputElement>();
-  const hasError = ref(false);
-  const timeout = ref<NodeJS.Timeout>();
-  const oldValue = ref('');
+const inputRef = ref<HTMLInputElement>();
+const hasError = ref(false);
+const timeout = ref<NodeJS.Timeout>();
+const oldValue = ref('');
 
-  const errorClasses = computed(() => {
-    if (hasError.value) {
-      if (timeout.value) {
-        clearTimeout(timeout.value);
-        timeout.value = undefined;
-      }
-      timeout.value = setTimeout(() => {
-        setError(false);
-        emits('onResetError', props.id);
-      }, props.timeout ?? 20000);
-      return 'outline outline-offset-2 outline-2 outline-red-500';
+const errorClasses = computed(() => {
+  if (hasError.value) {
+    if (timeout.value) {
+      clearTimeout(timeout.value);
+      timeout.value = undefined;
     }
-    return 'outline-none focus:outline-cobalt-green'
-  });
-
-  const emits = defineEmits<{
-    (event: 'onResetError', key: string): void;
-    (event: 'onKeyUp', value: string): void;
-    (event: 'onDoubleClick'): void;
-    (event: 'onSave'): void;
-  }>();
-
-  const getValue = () => {
-    const value = inputRef.value?.value;
-    if (props.validator) {
-      const error = validate(props.validator, value);
-      if (error) {
-        state.errorMessage = error;
-        return setError(true);
-      }
-    }
-    return value;
-  }
-
-  const setValue = (value: string) => {
-    inputRef.value!.value = value;
-  }
-
-  const onKeyUp = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && props.isEditing) {
-      setValue(oldValue.value);
-      inputRef.value?.blur();
-      emits('onSave');
-      e.stopPropagation();
-    }
-
-    setError(false);
-    if (inputRef.value!.value === '') return;
-    debounce(() => emits('onKeyUp', inputRef.value!.value));
-  }
-
-  const onDoubleClick = () => {
-    emits('onDoubleClick');
-    oldValue.value = inputRef.value!.value;
-  }
-
-  const onFocusOut = () => {
-    emits('onSave');
-  }
-
-  const onClickSave = () => {
-    emits('onSave');
-  }
-
-  const setError = (bool: boolean, message?: string) => {
-    hasError.value = bool;
-
-    if (message) {
-      state.errorMessage = message;
-    }
-
-    if (!bool) {
-      state.errorMessage = '';
+    timeout.value = setTimeout(() => {
+      setError(false);
       emits('onResetError', props.id);
+    }, props.timeout ?? 20000);
+    return 'outline outline-offset-2 outline-2 outline-red-500';
+  }
+  return 'outline-none focus:outline-cobalt-green';
+});
+
+const emits = defineEmits<{
+  (event: 'onResetError', key: string): void;
+  (event: 'onKeyUp', value: string): void;
+  (event: 'onDoubleClick'): void;
+  (event: 'onSave'): void;
+}>();
+
+const getValue = () => {
+  const value = inputRef.value?.value;
+  if (props.validator) {
+    const error = validate(props.validator, value);
+    if (error) {
+      state.errorMessage = error;
+      return setError(true);
+    }
+  }
+  return value;
+};
+
+const setValue = (value: string) => {
+  inputRef.value!.value = value;
+};
+
+const onKeyUp = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && props.isEditing) {
+    setValue(oldValue.value);
+    inputRef.value?.blur();
+    emits('onSave');
+    e.stopPropagation();
+  }
+
+  setError(false);
+  if (inputRef.value!.value === '') return;
+  debounce(() => emits('onKeyUp', inputRef.value!.value));
+};
+
+const onDoubleClick = () => {
+  emits('onDoubleClick');
+  oldValue.value = inputRef.value!.value;
+};
+
+const onFocusOut = () => {
+  const value = inputRef.value?.value;
+
+  if (props.validator) {
+    const error = validate(props.validator, value);
+    if (error) {
+      state.errorMessage = error;
+      return setError(true);
     }
   }
 
-  onUnmounted(() => {
-    clearTimeout(timeout.value);
-  });
+  emits('onSave');
+};
 
-  defineExpose({ getValue, setValue, setError });
+const onClickSave = () => {
+  emits('onSave');
+};
+
+const setError = (bool: boolean, message?: string) => {
+  hasError.value = bool;
+
+  if (message) {
+    state.errorMessage = message;
+  }
+
+  if (!bool) {
+    state.errorMessage = '';
+    emits('onResetError', props.id);
+  }
+};
+
+onUnmounted(() => {
+  clearTimeout(timeout.value);
+});
+
+defineExpose({ getValue, setValue, setError, hasError });
 </script>
 
 <style scoped lang="scss">
