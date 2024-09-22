@@ -7,7 +7,7 @@ import (
 func (api *API) findAll() {}
 
 func (api *API) findFirst(setting *Setting, key string) error {
-	if err := api.db.First(setting, "key = ?", key).Error; err != nil {
+	if err := api.db.First(setting, "`key` = ?", key).Error; err != nil {
 		return err
 	}
 

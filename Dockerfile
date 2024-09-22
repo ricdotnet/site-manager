@@ -10,4 +10,4 @@ COPY --from=builder /builder/.env /production
 COPY --from=builder /builder/server /production
 
 EXPOSE 3000
-CMD ["./server", "-run"]
+CMD ["./server", "-run", "-env=production"]

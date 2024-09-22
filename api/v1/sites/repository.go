@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"github.com/charmbracelet/log"
 	"gorm.io/gorm"
 	"ricr.dev/site-manager/config"
 )
@@ -11,7 +12,7 @@ func (api *API) findAll(user *config.JwtCustomClaims) (*[]Site, error) {
 		return nil, err
 	}
 
-	api.logger.Infof("Found %d site records for user %s", len(*sites), user.Username)
+	log.Infof("Found %d site records for user %s", len(*sites), user.Username)
 	return sites, nil
 }
 
@@ -21,7 +22,7 @@ func (api *API) findFirst(id int, user *config.JwtCustomClaims) (*Site, error) {
 		return nil, err
 	}
 	if site != nil {
-		api.logger.Infof("Found 1 site record with id %d for user %s", id, user.Username)
+		log.Infof("Found 1 site record with id %d for user %s", id, user.Username)
 	}
 
 	return site, nil
@@ -60,7 +61,7 @@ func (api *API) updateEnabled(site *Site) error {
 func (api *API) delete(sites *[]uint) error {
 	err := api.db.Transaction(func(tx *gorm.DB) error {
 		for _, site := range *sites {
-			api.logger.Debugf("Deleting site with id %d", site)
+			log.Infof("Deleting site with id %d", site)
 
 			if err := api.db.Delete(&Site{}, site).Error; err != nil {
 				return err

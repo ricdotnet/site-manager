@@ -23,6 +23,7 @@ export type TSite = {
   has_ssl: boolean;
   created_at: string;
   updated_at: string;
+  config?: string;
   checked?: boolean;
 }
 

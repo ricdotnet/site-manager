@@ -16,7 +16,10 @@ export { default as ButtonGroup } from './blocks/ButtonGroup.vue';
 export { default as Stack } from './blocks/Stack.vue';
 export { default as SitesTable } from './blocks/sites/SitesTable.vue';
 export { default as SiteItem } from './blocks/sites/SiteItem.vue';
+export { default as SiteInfo } from './blocks/sites/SiteInfo.vue';
 export { default as AddSiteDialog } from './blocks/sites/AddSiteDialog.vue';
+export { default as DeleteSitesDialog } from './blocks/sites/DeleteSitesDialog.vue';
+
 export { default as TableLoading } from './blocks/TableLoading.vue';
 
 export { default as Empty } from './blocks/Empty.vue';

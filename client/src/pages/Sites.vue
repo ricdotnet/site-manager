@@ -23,9 +23,8 @@
 
 <script setup lang="ts">
   import { computed, ref } from "vue";
-  import { AddSiteDialog, Button, SitesTable } from "@components";
-  import { useSitesStore } from "../stores/sites.store.ts";
-  import DeleteSitesDialog from "../components/blocks/sites/DeleteSitesDialog.vue";
+  import { AddSiteDialog, Button, DeleteSitesDialog, SitesTable } from "@components";
+  import { useSitesStore } from "@stores";
 
   const sitesStore = useSitesStore();
   const isAddingSite = ref(false);
@@ -37,6 +36,7 @@
   const onClickAddSite = () => isAddingSite.value = true;
 
   const closeAddSiteDialog = () => isAddingSite.value = false;
+
   const closeDeleteSitesDialog = () => isOpenDeleteSites.value = false;
 </script>
 

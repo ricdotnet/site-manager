@@ -6,13 +6,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/op/go-logging"
+	"github.com/charmbracelet/log"
 	"github.com/ricdotnet/goenvironmental"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 	router "ricr.dev/site-manager/api/v1"
-	"ricr.dev/site-manager/config"
-	"ricr.dev/site-manager/db"
+	"ricr.dev/site-manager/database"
 	"ricr.dev/site-manager/scripts"
 )
 
@@ -23,26 +20,17 @@ func main() {
 	flag.Parse()
 
 	goenvironmental.ParseEnv(*envFile)
-	cfg := config.NewConfig()
 
 	if *sa {
-		sitesAvailable(cfg.Logger)
+		sitesAvailable()
 		return
 	}
 
 	if *run {
-		// TODO: extract db related stuff maybe into the /db dir
-		dbHost, _ := goenvironmental.Get("DB_HOST")
-		dbUser, _ := goenvironmental.Get("DB_USER")
-		dbPass, _ := goenvironmental.Get("DB_PASSWORD")
-		dbName, _ := goenvironmental.Get("DB_NAME")
-
-		dns := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPass, dbHost, dbName)
-		dbConn, err := gorm.Open(mysql.Open(dns), &gorm.Config{})
+		conn, err := database.Connect()
 		if err != nil {
-			panic(err.Error())
+			panic(fmt.Sprintf("Could not connect to the database: %s", err.Error()))
 		}
-		db.RunMigrations(dbConn)
 
 		port, err := goenvironmental.Get("PORT")
 		if err != nil {
@@ -50,7 +38,7 @@ func main() {
 		}
 
 		// define the echo router and run
-		v1 := router.New(cfg, dbConn)
+		v1 := router.NewRouter(conn)
 		v1.Logger.Fatal(v1.Start(fmt.Sprintf(":%s", port)))
 	}
 
@@ -58,10 +46,10 @@ func main() {
 }
 
 // TODO: extract this into its own package
-func sitesAvailable(l *logging.Logger) {
+func sitesAvailable() {
 	start := time.Now()
 
-	sitesMap := scripts.Init(l).MapSites()
+	sitesMap := scripts.Init().MapSites()
 	file, _ := os.Create("db_inserts.sql")
 
 	for k, v := range sitesMap {
@@ -69,7 +57,7 @@ func sitesAvailable(l *logging.Logger) {
 		// ignore the errors :-)
 		_, err := file.WriteString(line)
 		if err != nil {
-			l.Fatalf("Writing failed while writing sql insert for %s", v)
+			log.Fatalf("Writing failed while writing sql insert for %s", v)
 		}
 	}
 

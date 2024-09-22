@@ -14,4 +14,8 @@ export function unwrap<T extends RefValue>(ref: Ref | T): unknown {
   return isRef(ref) ? ref.value : ref;
 }
 
-export const sleep = (ms: number) => new Promise(r => setTimeout(() => r(true), ms));
+export function formatDate(date: string): string {
+  return new Date(date).toDateString();
+}
+
+export const sleep = (ms: number) => new Promise((r) => setTimeout(() => r(true), ms));

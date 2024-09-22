@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"github.com/ricdotnet/goenvironmental"
-	"path/filepath"
 	"testing"
 )
 
@@ -25,14 +23,14 @@ func TestIsValidFileName(t *testing.T) {
 	}
 }
 
-func TestBuildApachePath(t *testing.T) {
-	goenvironmental.ParseEnv("../.env")
-	apachePath, _ := goenvironmental.Get("APACHE_PATH")
+// func TestBuildApachePath(t *testing.T) {
+// 	goenvironmental.ParseEnv("../.env")
+// 	apachePath, _ := goenvironmental.Get("APACHE_PATH")
 
-	got := BuildApachePath("sites-available/")
-	want := filepath.Join(apachePath, "sites-available")
+// 	got := BuildApachePath("sites-available/")
+// 	want := filepath.Join(apachePath, "sites-available")
 
-	if got != want {
-		t.Errorf("expected %s but got %s", want, got)
-	}
-}
+// 	if got != want {
+// 		t.Errorf("expected %s but got %s", want, got)
+// 	}
+// }

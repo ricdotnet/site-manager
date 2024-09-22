@@ -4,13 +4,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"ricr.dev/site-manager/api/middlewares"
-	"ricr.dev/site-manager/config"
 )
 
 // for the user id we are assuming it will always be present on the authorisation token
 
-func Routes(v1 *echo.Group, db *gorm.DB, cfg *config.Config) {
-	api := New(db, cfg)
+func Routes(v1 *echo.Group, db *gorm.DB) {
+	api := New(db)
 
 	sites := v1.Group("/site", middlewares.AuthMiddleware())
 
