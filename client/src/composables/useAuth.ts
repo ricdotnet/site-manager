@@ -1,7 +1,8 @@
+import { useUserStore } from '@stores';
+import type { RegisterData } from '@types';
+import type { AxiosError } from 'axios';
 import axios from 'axios';
 import { ref } from 'vue';
-import { useUserStore } from '@stores';
-import { RegisterData } from '@types';
 
 const useAuth = () => {
   const api = import.meta.env.VITE_API;
@@ -9,7 +10,7 @@ const useAuth = () => {
 
   // @ts-ignore
   const login = async (username: string, password: string) => {
-    const error = ref<any>();
+    const error = ref<unknown>();
 
     try {
       const { data } = await axios.post(`${api}/user/login`, {
@@ -22,23 +23,21 @@ const useAuth = () => {
       userStore.setIsAuthed(true);
       userStore.setUserId(data.id);
       userStore.setUsername(data.username);
-    } catch (err: any) {
-      error.value = err.response.data;
+    } catch (err: unknown) {
+      error.value = (err as AxiosError).response?.data;
     }
 
     return { error: error.value };
   };
 
   const register = async (registerData: RegisterData) => {
-    const error = ref<any>();
-    console.log(registerData);
-    return { error: 'hi' };
+    const error = ref<unknown>();
     try {
       const { data } = await axios.post(`${api}/user/register`, registerData);
 
       console.log(data);
-    } catch (err: any) {
-      error.value = err.response.data;
+    } catch (err: unknown) {
+      error.value = (err as AxiosError).response?.data;
     }
 
     return { error: error.value };

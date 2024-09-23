@@ -1,29 +1,31 @@
 export const useEvents = () => {
-  const events = new Map<string, Function>()
+  const events = new Map<string, (args: unknown[]) => void>();
 
-  const addEvent = (event: string, callback: Function) => {
+  const addEvent = (event: string, callback: (args: unknown[]) => void) => {
     if (events.has(event)) {
-      throw new Error(`Event ${event} already exists`)
+      throw new Error(`Event ${event} already exists`);
     }
 
-    events.set(event, callback)
-  }
+    events.set(event, callback);
+  };
 
   const removeEvent = (event: string) => {
     if (!events.has(event)) {
-      throw new Error(`Event ${event} does not exist`)
+      throw new Error(`Event ${event} does not exist`);
     }
 
-    events.delete(event)
-  }
+    events.delete(event);
+  };
 
-  const emitEvent = (event: string, ...args: any) => {
-    if (!events.has(event) || !events.get(event)) {
-      throw new Error(`Event ${event} does not exist`)
+  const emitEvent = (event: string, ...args: unknown[]) => {
+    if (!events.has(event)) {
+      throw new Error(`Event ${event} does not exist`);
     }
 
-    events.get(event)!(...args);
-  }
+    const eventFn = events.get(event);
+    if (!eventFn) return;
+    eventFn(args);
+  };
 
   return { addEvent, removeEvent, emitEvent };
-}
+};

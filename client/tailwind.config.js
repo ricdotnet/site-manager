@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    'index.html',
-    './src/**/*.{js,ts,vue}'
-  ],
+  content: ['index.html', './src/**/*.{js,ts,vue}'],
   darkMode: 'class',
   theme: {
     extend: {
@@ -18,8 +15,8 @@ export default {
         'light-border': '#DDDEE3',
         'cobalt-green': '#A2E3C4',
         'cobalt-green-darker': '#77BC99',
-      }
-    }
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 };

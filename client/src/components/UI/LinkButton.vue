@@ -10,40 +10,38 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from "vue";
+import { ref } from 'vue';
 
-  defineProps<{
-    text: string,
-    href?: string,
-  }>();
+defineProps<{
+  text: string;
+  href?: string;
+}>();
 
-  const button = ref<HTMLButtonElement>();
+const button = ref<HTMLButtonElement>();
 
-  const emits = defineEmits<{
-    (event: 'onLinkClick'): void;
-  }>();
+const emits = defineEmits<(event: 'onLinkClick') => void>();
 
-  const onClick = () => {
-    emits('onLinkClick');
-  }
+const onClick = () => {
+  emits('onLinkClick');
+};
 </script>
 
 <style scoped lang="scss">
-  .link-button {
-    @apply
-    flex
-    items-center
-    px-2
-    text-dark-darker
-    dark:text-light;
-  }
+.link-button {
+  @apply
+  flex
+  items-center
+  px-2
+  text-dark-darker
+  dark:text-light;
+}
 
-  .hover {
-    @apply
-    dark:hover:text-light-dim
-    hover:text-dark-dim
-    ease-in-out
-    duration-300
-    rounded-md;
-  }
+.hover {
+  @apply
+  dark:hover:text-light-dim
+  hover:text-dark-dim
+  ease-in-out
+  duration-300
+  rounded-md;
+}
 </style>

@@ -5,10 +5,10 @@
 </template>
 
 <script setup lang="ts">
-  defineProps<{
-    href: string;
-    text: string;
-  }>();
+defineProps<{
+  href: string;
+  text: string;
+}>();
 </script>
 
 <style scoped lang="scss">

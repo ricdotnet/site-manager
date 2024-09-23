@@ -25,11 +25,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRouter } from "vue-router";
-import { LinkButton, Toggle } from "@components";
+import { LinkButton, Toggle } from '@components';
 import { useTheme } from '@composables';
-import { useUserStore } from "@stores";
+import { useUserStore } from '@stores';
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const { toggleTheme, currentTheme } = useTheme();
@@ -41,7 +41,7 @@ const doLogout = () => {
   userStore.setIsAuthed(false);
   userStore.setUserId('');
   router.push('/login');
-}
+};
 
 const isDark = computed(() => {
   return currentTheme.value === 'dark';

@@ -14,55 +14,55 @@
 </template>
 
 <script setup lang="ts">
-  import { useRoute } from "vue-router";
-  import { useUserStore } from "@stores";
-  import { LinkButton } from "@components";
+import { LinkButton } from '@components';
+import { useUserStore } from '@stores';
+import { useRoute } from 'vue-router';
 
-  const userStore = useUserStore();
-  const route = useRoute();
+const userStore = useUserStore();
+const route = useRoute();
 
-  const isActive = (name: string | string[]) => {
-    if (name instanceof Array) {
-      return name.includes(route.name as string);
-    }
-    return route.name === name;
+const isActive = (name: string | string[]) => {
+  if (Array.isArray(name)) {
+    return name.includes(route.name as string);
   }
+  return route.name === name;
+};
 </script>
 
 <style scoped lang="scss">
-  .header {
-    @apply
-    pt-8
-    grid
-    grid-cols-1
-    gap-y-3
-    border-b
-    border-light-border
-    dark:border-dark-border;
+.header {
+  @apply
+  pt-8
+  grid
+  grid-cols-1
+  gap-y-3
+  border-b
+  border-light-border
+  dark:border-dark-border;
 
-    &__greeting {
-      @apply text-3xl;
+  &__greeting {
+    @apply text-3xl;
+  }
+
+  &__nav {
+    @apply flex;
+
+    * {
+      @apply pb-5 relative;
     }
 
-    &__nav {
-      @apply flex;
-
-      * {
-        @apply pb-5 relative;
-      }
-
-      .active {
-        @apply
-        before:block
-        before:absolute
-        before:h-0
-        before:left-2
-        before:right-2
-        before:bottom-[-1px]
-        before:border-b-2
-        before:border-dark
-        dark:before:border-white;
-      }
+    .active {
+      @apply
+      before:block
+      before:absolute
+      before:h-0
+      before:left-2
+      before:right-2
+      before:bottom-[-1px]
+      before:border-b-2
+      before:border-dark
+      dark:before:border-white;
     }
   }
+}
 </style>

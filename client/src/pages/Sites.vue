@@ -22,23 +22,26 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref } from "vue";
-  import { AddSiteDialog, Button, DeleteSitesDialog, SitesTable } from "@components";
-  import { useSitesStore } from "@stores";
+import { AddSiteDialog, Button, DeleteSitesDialog, SitesTable } from '@components';
+import { useSitesStore } from '@stores';
+import { computed, ref } from 'vue';
 
-  const sitesStore = useSitesStore();
-  const isAddingSite = ref(false);
-  const isOpenDeleteSites = ref(false);
+const sitesStore = useSitesStore();
+const isAddingSite = ref(false);
+const isOpenDeleteSites = ref(false);
 
-  const anySelected = computed(() => sitesStore.sites.find(site => site.checked));
-  const isDeleting = ref(false);
+const anySelected = computed(() => sitesStore.sites.find((site) => site.checked));
+const isDeleting = ref(false);
 
-  const onClickAddSite = () => isAddingSite.value = true;
+const onClickAddSite = () => {
+  isAddingSite.value = true;
+};
 
-  const closeAddSiteDialog = () => isAddingSite.value = false;
+const closeAddSiteDialog = () => {
+  isAddingSite.value = false;
+};
 
-  const closeDeleteSitesDialog = () => isOpenDeleteSites.value = false;
+const closeDeleteSitesDialog = () => {
+  isOpenDeleteSites.value = false;
+};
 </script>
-
-<style scoped lang="scss">
-</style>

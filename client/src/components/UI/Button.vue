@@ -12,52 +12,52 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from "vue";
-  import { ButtonColor, ButtonSize, ButtonType } from "@types";
-  import { ArrowPathIcon } from "@heroicons/vue/20/solid";
+import { ArrowPathIcon } from '@heroicons/vue/20/solid';
+import { ButtonColor, ButtonSize, ButtonType } from '@types';
+import { computed } from 'vue';
 
-  const props = defineProps<{
-    name: string;
-    color: ButtonColor;
-    text?: string;
-    value?: string;
-    disabled?: boolean;
-    size?: ButtonSize;
-    type?: ButtonType;
-    isActioning?: boolean;
-  }>();
+const props = defineProps<{
+  name: string;
+  color: ButtonColor;
+  text?: string;
+  value?: string;
+  disabled?: boolean;
+  size?: ButtonSize;
+  type?: ButtonType;
+  isActioning?: boolean;
+}>();
 
-  const buttonStyle = computed(() => {
-    switch (props.color) {
-      case 'primary':
-        return 'bg-cobalt-green text-dark';
-      case 'gray':
-        return 'bg-dark-dim text-white';
-      case 'danger':
-        return 'bg-red-700 text-white';
-    }
-  });
+const buttonStyle = computed(() => {
+  switch (props.color) {
+    case 'primary':
+      return 'bg-cobalt-green text-dark';
+    case 'gray':
+      return 'bg-dark-dim text-white';
+    case 'danger':
+      return 'bg-red-700 text-white';
+  }
+});
 
-  const buttonSize = computed(() => {
-    const defaultSize = 'px-4 py-2';
+const buttonSize = computed(() => {
+  const defaultSize = 'px-4 py-2';
 
-    switch (props.size) {
-      case 'sm':
-        return 'px-2 py-1 text-sm';
-      case 'md':
-        return defaultSize;
-      case 'lg':
-        return 'px-6 py-3';
-      default:
-        return defaultSize;
-    }
-  });
+  switch (props.size) {
+    case 'sm':
+      return 'px-2 py-1 text-sm';
+    case 'md':
+      return defaultSize;
+    case 'lg':
+      return 'px-6 py-3';
+    default:
+      return defaultSize;
+  }
+});
 
-  const buttonType = computed(() => {
-    return props.type ?? 'button';
-  });
+const buttonType = computed(() => {
+  return props.type ?? 'button';
+});
 
-  const computedStyles = computed(() => {
-    return [buttonStyle.value, buttonSize.value].join(' ');
-  });
+const computedStyles = computed(() => {
+  return [buttonStyle.value, buttonSize.value].join(' ');
+});
 </script>

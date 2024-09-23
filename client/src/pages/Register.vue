@@ -41,91 +41,97 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from "vue";
-  import { useRouter } from "vue-router";
-  import { Button, ButtonGroup, Input, LinkButton, Stack } from "@components";
-  import { InputComponent, RegisterData } from "@types";
-  import { useAuth } from "@composables";
-  import { emailValidator, passwordConfirmValidator, passwordValidator, usernameValidator } from "@validators";
-  import { messages } from "@utils";
+import { Button, ButtonGroup, Input, LinkButton, Stack } from '@components';
+import { useAuth } from '@composables';
+import { InputComponent, RegisterData } from '@types';
+import { messages } from '@utils';
+import { emailValidator, passwordConfirmValidator, passwordValidator, usernameValidator } from '@validators';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-  const router = useRouter();
+const router = useRouter();
 
-  const username = ref<InputComponent>();
-  const email = ref<InputComponent>();
-  const password = ref<InputComponent>();
-  const passwordConfirm = ref<InputComponent>();
+const username = ref<InputComponent>();
+const email = ref<InputComponent>();
+const password = ref<InputComponent>();
+const passwordConfirm = ref<InputComponent>();
 
-  const isRegistering = ref(false);
+const isRegistering = ref(false);
 
-  const { register } = useAuth();
+const { register } = useAuth();
 
-  const formHasError = ref(false);
-  const setFormHasError = (v: boolean = true) => {
-    formHasError.value = v;
+const formHasError = ref(false);
+const setFormHasError = (v = true) => {
+  formHasError.value = v;
+};
+
+const onSubmitRegister = async (e: Event) => {
+  e.preventDefault();
+  setFormHasError(false);
+
+  const registerData: RegisterData = {
+    username: username.value?.getValue() ?? '',
+    email: email.value?.getValue() ?? '',
+    password: password.value?.getValue() ?? '',
+    password_confirm: passwordConfirm.value?.getValue() ?? '',
+  };
+
+  if (!registerData.username) {
+    username.value?.setError(true);
+    setFormHasError();
   }
 
-  const onSubmitRegister = async (e: Event) => {
-    e.preventDefault();
-    setFormHasError(false);
+  if (!registerData.email) {
+    email.value?.setError(true);
+    setFormHasError();
+  }
 
-    const registerData: RegisterData = {
-      username: username.value?.getValue() ?? '',
-      email: email.value?.getValue() ?? '',
-      password: password.value?.getValue() ?? '',
-      password_confirm: passwordConfirm.value?.getValue() ?? '',
-    };
+  if (!registerData.password) {
+    password.value?.setError(true);
+    setFormHasError();
+  }
 
-    if (!registerData.username) {
-      username.value?.setError(true);
-      setFormHasError();
-    }
+  if (!registerData.password_confirm) {
+    passwordConfirm.value?.setError(true);
+    setFormHasError();
+  }
 
-    if (!registerData.email) {
-      email.value?.setError(true);
-      setFormHasError();
-    }
+  if (registerData.password && registerData.password !== registerData.password_confirm) {
+    password.value?.setError(true, messages.user.passwords_not_match);
+    passwordConfirm.value?.setError(true, messages.user.passwords_not_match);
+    setFormHasError();
+  }
 
-    if (!registerData.password) {
-      password.value?.setError(true);
-      setFormHasError();
-    }
+  if (
+    registerData.password === registerData.password_confirm &&
+    registerData.password &&
+    registerData.password_confirm
+  ) {
+    password.value?.setError(false);
+    passwordConfirm.value?.setError(false);
+  }
 
-    if (!registerData.password_confirm) {
-      passwordConfirm.value?.setError(true);
-      setFormHasError();
-    }
+  if (formHasError.value) return;
 
-    if (registerData.password && (registerData.password !== registerData.password_confirm)) {
-      password.value?.setError(true, messages.user.passwords_not_match);
-      passwordConfirm.value?.setError(true, messages.user.passwords_not_match);
-      setFormHasError();
-    }
-
-    if ((registerData.password === registerData.password_confirm)
-      && registerData.password && registerData.password_confirm) {
-      password.value?.setError(false);
-      passwordConfirm.value?.setError(false);
-    }
-
-    if (!!formHasError.value) return;
-
-    isRegistering.value = true;
-    const { error } = await register(registerData);
-    if (error) return isRegistering.value = false; // deal with some error
-
+  isRegistering.value = true;
+  const { error } = await register(registerData);
+  if (error) {
     isRegistering.value = false;
-    await router.push('/login');
+    return;
   }
+
+  isRegistering.value = false;
+  await router.push('/login');
+};
 </script>
 
 <style scoped lang="scss">
-  .title {
-    @apply text-2xl font-bold tracking-widest mb-6;
-  }
+.title {
+  @apply text-2xl font-bold tracking-widest mb-6;
+}
 
-  .group {
-    @apply w-full bg-white px-6 py-10 rounded-md shadow-md;
-    @apply lg:w-[26rem] dark:bg-dark;
-  }
+.group {
+  @apply w-full bg-white px-6 py-10 rounded-md shadow-md;
+  @apply lg:w-[26rem] dark:bg-dark;
+}
 </style>

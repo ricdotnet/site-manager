@@ -11,42 +11,43 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from "vue";
-  import { Dialog } from "@components";
-  import { TSite } from "@types";
-  import { useRequest } from "@composables";
-  import { useSitesStore } from "@stores";
+import { Dialog } from '@components';
+import { useRequest } from '@composables';
+import { useSitesStore } from '@stores';
+import { TSite } from '@types';
+import { ref } from 'vue';
 
-  const sitesStore = useSitesStore();
+const sitesStore = useSitesStore();
 
-  const props = defineProps<{
-    isOpenDeleteSites: boolean;
-    closeDialog: () => void;
-  }>();
+const props = defineProps<{
+  isOpenDeleteSites: boolean;
+  closeDialog: () => void;
+}>();
 
-  const isDeletingSites = ref(false);
+const isDeletingSites = ref(false);
 
-  const onConfirmDeleteSites = async () => {
-    isDeletingSites.value = true;
+const onConfirmDeleteSites = async () => {
+  isDeletingSites.value = true;
 
-    const sitesToDelete = sitesStore.sites.reduce((sites: number[], site: TSite) => {
-      if (site.checked) sites.push(site.ID);
-      return sites;
-    }, []);
+  const sitesToDelete = sitesStore.sites.reduce((sites: number[], site: TSite) => {
+    if (site.checked) sites.push(site.ID);
+    return sites;
+  }, []);
 
-    const { error } = await useRequest({
-      endpoint: '/site/',
-      method: 'DELETE',
-      payload: {
-        sites: sitesToDelete,
-      },
-      needsAuth: true,
-    });
+  const { error } = await useRequest({
+    endpoint: '/site/',
+    method: 'DELETE',
+    payload: {
+      sites: sitesToDelete,
+    },
+    needsAuth: true,
+  });
 
-    if (error) throw new Error(error);
+  // TODO: revise this error here
+  if (error) throw new Error(error as string);
 
-    sitesStore.removeSites(sitesToDelete);
-    isDeletingSites.value = false;
-    props.closeDialog();
-  }
+  sitesStore.removeSites(sitesToDelete);
+  isDeletingSites.value = false;
+  props.closeDialog();
+};
 </script>

@@ -1,4 +1,4 @@
-import { Validator } from './index.ts';
+import type { Validator } from './index.ts';
 
 export const domainValidator: Validator = {
   presence: {

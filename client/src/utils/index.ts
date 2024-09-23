@@ -1,6 +1,6 @@
 export { messages } from './messages.ts';
 
-import { isRef, ref, Ref } from 'vue';
+import { type Ref, isRef, ref } from 'vue';
 
 type RefValue = string | number | object | boolean;
 

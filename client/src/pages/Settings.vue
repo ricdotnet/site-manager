@@ -13,9 +13,10 @@ import { ref } from 'vue';
 
 const isAddingApiKey = ref(false);
 
-const onClickAddApiKey = () => (isAddingApiKey.value = true);
-const closeAddApiKeyDialog = () => (isAddingApiKey.value = false);
+const onClickAddApiKey = () => {
+  isAddingApiKey.value = true;
+};
+const closeAddApiKeyDialog = () => {
+  isAddingApiKey.value = false;
+};
 </script>
-
-<style scoped lang="scss">
-</style>

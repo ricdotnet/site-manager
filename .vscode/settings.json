@@ -1,0 +1,11 @@
+{
+  "[vue]": {
+    "multiFormatter.formatterList": ["Vue.volar", "biomejs.biome"]
+  },
+  "[javascript]": {
+    "multiFormatter.formatterList": ["biomejs.biome"]
+  },
+  "[typescript]": {
+    "multiFormatter.formatterList": ["biomejs.biome"]
+  },
+}

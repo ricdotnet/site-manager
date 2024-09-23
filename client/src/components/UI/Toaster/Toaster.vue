@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { useToaster } from "@composables";
-import { Toast } from "@components";
+import { Toast } from '@components';
+import { useToaster } from '@composables';
 
 const { toasts, removeToast } = useToaster();
 </script>

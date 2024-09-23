@@ -24,7 +24,7 @@ export type Validator = {
   length?: Length;
 };
 
-export function validate(validator: Validator | Function, data: any) {
+export function validate(validator: Validator | (() => void), data: string) {
   if (validator instanceof Function) {
     return console.log('run a custom validator....');
   }
@@ -34,7 +34,7 @@ export function validate(validator: Validator | Function, data: any) {
     return validator.presence.message;
   }
 
-  if (validator.match && validator.match.pattern) {
+  if (validator.match?.pattern) {
     const pattern = new RegExp(validator.match.pattern);
     if (!pattern.test(data)) {
       if (!validator.match.message) return 'your data contains invalid characters';
@@ -54,6 +54,4 @@ export function validate(validator: Validator | Function, data: any) {
       return validator.length.message;
     }
   }
-
-  return;
 }

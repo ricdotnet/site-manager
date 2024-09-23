@@ -1,27 +1,24 @@
-import axios from 'axios';
-import { Ref, ref } from 'vue';
 import { unwrap } from '@utils';
+import axios from 'axios';
+import { type Ref, ref } from 'vue';
 
 type RequestVerb = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
-// biome-ignore lint/suspicious/noExplicitAny: allow any type for payload
-type RequestOptions<T = any> = {
+type RequestOptions<T = unknown> = {
   endpoint: string;
   method?: RequestVerb;
   needsAuth?: boolean;
   payload?: T;
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: allow any type for error
-interface UseRequestResult<TResult, TError = any> {
+interface UseRequestResult<TResult, TError = unknown> {
   error: TError;
   data: TResult;
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: allow any type for payload
 export const useRequest = async <TResult>(
   options: RequestOptions,
-): Promise<UseRequestResult<TResult | undefined, any>> => {
+): Promise<UseRequestResult<TResult | undefined, unknown>> => {
   const api = import.meta.env.VITE_API;
 
   const error = ref<unknown>(null);

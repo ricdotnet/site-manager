@@ -47,11 +47,11 @@ const { buildEditor, monacoRef } = useEditor();
 const { addToast } = useToaster();
 
 onMounted(async () => {
-  domainInputRef?.value.setValue(getSite().domain);
-  configNameInputRef?.value.setValue(getSite().config_name);
+  domainInputRef.value?.setValue(getSite().domain);
+  configNameInputRef.value?.setValue(getSite().config_name);
 
   if (monacoRef.value) {
-    buildEditor(getSite().config);
+    buildEditor(getSite().config || '');
   }
 });
 
@@ -63,7 +63,7 @@ onUnmounted(() => {
 const onClick = async () => {
   isSaving.value = true;
 
-  const { error } = await useRequest<any>({
+  const { error } = await useRequest<never>({
     endpoint: `/site/${getSite().ID}`,
     method: 'PATCH',
     needsAuth: true,

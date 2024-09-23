@@ -1,5 +1,5 @@
-import { Validator } from './index.ts';
 import { messages } from '../utils';
+import type { Validator } from './index.ts';
 
 export const usernameValidator: Validator = {
   presence: {

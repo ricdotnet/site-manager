@@ -1,6 +1,5 @@
-import 'vue-router';
-import { createRouter, createWebHistory } from 'vue-router';
 import { useUserStore } from '@stores';
+import { createRouter, createWebHistory } from 'vue-router';
 import * as pages from './pages';
 
 declare module 'vue-router' {

@@ -7,11 +7,13 @@ export const useEditor = () => {
   const monacoRef = ref<HTMLDivElement | null>(null);
 
   monaco.languages.register({ id: 'nginx' });
-  monaco.languages.setLanguageConfiguration('nginx', config);
-  monaco.languages.setMonarchTokensProvider('nginx', tokens);
-  monaco.editor.defineTheme('nginxTheme', theme);
+  monaco.languages.setLanguageConfiguration('nginx', config as monaco.languages.LanguageConfiguration);
+  monaco.languages.setMonarchTokensProvider('nginx', tokens as monaco.languages.IMonarchLanguage);
+  monaco.editor.defineTheme('nginxTheme', theme as monaco.editor.IStandaloneThemeData);
 
   const buildEditor = (config: string) => {
+    if (!monacoRef.value) return;
+
     monaco.editor.create(monacoRef.value, {
       language: 'nginx',
       theme: 'vs-dark',

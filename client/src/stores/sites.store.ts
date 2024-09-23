@@ -1,9 +1,9 @@
-import { ref } from 'vue';
-import { defineStore } from 'pinia';
-import { TSite, TSIteResponse, TSitesResponse } from '@types';
 import { useRequest } from '@composables';
-import { useRoute } from 'vue-router';
+import type { TSIteResponse, TSite, TSitesResponse } from '@types';
 import { unwrap } from '@utils';
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 export const useSitesStore = defineStore('sites', () => {
   const sites = ref<TSite[]>([]);
@@ -27,7 +27,7 @@ export const useSitesStore = defineStore('sites', () => {
     lastFetch.value = Date.now();
   };
 
-  const fetchSites = async (): Promise<Error> => {
+  const fetchSites = async (): Promise<Error | undefined> => {
     if (Date.now() - lastFetch.value < 30000) return;
 
     const { data, error } = await useRequest<TSitesResponse>({
@@ -44,7 +44,7 @@ export const useSitesStore = defineStore('sites', () => {
     setLastFetch();
   };
 
-  const fetchSite = async (): Promise<Error> => {
+  const fetchSite = async (): Promise<Error | undefined> => {
     const { data, error } = await useRequest<TSIteResponse>({
       endpoint: `/site/${route.params.id}`,
       needsAuth: true,
@@ -54,7 +54,7 @@ export const useSitesStore = defineStore('sites', () => {
 
     if (data?.site) {
       site.value = data.site;
-      site.value.config = data.config;
+      site.value.config = data.site.config;
     }
   };
 

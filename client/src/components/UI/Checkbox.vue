@@ -13,21 +13,19 @@
 </template>
 
 <script setup lang="ts">
-  import { CheckIcon } from "@heroicons/vue/20/solid";
+import { CheckIcon } from '@heroicons/vue/20/solid';
 
-  defineProps<{
-    id: string;
-    name: string;
-    checked: boolean;
-  }>();
+defineProps<{
+  id: string;
+  name: string;
+  checked: boolean;
+}>();
 
-  const emits = defineEmits<{
-    (event: 'onChange'): void;
-  }>();
+const emits = defineEmits<(event: 'onChange') => void>();
 
-  const onChange = () => {
-    emits('onChange');
-  }
+const onChange = () => {
+  emits('onChange');
+};
 </script>
 
 <style scoped lang="scss">

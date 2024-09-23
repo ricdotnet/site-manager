@@ -1,6 +1,6 @@
+import axios from 'axios';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import axios from 'axios';
 
 export const useUserStore = defineStore('user', () => {
   const api = import.meta.env.VITE_API;

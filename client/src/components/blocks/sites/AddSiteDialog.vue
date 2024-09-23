@@ -92,7 +92,7 @@ const onClickConfirmDialog = async () => {
     return;
   }
 
-  if (data && data.site) {
+  if (data?.site) {
     sitesStore.addSite(data.site);
   }
   props.closeDialog();
@@ -102,7 +102,7 @@ const onDomainKeyUp = () => {
   const domainValue = domainInput.value?.getValue();
 
   if (domainValue) {
-    configInput.value?.setValue(domainValue + '.conf');
+    configInput.value?.setValue(`${domainValue}.conf`);
   }
 };
 

@@ -48,90 +48,90 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted, ref } from "vue";
-  import { Checkbox, Empty, TableLoading } from "@components";
-  import { useSitesStore } from "@stores";
+import { Checkbox, Empty, TableLoading } from '@components';
+import { useSitesStore } from '@stores';
+import { computed, onMounted, ref } from 'vue';
 
-  const sitesStore = useSitesStore();
+const sitesStore = useSitesStore();
 
-  const fetchError = ref(false);
-  const isLoading = ref(false);
+const fetchError = ref(false);
+const isLoading = ref(false);
 
-  const allChecked = computed(() => !sitesStore.sites.filter((site) => !site.checked).length);
+const allChecked = computed(() => !sitesStore.sites.filter((site) => !site.checked).length);
 
-  onMounted(async () => {
-    isLoading.value = true;
+onMounted(async () => {
+  isLoading.value = true;
 
-    const error = await sitesStore.fetchSites();
-    if (error) fetchError.value = true;
+  const error = await sitesStore.fetchSites();
+  if (error) fetchError.value = true;
 
-    isLoading.value = false;
-  });
+  isLoading.value = false;
+});
 
-  const onCheckSite = (id: number) => {
-    sitesStore.checkSite(id);
-  }
+const onCheckSite = (id: number) => {
+  sitesStore.checkSite(id);
+};
 
-  const onCheckAll = (e: Event & { target: HTMLInputElement }) => {
-    sitesStore.checkAll(e.target.checked);
-  }
+const onCheckAll = (e: Event & { target: HTMLInputElement }) => {
+  sitesStore.checkAll(e.target.checked);
+};
 
-  const isEnabled = (isEnabled: boolean) => {
-    return isEnabled ? 'Site enabled' : 'Site disabled';
-  }
+const isEnabled = (isEnabled: boolean) => {
+  return isEnabled ? 'Site enabled' : 'Site disabled';
+};
 </script>
 
 <style scoped lang="scss">
-  .table {
-    @apply w-full;
+.table {
+  @apply w-full;
 
-    &__head {
-      @apply uppercase text-sm bg-light-lighter dark:bg-dark-darker;
+  &__head {
+    @apply uppercase text-sm bg-light-lighter dark:bg-dark-darker;
 
-      &--col {
-        @apply py-3 pl-3 text-left;
+    &--col {
+      @apply py-3 pl-3 text-left;
 
-        &:first-child {
-          @apply rounded-l-md;
-        }
-
-        &:last-child {
-          @apply rounded-r-md;
-        }
+      &:first-child {
+        @apply rounded-l-md;
       }
-    }
 
-    &__body {
-      @apply divide-y divide-light-border dark:divide-dark-border;
-
-      &--col {
-        &:not(:first-child) {
-          @apply
-          w-auto
-          px-3
-          py-5;
-        }
-
-        @apply
-        w-12
-        pl-3
-        transition
-        ease-in-out
-        duration-200
-        whitespace-nowrap
-        group-hover:bg-light-lighter
-        dark:group-hover:bg-dark-darker;
-
-        &--link {
-          @apply
-          underline
-          underline-offset-2
-          decoration-dashed
-          decoration-1
-          decoration-dark/60
-          dark:decoration-white/40;
-        }
+      &:last-child {
+        @apply rounded-r-md;
       }
     }
   }
+
+  &__body {
+    @apply divide-y divide-light-border dark:divide-dark-border;
+
+    &--col {
+      &:not(:first-child) {
+        @apply
+        w-auto
+        px-3
+        py-5;
+      }
+
+      @apply
+      w-12
+      pl-3
+      transition
+      ease-in-out
+      duration-200
+      whitespace-nowrap
+      group-hover:bg-light-lighter
+      dark:group-hover:bg-dark-darker;
+
+      &--link {
+        @apply
+        underline
+        underline-offset-2
+        decoration-dashed
+        decoration-1
+        decoration-dark/60
+        dark:decoration-white/40;
+      }
+    }
+  }
+}
 </style>

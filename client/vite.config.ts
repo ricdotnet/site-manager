@@ -1,16 +1,20 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import * as path from "path";
+import path from 'node:path';
+import vue from '@vitejs/plugin-vue';
+import { defineConfig } from 'vite';
 import monacoEditorPlugin from 'vite-plugin-monaco-editor';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    outDir: './dist'
+    outDir: './dist',
   },
-  plugins: [vue(), monacoEditorPlugin.default({
-    languageWorkers: ['json', 'editorWorkerService'],
-  })],
+  plugins: [
+    vue(),
+    // @ts-ignore
+    monacoEditorPlugin.default({
+      languageWorkers: ['json', 'editorWorkerService'],
+    }),
+  ],
   resolve: {
     alias: {
       '@components': path.resolve(__dirname, './src/components'),
@@ -21,5 +25,5 @@ export default defineConfig({
       '@validators': path.resolve(__dirname, './src/validators'),
       '@types': path.resolve(__dirname, './src/types.ts'),
     },
-  }
+  },
 });

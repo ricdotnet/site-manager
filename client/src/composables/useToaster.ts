@@ -1,10 +1,10 @@
+import type { TToast } from '@types';
 import { ref } from 'vue';
-import { TToast } from "@types";
 
 const toasts = ref<TToast[]>([]);
 
 export const useToaster = () => {
-  function addToast(type: TToast['type'], message: string);
+  function addToast(type: TToast['type'], message: string): void;
   function addToast(type: TToast['type'], message: string, title?: string) {
     const id = Date.now();
     if (title) {

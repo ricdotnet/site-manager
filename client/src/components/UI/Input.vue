@@ -38,7 +38,7 @@ const props = defineProps<{
   placeholder?: string;
   errorMessage?: string;
   timeout?: number;
-  validator?: Validator | Function;
+  validator?: Validator | (() => void);
   disabled?: boolean;
   readonly?: boolean;
   isEditing?: boolean;
@@ -99,7 +99,8 @@ const getValue = () => {
 };
 
 const setValue = (value: string) => {
-  inputRef.value!.value = value;
+  if (!inputRef.value) return;
+  inputRef.value.value = value;
 };
 
 const onKeyUp = (e: KeyboardEvent) => {
@@ -111,13 +112,15 @@ const onKeyUp = (e: KeyboardEvent) => {
   }
 
   setError(false);
-  if (inputRef.value!.value === '') return;
-  debounce(() => emits('onKeyUp', inputRef.value!.value));
+  const inputValue = inputRef.value?.value;
+  if (!inputValue) return;
+  debounce(() => emits('onKeyUp', inputValue));
 };
 
 const onDoubleClick = () => {
   emits('onDoubleClick');
-  oldValue.value = inputRef.value!.value;
+  if (!inputRef.value) return;
+  oldValue.value = inputRef.value.value;
 };
 
 const onFocusOut = () => {
@@ -159,24 +162,24 @@ defineExpose({ getValue, setValue, setError, hasError });
 </script>
 
 <style scoped lang="scss">
-  .input {
-    @apply
-    w-full
-    py-3
-    px-4
-    bg-white
-    border
-    border-light-border
-    rounded-md
-    transition-[outline]
-    ease-in-out
-    duration-200
-    dark:bg-dark dark:border-dark-border
-    read-only:dark:border-dark-border/70
-    read-only:border-light-border/50
-    read-only:dark:text-dark-dim
-    read-only:text-dark-dim/70
-    read-only:outline-none
-    read-only:cursor-default;
-  }
+.input {
+  @apply
+  w-full
+  py-3
+  px-4
+  bg-white
+  border
+  border-light-border
+  rounded-md
+  transition-[outline]
+  ease-in-out
+  duration-200
+  dark:bg-dark dark:border-dark-border
+  read-only:dark:border-dark-border/70
+  read-only:border-light-border/50
+  read-only:dark:text-dark-dim
+  read-only:text-dark-dim/70
+  read-only:outline-none
+  read-only:cursor-default;
+}
 </style>

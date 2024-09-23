@@ -22,31 +22,29 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue';
-  import { MoonIcon, SunIcon } from "@heroicons/vue/20/solid";
+import { MoonIcon, SunIcon } from '@heroicons/vue/20/solid';
+import { computed } from 'vue';
 
-  const props = defineProps<{
-    name: string;
-    isChecked: boolean;
-    id?: string;
-    title?: string;
-    isThemeToggle?: boolean;
-  }>();
+const props = defineProps<{
+  name: string;
+  isChecked: boolean;
+  id?: string;
+  title?: string;
+  isThemeToggle?: boolean;
+}>();
 
-  const toggledClasses = computed(() => {
-    if (props.isThemeToggle) {
-      return props.isChecked ? 'left-[18px] text-cobalt-green' : 'left-[3px]';
-    }
-    return props.isChecked ? 'left-[20px] bg-cobalt-green' : 'left-[5px] bg-light-dim dark:bg-dark-dim';
-  });
-
-  const emits = defineEmits<{
-    (event: 'ontoggle'): void;
-  }>();
-
-  function onToggle() {
-    emits('ontoggle');
+const toggledClasses = computed(() => {
+  if (props.isThemeToggle) {
+    return props.isChecked ? 'left-[18px] text-cobalt-green' : 'left-[3px]';
   }
+  return props.isChecked ? 'left-[20px] bg-cobalt-green' : 'left-[5px] bg-light-dim dark:bg-dark-dim';
+});
+
+const emits = defineEmits<(event: 'ontoggle') => void>();
+
+function onToggle() {
+  emits('ontoggle');
+}
 </script>
 
 <style scoped>

@@ -13,11 +13,11 @@
 
 <script setup lang="ts">
 import { CheckCircleIcon, ExclamationCircleIcon, InformationCircleIcon, XCircleIcon } from '@heroicons/vue/20/solid';
-import { TToast } from "@types";
-import { computed } from "vue";
+import type { TToast } from '@types';
+import { computed } from 'vue';
 
 const props = defineProps<{
-  toast: TToast,
+  toast: TToast;
 }>();
 
 const toastIcon = computed(() => {
