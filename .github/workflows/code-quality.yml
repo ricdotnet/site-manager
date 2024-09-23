@@ -8,8 +8,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  analyze:
-    name: Analyze code
+  static-checks:
+    name: Code static analysis
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -37,4 +37,26 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
+  
+  style-checks:
+    name: Code style checks
+    runs-on: ubuntu-latest
 
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - run: corepack enable
+
+    - name: Install dependencies
+      working-directory: ./client
+      run: yarn install
+
+    - name: Run biome checks
+      working-directory: ./client
+      run: yarn biome

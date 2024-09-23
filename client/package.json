@@ -1,39 +1,40 @@
 {
-  "name": "client",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@heroicons/vue": "^2.0.17",
-    "axios": "^1.7.7",
-    "inter-ui": "^3.19.3",
-    "monaco-editor": "^0.39.0",
-    "pinia": "^2.1.3",
-    "vue": "^3.3.4",
-    "vue-router": "4"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.21.5",
-    "@biomejs/biome": "^1.6.2",
-    "@types/node": "^20.2.3",
-    "@vitejs/plugin-vue": "^4.1.0",
-    "autoprefixer": "^10.4.20",
-    "babel-loader": "^8.3.0",
-    "postcss": "^8.4.47",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "sass": "^1.79.2",
-    "tailwindcss": "^3.3.2",
-    "typescript": "*",
-    "vite": "4.3.9",
-    "vite-plugin-monaco-editor": "^1.1.0",
-    "vue-loader": "^16.8.3",
-    "vue-tsc": "^1.4.2"
-  },
-  "packageManager": "yarn@3.8.5+sha512.786c27300bc8fb134a1a0630db71cfeccc2b92272c031df17ff662876e89c2df488e6819dd7f2ffaf02e021b6827f75d3eb6a6df0a10218f72a589b735db6cc2"
+	"name": "client",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vue-tsc && vite build",
+		"preview": "vite preview",
+		"biome": "biome ci ."
+	},
+	"dependencies": {
+		"@heroicons/vue": "^2.0.17",
+		"axios": "^1.7.7",
+		"inter-ui": "^3.19.3",
+		"monaco-editor": "^0.39.0",
+		"pinia": "^2.1.3",
+		"vue": "^3.3.4",
+		"vue-router": "4"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.21.5",
+		"@biomejs/biome": "^1.9.2",
+		"@types/node": "^20.2.3",
+		"@vitejs/plugin-vue": "^4.1.0",
+		"autoprefixer": "^10.4.20",
+		"babel-loader": "^8.3.0",
+		"postcss": "^8.4.47",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"sass": "^1.79.2",
+		"tailwindcss": "^3.3.2",
+		"typescript": "*",
+		"vite": "4.3.9",
+		"vite-plugin-monaco-editor": "^1.1.0",
+		"vue-loader": "^16.8.3",
+		"vue-tsc": "^1.4.2"
+	},
+	"packageManager": "yarn@3.8.5+sha512.786c27300bc8fb134a1a0630db71cfeccc2b92272c031df17ff662876e89c2df488e6819dd7f2ffaf02e021b6827f75d3eb6a6df0a10218f72a589b735db6cc2"
 }
