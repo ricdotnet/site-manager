@@ -22,6 +22,9 @@
 			"quoteStyle": "single"
 		}
 	},
+	"files": {
+		"ignore": ["**/*.json"]
+	},
 	"overrides": [
 		{
 			"include": ["*.vue"],
