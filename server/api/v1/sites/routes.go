@@ -9,14 +9,14 @@ import (
 // for the user id we are assuming it will always be present on the authorisation token
 
 func Routes(v1 *echo.Group, db *gorm.DB) {
-	api := New(db)
+	sitesApi := New(db)
 
 	sites := v1.Group("/site", middlewares.AuthMiddleware())
 
-	sites.GET("/all", api.getAllSites)
-	sites.GET("/:id", api.getSite)
-	sites.POST("/", api.createSite)
-	sites.PATCH("/:id", api.updateSite)
-	sites.PATCH("/:id/status", api.updateSiteStatus) // a2ensite / a2dissite
-	sites.DELETE("/", api.deleteSite)
+	sites.GET("/all", sitesApi.getAllSites)
+	sites.GET("/:id", sitesApi.getSite)
+	sites.POST("/", sitesApi.createSite)
+	sites.PATCH("/:id", sitesApi.updateSite)
+	sites.PATCH("/:id/status", sitesApi.updateSiteStatus) // a2ensite / a2dissite
+	sites.DELETE("/", sitesApi.deleteSite)
 }

@@ -35,10 +35,10 @@ type DeleteSites struct {
 }
 
 // TODO: Add pagination
-func (api *API) getAllSites(ctx echo.Context) error {
+func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 
-	sites, err := api.findAll(userCtx)
+	sites, err := s.sitesRepo.FindAll(userCtx)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, config.ApiResponse{
 			Code:        http.StatusInternalServerError,
@@ -55,17 +55,17 @@ func (api *API) getAllSites(ctx echo.Context) error {
 	})
 }
 
-func (api *API) getSite(ctx echo.Context) error {
+func (s *SitesAPI) getSite(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	site, err := api.findFirst(id, userCtx)
+	site, err := s.sitesRepo.FindFirst(id, userCtx)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "site_not_found")
 	}
 
 	nginxDir, _ := goenvironmental.Get("SITES_AVAILABLE_PATH")
-	conf, err := api.sitesService.ReadSingle(nginxDir, site.ConfigName)
+	conf, err := s.sitesService.ReadSingle(nginxDir, site.ConfigName)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, &Response{
 			ApiResponse: config.ApiResponse{
@@ -85,14 +85,14 @@ func (api *API) getSite(ctx echo.Context) error {
 	})
 }
 
-func (api *API) createSite(ctx echo.Context) error {
+func (s *SitesAPI) createSite(ctx echo.Context) error {
 	log.Info("Entering create a site")
 
 	site := new(Site)
 	if err := ctx.Bind(site); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if errorCode := api.validateSite(site); errorCode != nil {
+	if errorCode := s.validateSite(site); errorCode != nil {
 		return ctx.JSON(http.StatusBadRequest, &config.ApiResponse{
 			Code:        http.StatusBadRequest,
 			MessageCode: *errorCode,
@@ -102,7 +102,7 @@ func (api *API) createSite(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 	site.UserID = userCtx.UserID
 
-	newSite, err := api.insert(site)
+	newSite, err := s.sitesRepo.InsertOne(site)
 	if err != nil {
 		log.Warnf("Failed to create a site with the domain %s", site.Domain)
 
@@ -114,7 +114,7 @@ func (api *API) createSite(ctx echo.Context) error {
 		})
 	}
 
-	if err = api.sitesService.WriteSingle(site.ConfigName, ""); err != nil {
+	if err = s.sitesService.WriteSingle(site.ConfigName, ""); err != nil {
 		log.Errorf("Failed to write the new site config: %s", err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write the new site config")
 	}
@@ -130,31 +130,31 @@ func (api *API) createSite(ctx echo.Context) error {
 	})
 }
 
-func (api *API) updateSite(ctx echo.Context) error {
+func (s *SitesAPI) updateSite(ctx echo.Context) error {
 	body := &RequestBody{}
 	err := ctx.Bind(body)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
 	}
 
-	oldSite, err := api.findFirst(int(body.Site.ID), utils.GetTokenClaims(ctx))
+	oldSite, err := s.sitesRepo.FindFirst(int(body.Site.ID), utils.GetTokenClaims(ctx))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "This site does not exist")
 	}
 
-	newSite, err := api.update(body.Site)
+	newSite, err := s.sitesRepo.UpdateOne(body.Site)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
 	}
 
 	if oldSite.ConfigName != newSite.ConfigName {
-		err = api.sitesService.UpdateName(oldSite.ConfigName, newSite.ConfigName)
+		err = s.sitesService.UpdateName(oldSite.ConfigName, newSite.ConfigName)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
 		}
 	}
 
-	err = api.sitesService.WriteSingle(body.Site.ConfigName, body.Config)
+	err = s.sitesService.WriteSingle(body.Site.ConfigName, body.Config)
 	if err != nil {
 		println(err.Error())
 	}
@@ -167,7 +167,7 @@ func (api *API) updateSite(ctx echo.Context) error {
 	})
 }
 
-func (api *API) updateSiteStatus(ctx echo.Context) error {
+func (s *SitesAPI) updateSiteStatus(ctx echo.Context) error {
 	site := &Site{}
 	err := ctx.Bind(site)
 	if err != nil {
@@ -176,7 +176,7 @@ func (api *API) updateSiteStatus(ctx echo.Context) error {
 
 	id, _ := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	site.ID = uint(id)
-	if err = api.updateEnabled(site); err != nil {
+	if err = s.sitesRepo.EnableOne(site); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Unable to update site status")
 	}
 
@@ -193,7 +193,7 @@ func (api *API) updateSiteStatus(ctx echo.Context) error {
 	})
 }
 
-func (api *API) deleteSite(ctx echo.Context) error {
+func (s *SitesAPI) deleteSite(ctx echo.Context) error {
 	log.Info("Entering delete sites handler")
 
 	sites := &DeleteSites{}
@@ -203,7 +203,7 @@ func (api *API) deleteSite(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
 
-	if err = api.delete(sites.Sites); err != nil {
+	if err = s.sitesRepo.Delete(sites.Sites); err != nil {
 		log.Error(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
@@ -218,7 +218,7 @@ func (api *API) deleteSite(ctx echo.Context) error {
 	})
 }
 
-func (api *API) validateSite(site *Site) *string {
+func (s *SitesAPI) validateSite(site *Site) *string {
 	domainRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$"
 	configRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*.[A-Za-z]{2,}\\.conf$"
 

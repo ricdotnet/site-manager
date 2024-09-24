@@ -7,11 +7,11 @@ import (
 )
 
 func Routes(v1 *echo.Group, db *gorm.DB) {
-	api := New(db)
+	settingsApi := New(db)
 
 	settings := v1.Group("/settings", middlewares.AuthMiddleware())
 
-	settings.GET("/:key", api.getApiKey)
-	settings.PUT("", api.createOrUpdateApiKey)
-	settings.DELETE("/:key", api.deleteApiKey)
+	settings.GET("/:key", settingsApi.getApiKey)
+	settings.PUT("", settingsApi.createOrUpdateApiKey)
+	settings.DELETE("/:key", settingsApi.deleteApiKey)
 }

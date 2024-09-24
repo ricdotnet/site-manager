@@ -10,9 +10,9 @@ import (
 
 type Setting = models.Settings
 
-func (api *API) getApiKey(c echo.Context) error {
+func (s *SettingsAPI) getApiKey(c echo.Context) error {
 	setting := &Setting{}
-	err := api.findFirst(setting, c.Param("key"))
+	err := s.settingsRepo.FindFirst(setting, c.Param("key"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, config.ApiResponse{
 			Code:        http.StatusNotFound,
@@ -23,7 +23,7 @@ func (api *API) getApiKey(c echo.Context) error {
 	return c.JSON(http.StatusOK, setting)
 }
 
-func (api *API) createOrUpdateApiKey(c echo.Context) error {
+func (s *SettingsAPI) createOrUpdateApiKey(c echo.Context) error {
 	body := &Setting{}
 	if err := c.Bind(body); err != nil {
 		return c.JSON(http.StatusBadRequest, config.ApiResponse{
@@ -39,7 +39,7 @@ func (api *API) createOrUpdateApiKey(c echo.Context) error {
 		})
 	}
 
-	if err := api.insertOrUpdate(body); err != nil {
+	if err := s.settingsRepo.CreateOrUpdateOne(body); err != nil {
 		return c.JSON(http.StatusInternalServerError, config.ApiResponse{
 			Code:        http.StatusInternalServerError,
 			MessageCode: "setting_save_error",
@@ -49,8 +49,8 @@ func (api *API) createOrUpdateApiKey(c echo.Context) error {
 	return c.NoContent(http.StatusAccepted)
 }
 
-func (api *API) deleteApiKey(c echo.Context) error {
-	if err := api.delete(c.Param("key")); err != nil {
+func (s *SettingsAPI) deleteApiKey(c echo.Context) error {
+	if err := s.settingsRepo.DeleteOne(c.Param("key")); err != nil {
 		return c.JSON(http.StatusInternalServerError, config.ApiResponse{
 			Code:        http.StatusInternalServerError,
 			MessageCode: "setting_delete_error",
