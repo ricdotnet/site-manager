@@ -1,22 +1,7 @@
-version: "3.8"
-
-networks:
-  mysql-net:
-    driver: bridge
-
 services:
   api:
     image: site-manager-api:latest
     container_name: site-manager-api
     build:
       context: .
-      dockerfile: ./Dockerfile
-    ports:
-      - "3000:3000"
-    restart: unless-stopped
-    env_file:
-      - .env
-    volumes:
-      - ${SITES_AVAILABLE_PATH}:/sites-available
-    networks:
-      - mysql-net
+      dockerfile: ./server/Dockerfile
