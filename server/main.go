@@ -16,10 +16,13 @@ import (
 func main() {
 	sa := flag.Bool("sa", false, "map config files to their domains")
 	run := flag.Bool("run", false, "start the app")
-	envFile := flag.String("env-file", ".env", "environment to run the app in")
+	envFile := flag.String("env-file", "", "environment to run the app in")
 	flag.Parse()
 
-	goenvironmental.ParseEnv(*envFile)
+	// parse the env file if it was provided... goenvironmental will still provide env vars from the system through os.Getenv
+	if *envFile != "" {
+		goenvironmental.ParseEnv(*envFile)
+	}
 
 	if *sa {
 		sitesAvailable()

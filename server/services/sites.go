@@ -2,10 +2,12 @@ package services
 
 import (
 	"fmt"
-	"github.com/charmbracelet/log"
-	"github.com/ricdotnet/goenvironmental"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"github.com/charmbracelet/log"
+	"github.com/ricdotnet/goenvironmental"
 	"ricr.dev/site-manager/utils"
 )
 
@@ -50,7 +52,16 @@ func (ss *SitesService) ReadSingle(dir string, name string) ([]byte, error) {
 func (ss *SitesService) WriteSingle(name string, content string) error {
 	nginxDir, _ := goenvironmental.Get("SITES_AVAILABLE_PATH")
 
-	err := os.WriteFile(filepath.Join(nginxDir, name), []byte(content), 0666)
+	if strings.Contains(name, "/") || strings.Contains(name, "\\") || strings.Contains(name, "..") {
+		log.Errorf("The filename used %s is not valid", name)
+		return fmt.Errorf("the filename used %s is not a valid filename", name)
+	}
+
+	path := filepath.Join(nginxDir, name)
+
+	log.Infof("Will write the new config in %s", path)
+
+	err := os.WriteFile(path, []byte(content), 0666)
 	if err != nil {
 		return err
 	}
