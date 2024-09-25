@@ -35,7 +35,7 @@ func GetTokenClaims(ctx echo.Context) *config.JwtCustomClaims {
 }
 
 func IsValidFilename(filename string) bool {
-	pattern := "^[A-z0-9-.]+$"
+	pattern := "^([A-z0-9-])(.{1})+$"
 	regex := regexp.MustCompile(pattern)
 
 	return regex.MatchString(filename)

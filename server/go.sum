@@ -48,6 +48,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/ricdotnet/goenvironmental v0.2.3 h1:kVwkjwLN1B17n3AEK4r/k83xDcT0dRpJYxHpzfzhszM=
 github.com/ricdotnet/goenvironmental v0.2.3/go.mod h1:Psjihu9vflJidhR2IcPpcmvqX2IwVfnYd6QfbPwRA1Q=
+github.com/ricdotnet/goenvironmental v0.3.0 h1:T7Dwn8OfIS690iFeaIeSggm87M+h5lzJXN8Hsj3bEU4=
+github.com/ricdotnet/goenvironmental v0.3.0/go.mod h1:LRNBgJe/rRyJVixnSFtjDEjSft1y+K/ozojxtLO1djg=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.2.0 h1:S1pD9weZBuJdFmowNwbpi7BJ8TNftyUImj/0WQi72jY=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=

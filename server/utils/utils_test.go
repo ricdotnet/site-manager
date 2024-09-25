@@ -15,6 +15,8 @@ func TestIsValidFileName(t *testing.T) {
 		"../../another/dir":        false,
 		"/ && rm -r /":             false,
 		".../...//":                false,
+		"..":                       false,
+		" ":                        false,
 	} {
 		got := IsValidFilename(k)
 		if got != v {
@@ -23,14 +25,14 @@ func TestIsValidFileName(t *testing.T) {
 	}
 }
 
-// func TestBuildApachePath(t *testing.T) {
-// 	goenvironmental.ParseEnv("../.env")
-// 	apachePath, _ := goenvironmental.Get("APACHE_PATH")
-
-// 	got := BuildApachePath("sites-available/")
-// 	want := filepath.Join(apachePath, "sites-available")
-
-// 	if got != want {
-// 		t.Errorf("expected %s but got %s", want, got)
-// 	}
-// }
+//func TestBuildApachePath(t *testing.T) {
+//	goenvironmental.ParseEnv("../.env")
+//	apachePath, _ := goenvironmental.Get("APACHE_PATH")
+//
+//	got := BuildApachePath("sites-available/")
+//	want := filepath.Join(apachePath, "sites-available")
+//
+//	if got != want {
+//		t.Errorf("expected %s but got %s", want, got)
+//	}
+//}
