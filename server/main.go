@@ -22,6 +22,8 @@ func main() {
 	// parse the env file if it was provided... goenvironmental will still provide env vars from the system through os.Getenv
 	if *envFile != "" {
 		goenvironmental.ParseEnv(*envFile)
+	} else {
+		goenvironmental.ParseEnv()
 	}
 
 	if *sa {

@@ -46,10 +46,8 @@ github.com/muesli/termenv v0.15.2 h1:GohcuySI0QmI3wN8Ok9PtKGkgkFIk7y6Vpb5PvrY+Wo
 github.com/muesli/termenv v0.15.2/go.mod h1:Epx+iuz8sNs7mNKhxzH4fWXGNpZwUaJKRS1noLXviQ8=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/ricdotnet/goenvironmental v0.2.3 h1:kVwkjwLN1B17n3AEK4r/k83xDcT0dRpJYxHpzfzhszM=
-github.com/ricdotnet/goenvironmental v0.2.3/go.mod h1:Psjihu9vflJidhR2IcPpcmvqX2IwVfnYd6QfbPwRA1Q=
-github.com/ricdotnet/goenvironmental v0.3.0 h1:T7Dwn8OfIS690iFeaIeSggm87M+h5lzJXN8Hsj3bEU4=
-github.com/ricdotnet/goenvironmental v0.3.0/go.mod h1:LRNBgJe/rRyJVixnSFtjDEjSft1y+K/ozojxtLO1djg=
+github.com/ricdotnet/goenvironmental v0.3.2 h1:Z3a8fbOISn019KlzykmCf8mFN2XmwsIIWG7AzXFwP8s=
+github.com/ricdotnet/goenvironmental v0.3.2/go.mod h1:LRNBgJe/rRyJVixnSFtjDEjSft1y+K/ozojxtLO1djg=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.2.0 h1:S1pD9weZBuJdFmowNwbpi7BJ8TNftyUImj/0WQi72jY=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
