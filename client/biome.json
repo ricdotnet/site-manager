@@ -23,7 +23,7 @@
     }
   },
   "files": {
-    "ignore": ["*.json"]
+    "ignore": ["*.json", "./dist/**/*", "./node_modules/**/*"]
   },
   "overrides": [
     {
