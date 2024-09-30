@@ -8,59 +8,66 @@ import (
 )
 
 type SitesRepo struct {
-	db *gorm.DB
+	Db *gorm.DB
 }
 
-func NewSitesRepo(db *gorm.DB) *SitesRepo {
-	return &SitesRepo{
-		db: db,
-	}
-}
+type Site = models.Site
 
-func (repo *SitesRepo) FindAll(user *config.JwtCustomClaims) (*[]models.Site, error) {
-	sites := new([]models.Site)
-	if err := repo.db.Find(&sites, "user_id = ?", user.UserID).Error; err != nil {
-		return nil, err
+func (repo *SitesRepo) GetAll(items ...interface{}) error {
+	sites := items[0].(*[]Site)
+	user := items[1].(*config.JwtCustomClaims)
+
+	if err := repo.Db.Find(&sites, "user_id = ?", user.UserID).Error; err != nil {
+		return err
 	}
 
 	log.Infof("Found %d site records for user %s", len(*sites), user.Username)
-	return sites, nil
+
+	return nil
 }
 
-func (repo *SitesRepo) FindFirst(id int, user *config.JwtCustomClaims) (*models.Site, error) {
-	site := &models.Site{}
-	if err := repo.db.First(site, "id = ? AND user_id = ?", id, user.UserID).Error; err != nil {
-		return nil, err
-	}
-	if site != nil {
-		log.Infof("Found 1 site record with id %d for user %s", id, user.Username)
+func (repo *SitesRepo) GetOneByID(id uint, items ...interface{}) error {
+	site := items[0].(*Site)
+	user := items[1].(*config.JwtCustomClaims)
+
+	if err := repo.Db.First(site, "id = ? AND user_id = ?", id, user.UserID).Error; err != nil {
+		return err
 	}
 
-	return site, nil
+	if site == nil {
+		return gorm.ErrRecordNotFound
+	}
+
+	log.Infof("Found 1 site record with id %d for user %s", id, user.Username)
+
+	return nil
 }
 
-func (repo *SitesRepo) InsertOne(site *models.Site) (*models.Site, error) {
-	if err := repo.db.Create(site).Error; err != nil {
-		return nil, err
+func (repo *SitesRepo) CreateOne(item interface{}) error {
+	site := item.(*Site)
+
+	if err := repo.Db.Create(site).Error; err != nil {
+		return err
 	}
-	return site, nil
+
+	return nil
 }
 
-func (repo *SitesRepo) UpdateOne(site *models.Site) (*models.Site, error) {
-	updated := &models.Site{}
-	var err error
-	if err = repo.db.Updates(site).Error; err != nil {
-		return nil, err
+func (repo *SitesRepo) UpdateOne(item interface{}) error {
+	site := item.(*Site)
+
+	if err := repo.Db.Updates(site).Error; err != nil {
+		return err
 	}
-	if err = repo.db.First(updated, "id = ?", site.ID).Error; err != nil {
-		return nil, err
-	}
-	return updated, nil
+
+	return nil
 }
 
 // TODO: maybe merge this with above?
-func (repo *SitesRepo) EnableOne(site *models.Site) error {
-	if err := repo.db.Model(site).
+func (repo *SitesRepo) EnableOne(item interface{}) error {
+	site := item.(*Site)
+
+	if err := repo.Db.Model(site).
 		Where("id = ?", site.ID).
 		Update("enabled", site.Enabled).Error; err != nil {
 		return err
@@ -69,12 +76,12 @@ func (repo *SitesRepo) EnableOne(site *models.Site) error {
 	return nil
 }
 
-func (repo *SitesRepo) Delete(sites *[]uint) error {
-	err := repo.db.Transaction(func(tx *gorm.DB) error {
-		for _, site := range *sites {
+func (repo *SitesRepo) DeleteManyByID(sites []uint) error {
+	err := repo.Db.Transaction(func(tx *gorm.DB) error {
+		for _, site := range sites {
 			log.Infof("Deleting site with id %d", site)
 
-			if err := repo.db.Delete(&models.Site{}, site).Error; err != nil {
+			if err := repo.Db.Delete(Site{}, site).Error; err != nil {
 				return err
 			}
 		}

@@ -31,14 +31,15 @@ type RequestBody struct {
 }
 
 type DeleteSites struct {
-	Sites *[]uint
+	Sites []uint
 }
 
 // TODO: Add pagination
 func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
+	sites := &[]Site{}
 
-	sites, err := s.sitesRepo.FindAll(userCtx)
+	err := s.repo.GetAll(sites, userCtx)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, config.ApiResponse{
 			Code:        http.StatusInternalServerError,
@@ -57,9 +58,11 @@ func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 
 func (s *SitesAPI) getSite(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
+	site := &Site{}
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	site, err := s.sitesRepo.FindFirst(id, userCtx)
+	err := s.repo.GetOneByID(uint(id), site, userCtx)
+
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "site_not_found")
 	}
@@ -102,7 +105,7 @@ func (s *SitesAPI) createSite(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 	site.UserID = userCtx.UserID
 
-	newSite, err := s.sitesRepo.InsertOne(site)
+	err := s.repo.CreateOne(site)
 	if err != nil {
 		log.Warnf("Failed to create a site with the domain %s", site.Domain)
 
@@ -126,7 +129,7 @@ func (s *SitesAPI) createSite(ctx echo.Context) error {
 			Code:    http.StatusCreated,
 			Message: "site_create_success",
 		},
-		Site: newSite,
+		Site: site,
 	})
 }
 
@@ -137,18 +140,20 @@ func (s *SitesAPI) updateSite(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
 	}
 
-	oldSite, err := s.sitesRepo.FindFirst(int(body.Site.ID), utils.GetTokenClaims(ctx))
+	oldSite := &Site{}
+
+	err = s.repo.GetOneByID(body.Site.ID, oldSite, utils.GetTokenClaims(ctx))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "This site does not exist")
 	}
 
-	newSite, err := s.sitesRepo.UpdateOne(body.Site)
+	err = s.repo.UpdateOne(body.Site)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
 	}
 
-	if oldSite.ConfigName != newSite.ConfigName {
-		err = s.sitesService.UpdateName(oldSite.ConfigName, newSite.ConfigName)
+	if oldSite.ConfigName != body.Site.ConfigName {
+		err = s.sitesService.UpdateName(oldSite.ConfigName, body.Site.ConfigName)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
 		}
@@ -176,7 +181,8 @@ func (s *SitesAPI) updateSiteStatus(ctx echo.Context) error {
 
 	id, _ := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	site.ID = uint(id)
-	if err = s.sitesRepo.EnableOne(site); err != nil {
+
+	if err = s.repo.UpdateOne(site); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Unable to update site status")
 	}
 
@@ -203,7 +209,7 @@ func (s *SitesAPI) deleteSite(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
 
-	if err = s.sitesRepo.Delete(sites.Sites); err != nil {
+	if err = s.repo.DeleteManyByID(sites.Sites); err != nil {
 		log.Error(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}

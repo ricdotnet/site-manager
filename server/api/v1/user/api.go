@@ -6,13 +6,15 @@ import (
 )
 
 type UserAPI struct {
-	db       *gorm.DB
-	userRepo *repository.UserRepo
+	db   *gorm.DB
+	repo repository.UserRepository
 }
 
 func New(db *gorm.DB) *UserAPI {
+	userRepositoy := &repository.UserRepo{Db: db}
+
 	return &UserAPI{
-		db:       db,
-		userRepo: repository.NewUserRepo(db),
+		db:   db,
+		repo: userRepositoy,
 	}
 }

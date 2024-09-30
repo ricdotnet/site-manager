@@ -12,7 +12,7 @@ type Setting = models.Settings
 
 func (s *SettingsAPI) getApiKey(c echo.Context) error {
 	setting := &Setting{}
-	err := s.settingsRepo.FindFirst(setting, c.Param("key"))
+	err := s.repo.GetOne(c.Param("key"), setting)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, config.ApiResponse{
 			Code:        http.StatusNotFound,
@@ -39,18 +39,19 @@ func (s *SettingsAPI) createOrUpdateApiKey(c echo.Context) error {
 		})
 	}
 
-	if err := s.settingsRepo.CreateOrUpdateOne(body); err != nil {
+	setting, err := s.repo.CreateOrUpdateOne(body)
+	if err != nil {
 		return c.JSON(http.StatusInternalServerError, config.ApiResponse{
 			Code:        http.StatusInternalServerError,
 			MessageCode: "setting_save_error",
 		})
 	}
 
-	return c.NoContent(http.StatusAccepted)
+	return c.JSON(http.StatusAccepted, setting)
 }
 
 func (s *SettingsAPI) deleteApiKey(c echo.Context) error {
-	if err := s.settingsRepo.DeleteOne(c.Param("key")); err != nil {
+	if err := s.repo.DeleteOne(c.Param("key")); err != nil {
 		return c.JSON(http.StatusInternalServerError, config.ApiResponse{
 			Code:        http.StatusInternalServerError,
 			MessageCode: "setting_delete_error",

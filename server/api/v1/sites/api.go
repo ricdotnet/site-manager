@@ -8,14 +8,14 @@ import (
 
 type SitesAPI struct {
 	db           *gorm.DB
-	sitesRepo    *repository.SitesRepo
+	repo         repository.SitesRepository
 	sitesService *services.SitesService
 }
 
 func New(db *gorm.DB) *SitesAPI {
 	return &SitesAPI{
 		db:           db,
+		repo:         &repository.SitesRepo{Db: db},
 		sitesService: services.NewSitesService(),
-		sitesRepo:    repository.NewSitesRepo(db),
 	}
 }

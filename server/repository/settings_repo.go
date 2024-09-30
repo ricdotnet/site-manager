@@ -7,38 +7,36 @@ import (
 )
 
 type SettingsRepo struct {
-	db *gorm.DB
+	Db *gorm.DB
 }
 
-func NewSettingsRepo(db *gorm.DB) *SettingsRepo {
-	return &SettingsRepo{
-		db: db,
-	}
-}
+type Setting = models.Settings
 
-func (repo *SettingsRepo) FindAll() {}
+func (repo *SettingsRepo) GetOne(key string, item ...interface{}) error {
+	setting := item[0].(*Setting)
 
-func (repo *SettingsRepo) FindFirst(setting *models.Settings, key string) error {
-	if err := repo.db.First(setting, "`key` = ?", key).Error; err != nil {
+	if err := repo.Db.First(setting, "`key` = ?", key).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (repo *SettingsRepo) CreateOrUpdateOne(setting *models.Settings) error {
-	if err := repo.db.Clauses(clause.OnConflict{
+func (repo *SettingsRepo) CreateOrUpdateOne(item interface{}) (interface{}, error) {
+	setting := item.(*Setting)
+
+	if err := repo.Db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "key"}},
 		DoUpdates: clause.AssignmentColumns([]string{"value"}),
 	}).Create(setting).Error; err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return setting, nil
 }
 
 func (repo *SettingsRepo) DeleteOne(key string) error {
-	if err := repo.db.Delete(&models.Settings{}, "`key` = ?", key).Error; err != nil {
+	if err := repo.Db.Delete(&Setting{}, "`key` = ?", key).Error; err != nil {
 		return err
 	}
 
