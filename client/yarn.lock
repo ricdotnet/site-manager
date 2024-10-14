@@ -1432,7 +1432,7 @@ __metadata:
     sass: ^1.79.2
     tailwindcss: ^3.3.2
     typescript: "*"
-    vite: 5.4.7
+    vite: 5.4.9
     vite-plugin-monaco-editor: ^1.1.0
     vue: ^3.3.4
     vue-loader: ^17.4.2
@@ -3644,9 +3644,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:5.4.7":
-  version: 5.4.7
-  resolution: "vite@npm:5.4.7"
+"vite@npm:5.4.9":
+  version: 5.4.9
+  resolution: "vite@npm:5.4.9"
   dependencies:
     esbuild: ^0.21.3
     fsevents: ~2.3.3
@@ -3683,7 +3683,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: aecb3380a85b8b2df9cbd01077b132e042b5a9f9bc87a302ccd69c5e528323eb4972ae41c430d8336a5d1d3ca253beb5e92ce74bc4e5fca3d0dd8651daa33d03
+  checksum: d3229e0618ece284af0478ec09c474a7a70ac369920716afdb6ebed8e320fd17a17c60afddba0d436698fe4837474cccd057c3e7d8270281b57506b78c5fbb8c
   languageName: node
   linkType: hard
 
