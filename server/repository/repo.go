@@ -57,6 +57,6 @@ type SettingsRepository interface {
 	DeleteOne
 }
 
-func notImeplemented() error {
+func notImplemented() error {
 	return errors.New("not implemented")
 }

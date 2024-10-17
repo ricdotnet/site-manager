@@ -63,19 +63,6 @@ func (repo *SitesRepo) UpdateOne(item interface{}) error {
 	return nil
 }
 
-// TODO: maybe merge this with above?
-func (repo *SitesRepo) EnableOne(item interface{}) error {
-	site := item.(*Site)
-
-	if err := repo.Db.Model(site).
-		Where("id = ?", site.ID).
-		Update("enabled", site.Enabled).Error; err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (repo *SitesRepo) DeleteManyByID(sites []uint) error {
 	err := repo.Db.Transaction(func(tx *gorm.DB) error {
 		for _, site := range sites {
