@@ -41,11 +41,25 @@ const formHasError = ref(false);
 const generalErrorMessage = ref('');
 
 const onCloseDialog = () => {
+  apiKeyInput.value?.setValue('');
+  apiKeyValueInput.value?.setValue('');
+  generalErrorMessage.value = '';
+
   props.closeDialog();
 };
 
 const onClickConfirmDialog = () => {
   formHasError.value = false;
+
+  if (!apiKeyInput.value?.value || !apiKeyValueInput.value?.value) {
+    generalErrorMessage.value = 'Please fill in all fields.';
+    formHasError.value = true;
+
+    apiKeyInput.value?.setError(true);
+    apiKeyValueInput.value?.setError(true);
+
+    return;
+  }
 
   if (apiKeyInput.value?.hasError || apiKeyValueInput.value?.hasError) {
     formHasError.value = true;

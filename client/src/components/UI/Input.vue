@@ -142,7 +142,7 @@ const onClickSave = () => {
 };
 
 const setError = (bool: boolean, message?: string) => {
-  hasError.value = bool;
+  hasError.value = bool ?? true;
 
   if (message) {
     state.errorMessage = message;

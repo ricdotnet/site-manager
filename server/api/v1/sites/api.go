@@ -2,17 +2,20 @@ package sites
 
 import (
 	"gorm.io/gorm"
+	"ricr.dev/site-manager/repository"
 	"ricr.dev/site-manager/services"
 )
 
-type API struct {
+type SitesAPI struct {
 	db           *gorm.DB
+	repo         repository.SitesRepository
 	sitesService *services.SitesService
 }
 
-func New(db *gorm.DB) *API {
-	return &API{
+func New(db *gorm.DB) *SitesAPI {
+	return &SitesAPI{
 		db:           db,
+		repo:         &repository.SitesRepo{Db: db},
 		sitesService: services.NewSitesService(),
 	}
 }

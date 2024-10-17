@@ -7,12 +7,12 @@ import (
 )
 
 func Routes(v1 *echo.Group, db *gorm.DB) {
-	api := New(db)
+	userApi := New(db)
 
 	user := v1.Group("/user")
 
-	user.POST("/login", api.loginUser)
-	user.POST("/register", api.registerUser)
-	user.PATCH("/update", api.updateUser, middlewares.AuthMiddleware())
-	user.GET("/auth", api.authUser, middlewares.AuthMiddleware())
+	user.POST("/login", userApi.loginUser)
+	user.POST("/register", userApi.registerUser)
+	user.PATCH("/update", userApi.updateUser, middlewares.AuthMiddleware())
+	user.GET("/auth", userApi.authUser, middlewares.AuthMiddleware())
 }

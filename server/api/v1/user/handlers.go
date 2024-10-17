@@ -22,7 +22,7 @@ type Response struct {
 	Token    string `json:"token,omitempty"`
 }
 
-func (api *API) authUser(ctx echo.Context) error {
+func (u *UserAPI) authUser(ctx echo.Context) error {
 	userCtx := utils.GetTokenClaims(ctx)
 
 	return ctx.JSON(http.StatusOK, Response{
@@ -35,7 +35,7 @@ func (api *API) authUser(ctx echo.Context) error {
 	})
 }
 
-func (api *API) loginUser(ctx echo.Context) error {
+func (u *UserAPI) loginUser(ctx echo.Context) error {
 	log.Info("Entering the /login handler")
 
 	user := new(User)
@@ -61,8 +61,10 @@ func (api *API) loginUser(ctx echo.Context) error {
 		})
 	}
 
-	result, _ := api.findFirst(username, false)
-	if result == nil {
+	err := u.repo.GetOne(username, user, false)
+	if err != nil {
+		log.Warnf("User %s does not exist", username)
+
 		return ctx.JSON(http.StatusBadRequest, &Response{
 			ApiResponse: config.ApiResponse{
 				Code:        http.StatusBadRequest,
@@ -71,7 +73,16 @@ func (api *API) loginUser(ctx echo.Context) error {
 		})
 	}
 
-	correctPassword, _, _ := argon2id.CheckHash(password, result.Password)
+	if user == nil {
+		return ctx.JSON(http.StatusBadRequest, &Response{
+			ApiResponse: config.ApiResponse{
+				Code:        http.StatusBadRequest,
+				MessageCode: "username_not_found",
+			},
+		})
+	}
+
+	correctPassword, _, _ := argon2id.CheckHash(password, user.Password)
 	if !correctPassword {
 		log.Warnf("User %s tried to login with an incorrect password", username)
 
@@ -83,13 +94,13 @@ func (api *API) loginUser(ctx echo.Context) error {
 		})
 	}
 
-	token := utils.MakeToken(result)
+	token := utils.MakeToken(user)
 
 	log.Info("Exiting /login handler")
 
 	return ctx.JSON(http.StatusOK, Response{
-		ID:       result.ID,
-		Username: result.Username,
+		ID:       user.ID,
+		Username: user.Username,
 		Token:    token,
 		ApiResponse: config.ApiResponse{
 			Code:        http.StatusOK,
@@ -98,13 +109,13 @@ func (api *API) loginUser(ctx echo.Context) error {
 	})
 }
 
-func (api *API) registerUser(ctx echo.Context) error {
+func (u *UserAPI) registerUser(ctx echo.Context) error {
 	log.Info("Entering the /register handler")
 
 	user := new(User)
 	_ = ctx.Bind(user)
 
-	messageCode := api.registerValidationHelper(user)
+	messageCode := u.registerValidationHelper(user)
 
 	if messageCode != "" {
 		log.Info("Exiting the /register handler")
@@ -117,7 +128,7 @@ func (api *API) registerUser(ctx echo.Context) error {
 
 	password, _ := argon2id.CreateHash(user.Password, argon2id.DefaultParams)
 	user.Password = password
-	api.insert(user)
+	u.repo.CreateOne(user)
 
 	log.Info("Exiting the /register handler")
 
@@ -127,7 +138,7 @@ func (api *API) registerUser(ctx echo.Context) error {
 	})
 }
 
-func (api *API) updateUser(ctx echo.Context) error {
+func (u *UserAPI) updateUser(ctx echo.Context) error {
 	log.Info("Entering the /update handler")
 
 	// do the update stuff
@@ -140,7 +151,7 @@ func (api *API) updateUser(ctx echo.Context) error {
 	})
 }
 
-func (api *API) registerValidationHelper(user *User) string {
+func (u *UserAPI) registerValidationHelper(user *User) string {
 	usernameRegex := "^[A-Za-z0-9_$]+$"
 	emailRegex := "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-.]+\\.[A-Za-z]{2,}$"
 
@@ -192,15 +203,15 @@ func (api *API) registerValidationHelper(user *User) string {
 		return "passwords_not_match"
 	}
 
-	existingUsername, _ := api.findFirst(user.Username, false)
-	if existingUsername != nil {
+	_ = u.repo.GetOne(user.Username, user, false)
+	if user != nil {
 		log.Warnf("Username %s is already registered", user.Username)
 
 		return "username_exists"
 	}
 
-	existingEmail, _ := api.findFirst(user.Email, true)
-	if existingEmail != nil {
+	_ = u.repo.GetOne(user.Email, user, true)
+	if user != nil {
 		log.Warnf("Email %s is already registered", user.Email)
 
 		return "email_exists"
