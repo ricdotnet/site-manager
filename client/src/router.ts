@@ -62,9 +62,37 @@ const routes = [
         name: 'domains',
       },
       {
+        path: 'domains/:domain',
+        component: pages.DomainDetails,
+        name: 'domain-details',
+        children: [
+          {
+            path: ':type(a|aaaa|cname|mx|ns|txt|srv)',
+            component: pages.DNSRecords,
+            name: 'dns-records',
+          },
+        ],
+      },
+      {
         path: 'settings',
         component: pages.Settings,
-        name: 'settings',
+        children: [
+          {
+            path: '',
+            component: pages.NotBuiltYet, // this should default always to /profile
+            name: 'settings',
+          },
+          {
+            path: 'profile',
+            component: pages.NotBuiltYet,
+            name: 'profile',
+          },
+          {
+            path: 'api-keys',
+            component: pages.ApiKeys,
+            name: 'api-keys',
+          },
+        ],
       },
     ],
   },

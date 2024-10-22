@@ -16,11 +16,11 @@
   @apply flex flex-col gap-2;
 
   &__header {
-    @apply w-full py-5 bg-gray-200 dark:bg-zinc-950 animate-pulse rounded-md;
+    @apply w-full py-5 bg-gray-400 dark:bg-zinc-900 animate-pulse rounded-md;
   }
 
   &__row {
-    @apply w-full py-7 bg-gray-100 dark:bg-zinc-800 animate-pulse rounded-md;
+    @apply w-full py-7 bg-gray-300 dark:bg-zinc-800 animate-pulse rounded-md;
   }
 }
 </style>

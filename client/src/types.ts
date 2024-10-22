@@ -1,6 +1,6 @@
 export type ButtonType = 'button' | 'reset' | 'submit';
 export type ButtonSize = 'sm' | 'md' | 'lg';
-export type ButtonColor = 'primary' | 'gray' | 'danger';
+export type ButtonColor = 'primary' | 'gray' | 'danger' | 'icon';
 
 export type InputComponent = {
   getValue: () => string;
@@ -45,4 +45,20 @@ export type TToast = {
   title?: string;
   message: string;
   type: 'success' | 'error' | 'info' | 'warning';
+};
+
+export type TApiKey = {
+  ID: number;
+  key: string;
+  value: string;
+  is_api_key: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TDomain = {
+  order_id: number;
+  name: string;
+  created_at: string;
+  renewal_at: string;
 };

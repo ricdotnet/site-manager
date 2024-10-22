@@ -11,6 +11,7 @@ func Routes(v1 *echo.Group, db *gorm.DB) {
 
 	settings := v1.Group("/settings", middlewares.AuthMiddleware())
 
+	settings.GET("", settingsApi.getAllApiKeys)
 	settings.GET("/:key", settingsApi.getApiKey)
 	settings.PUT("", settingsApi.createOrUpdateApiKey)
 	settings.DELETE("/:key", settingsApi.deleteApiKey)

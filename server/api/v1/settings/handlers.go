@@ -2,6 +2,7 @@ package settings
 
 import (
 	"net/http"
+	"ricr.dev/site-manager/utils"
 
 	"github.com/labstack/echo/v4"
 	"ricr.dev/site-manager/config"
@@ -10,9 +11,24 @@ import (
 
 type Setting = models.Settings
 
-func (s *SettingsAPI) getApiKey(c echo.Context) error {
+func (s *SettingsAPI) getAllApiKeys(ctx echo.Context) error {
+	settings := &[]Setting{}
+	userCtx := utils.GetTokenClaims(ctx)
+
+	err := s.repo.GetAll(settings, userCtx.UserID)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, config.ApiResponse{
+			Code:        http.StatusInternalServerError,
+			MessageCode: "setting_get_error",
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, settings)
+}
+
+func (s *SettingsAPI) getApiKey(ctx echo.Context) error {
 	setting := &Setting{}
-	err := s.repo.GetOne(c.Param("key"), setting)
+	err := s.repo.GetOne(ctx.Param("key"), setting)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, config.ApiResponse{
 			Code:        http.StatusNotFound,
@@ -20,43 +36,46 @@ func (s *SettingsAPI) getApiKey(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, setting)
+	return ctx.JSON(http.StatusOK, setting)
 }
 
-func (s *SettingsAPI) createOrUpdateApiKey(c echo.Context) error {
+func (s *SettingsAPI) createOrUpdateApiKey(ctx echo.Context) error {
 	body := &Setting{}
-	if err := c.Bind(body); err != nil {
-		return c.JSON(http.StatusBadRequest, config.ApiResponse{
+	if err := ctx.Bind(body); err != nil {
+		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
 			Code:        http.StatusBadRequest,
 			MessageCode: "setting_missing_payload",
 		})
 	}
 
 	if body.Key == "" || body.Value == "" {
-		return c.JSON(http.StatusBadRequest, config.ApiResponse{
+		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
 			Code:        http.StatusBadRequest,
 			MessageCode: "setting_invalid_payload",
 		})
 	}
 
+	userCtx := utils.GetTokenClaims(ctx)
+	body.UserID = userCtx.UserID
+
 	setting, err := s.repo.CreateOrUpdateOne(body)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, config.ApiResponse{
+		return ctx.JSON(http.StatusInternalServerError, config.ApiResponse{
 			Code:        http.StatusInternalServerError,
 			MessageCode: "setting_save_error",
 		})
 	}
 
-	return c.JSON(http.StatusAccepted, setting)
+	return ctx.JSON(http.StatusAccepted, setting)
 }
 
-func (s *SettingsAPI) deleteApiKey(c echo.Context) error {
-	if err := s.repo.DeleteOne(c.Param("key")); err != nil {
-		return c.JSON(http.StatusInternalServerError, config.ApiResponse{
+func (s *SettingsAPI) deleteApiKey(ctx echo.Context) error {
+	if err := s.repo.DeleteOne(ctx.Param("key")); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, config.ApiResponse{
 			Code:        http.StatusInternalServerError,
 			MessageCode: "setting_delete_error",
 		})
 	}
 
-	return c.NoContent(http.StatusAccepted)
+	return ctx.NoContent(http.StatusAccepted)
 }

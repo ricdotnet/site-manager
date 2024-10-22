@@ -2,8 +2,7 @@
   <div ref="dropdownRef" class="dropdown">
     <slot name="caller"/>
     <template v-if="!slots.caller">
-      <!-- TODO find another way to handle an undefined name -->
-      <Button :id="id" :name="name ?? ''" :color="color ?? 'primary'" @click="emits('onClick')">
+      <Button :id="id" :name="name ?? `dropdown-button-${randomName}`" :color="color ?? 'primary'" @click="emits('onClick')">
         <span>{{ text }}</span>
         <ChevronDownIcon v-if="!isOpen" class="w-5"/>
         <ChevronUpIcon v-if="isOpen" class="w-5"/>
@@ -38,6 +37,8 @@ const slots = useSlots();
 
 const dropdownRef = ref<HTMLDivElement>();
 const itemsRef = ref<HTMLDivElement>();
+
+const randomName = computed(() => Math.random().toString(36).substring(7));
 
 const itemsPosition = computed(() => {
   if (itemsRef.value) {
@@ -86,7 +87,8 @@ const onDropdownFocusOut = (e: FocusEvent) => {
     dark:bg-dark
     flex
     flex-col
-    rounded-md;
+    rounded-md
+    z-10;
   }
 }
 </style>

@@ -1,22 +1,34 @@
 package domains
 
 import (
+	"encoding/json"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
-	"net/http"
 	"ricr.dev/site-manager/api/middlewares"
-	"ricr.dev/site-manager/config"
 )
 
-func Routes(v1 *echo.Group, db *gorm.DB, cfg *config.Config) {
-	//api := New(db, cfg)
+type Response struct {
+	Code    int         `json:"code"`
+	Message interface{} `json:"message"`
+}
+
+type DomainsResponse struct {
+	Id        json.RawMessage
+	Total     int `json:"totalrecords"`
+	PageCount int `json:"pagecount"`
+}
+
+type DomainData struct {
+	OrderId string `json:"orders.orderid"`
+	Domain  string `json:"entity.description"`
+}
+
+func Routes(v1 *echo.Group, db *gorm.DB) {
+	domainsApi := New(db)
 
 	domains := v1.Group("/domains", middlewares.AuthMiddleware())
 
-	domains.GET("/all", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, config.ApiResponse{
-			Code:    200,
-			Message: "all domains",
-		})
-	})
+	domains.GET("/all", domainsApi.getAllDomains)
+	domains.GET("/:domain", domainsApi.getDomain)
+	domains.GET("/:domain/:type", domainsApi.getRecords)
 }

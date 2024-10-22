@@ -12,6 +12,17 @@ type SettingsRepo struct {
 
 type Setting = models.Settings
 
+func (repo *SettingsRepo) GetAll(item ...interface{}) error {
+	settings := item[0].(*[]Setting)
+	userId := item[1].(uint)
+
+	if err := repo.Db.Find(settings, "user_id = ?", userId).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (repo *SettingsRepo) GetOne(key string, item ...interface{}) error {
 	setting := item[0].(*Setting)
 

@@ -1,13 +1,13 @@
 <template>
-  <div class="header">
+  <div class="header mb-5">
     <div class="header__greeting">
-      Hello <span class="text-cobalt-green">{{ userStore.username }}</span>, welcome
+      Hello <span class="text-cobalt-green">{{ userStore.username }}</span>, welcome!
     </div>
     <div class="header__nav">
       <LinkButton :class="{ active: isActive('overview') }" href="/dashboard" text="Overview"/>
       <LinkButton :class="{ active: isActive(['sites', 'site-details']) }" href="/dashboard/sites" text="Sites"/>
-      <LinkButton :class="{ active: isActive('domains') }" href="/dashboard/domains" text="Domains"/>
-      <LinkButton :class="{ active: isActive('settings') }" href="/dashboard/settings" text="Settings"/>
+      <LinkButton :class="{ active: isActive(['domains', 'domain-details', 'dns-records']) }" href="/dashboard/domains" text="Domains"/>
+      <LinkButton :class="{ active: isActive(['settings', 'profile', 'api-keys']) }" href="/dashboard/settings" text="Settings"/>
     </div>
   </div>
   <router-view></router-view>

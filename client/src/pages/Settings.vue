@@ -1,22 +1,49 @@
 <template>
-  <div class="py-5 flex gap-2 justify-end">
-    <Button text="Add API Key" color="primary" value="add-api-key" name="add-api-key" @click="onClickAddApiKey"/>
+  <div class="grid grid-cols-left-nav gap-2">
+    <div class="left-nav">
+      <div data-role="header">General</div>
+      <LinkButton :class="isActive(['profile', 'settings']) ? 'active' : ''" href="/dashboard/settings/profile" text="Profile"/>
+      <LinkButton :class="isActive('api-keys') ? 'active' : ''" href="/dashboard/settings/api-keys" text="API Keys"/>
+    </div>
+    <div>
+      <router-view/>
+    </div>
   </div>
-  <AddApiKeyDialog :is-adding-api-key="isAddingApiKey"
-                   :close-dialog="closeAddApiKeyDialog"
-                   @on-close-dialog="closeAddApiKeyDialog"/>
 </template>
 
 <script setup lang="ts">
-import { AddApiKeyDialog, Button } from '@components';
-import { ref } from 'vue';
+import { LinkButton } from '@components';
+import { useRoute } from 'vue-router';
 
-const isAddingApiKey = ref(false);
+const route = useRoute();
 
-const onClickAddApiKey = () => {
-  isAddingApiKey.value = true;
-};
-const closeAddApiKeyDialog = () => {
-  isAddingApiKey.value = false;
+const isActive = (name: string | string[]) => {
+  if (Array.isArray(name)) {
+    return name.includes(route.name);
+  }
+  return route.name === name;
 };
 </script>
+
+<style scoped lang="scss">
+.left-nav {
+  a {
+    @apply py-2 px-4 hover:bg-dark;
+  }
+
+  .active::before {
+    content: '';
+    border-style: solid;
+    border-width: 0 0.25em 0.25em 0;
+    display: inline-block;
+    height: 0.45em;
+    transform: rotate(-45deg);
+    width: 0.45em;
+    margin-right: 0.5em;
+  }
+
+  [data-role="header"] {
+    @apply text-light font-bold px-4;
+  }
+}
+</style>

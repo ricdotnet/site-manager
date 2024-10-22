@@ -18,13 +18,21 @@
         <div v-if="generalErrorMessage" class="text-center text-red-500" v-html="generalErrorMessage"></div>
       </Transition>
     </div>
+
+    <AddApiKeyExistsDialog
+      :is-api-key-exists-dialog-open="isApiKeyExistsDialogOpen"
+      :on-confirm-dialog="postApiKey"
+      :on-close-dialog="() => isApiKeyExistsDialogOpen = false"
+    />
   </Dialog>
 </template>
 
 <script setup lang="ts">
-import { Dialog, Input } from '@components';
+import { AddApiKeyExistsDialog, Dialog, Input } from '@components';
+import { useApiKeysStore } from '@stores';
 import type { InputComponent } from '@types';
 import { apiKeyValidator, apiKeyValueValidator } from '@validators';
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
 const props = defineProps<{
@@ -32,7 +40,11 @@ const props = defineProps<{
   closeDialog: () => void;
 }>();
 
+const apiKeysStore = useApiKeysStore();
+const { apiKeys } = storeToRefs(apiKeysStore);
+
 const isPostingApiKey = ref(false);
+const isApiKeyExistsDialogOpen = ref(false);
 
 const apiKeyInput = ref<InputComponent>();
 const apiKeyValueInput = ref<InputComponent>();
@@ -41,6 +53,11 @@ const formHasError = ref(false);
 const generalErrorMessage = ref('');
 
 const onCloseDialog = () => {
+  if (isApiKeyExistsDialogOpen.value) {
+    isApiKeyExistsDialogOpen.value = false;
+    return;
+  }
+
   apiKeyInput.value?.setValue('');
   apiKeyValueInput.value?.setValue('');
   generalErrorMessage.value = '';
@@ -48,10 +65,10 @@ const onCloseDialog = () => {
   props.closeDialog();
 };
 
-const onClickConfirmDialog = () => {
+const onClickConfirmDialog = async () => {
   formHasError.value = false;
 
-  if (!apiKeyInput.value?.value || !apiKeyValueInput.value?.value) {
+  if (!apiKeyInput.value?.getValue() || !apiKeyValueInput.value?.getValue()) {
     generalErrorMessage.value = 'Please fill in all fields.';
     formHasError.value = true;
 
@@ -66,11 +83,26 @@ const onClickConfirmDialog = () => {
     return;
   }
 
+  const apiKeyExists = apiKeys.value.find((apiKey) => apiKey.key === apiKeyInput.value!.getValue());
+
+  if (apiKeyExists?.value) {
+    isApiKeyExistsDialogOpen.value = true;
+    return;
+  }
+
+  postApiKey();
+};
+
+const postApiKey = async () => {
   isPostingApiKey.value = true;
-  setTimeout(() => {
-    isPostingApiKey.value = false;
-    formHasError.value = false;
-    onCloseDialog();
-  }, 5000);
+  await apiKeysStore.addApiKey({
+    key: apiKeyInput.value!.getValue(),
+    value: apiKeyValueInput.value!.getValue(),
+    is_api_key: true,
+  });
+  isPostingApiKey.value = false;
+  formHasError.value = false;
+  isApiKeyExistsDialogOpen.value = false;
+  onCloseDialog();
 };
 </script>

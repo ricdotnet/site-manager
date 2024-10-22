@@ -7,7 +7,6 @@ import { useRoute } from 'vue-router';
 
 export const useSitesStore = defineStore('sites', () => {
   const sites = ref<TSite[]>([]);
-  const lastFetch = ref(0); // for caching purposes I guess
   const site = ref<TSite>();
 
   const route = useRoute();
@@ -23,13 +22,7 @@ export const useSitesStore = defineStore('sites', () => {
     }, []);
   };
 
-  const setLastFetch = () => {
-    lastFetch.value = Date.now();
-  };
-
   const fetchSites = async (): Promise<Error | undefined> => {
-    if (Date.now() - lastFetch.value < 30000) return;
-
     const { data, error } = await useRequest<TSitesResponse>({
       endpoint: '/site/all',
       needsAuth: true,
@@ -40,8 +33,6 @@ export const useSitesStore = defineStore('sites', () => {
     if (data?.sites) {
       sites.value = [...data.sites];
     }
-
-    setLastFetch();
   };
 
   const fetchSite = async (): Promise<Error | undefined> => {
@@ -59,15 +50,15 @@ export const useSitesStore = defineStore('sites', () => {
   };
 
   const checkSite = (id: number): void => {
-    const site = sites.value.find((site) => site.ID === id);
-    if (site) {
-      site.checked = !site.checked;
-    }
+    sites.value.forEach((site) => {
+      if (site.ID === id) {
+        site.checked = !site.checked;
+      }
+    });
   };
 
   const checkAll = (checked: boolean): void => {
-    // biome-ignore lint/complexity/noForEach: we can allow here a for each... it is easier
-    sites.value.forEach((site) => {
+    sites.value = sites.value.map((site) => {
       site.checked = checked;
       return site;
     });
@@ -79,7 +70,6 @@ export const useSitesStore = defineStore('sites', () => {
 
   return {
     sites,
-    lastFetch,
     addSite,
     fetchSites,
     fetchSite,

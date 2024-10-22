@@ -8,3 +8,8 @@ export { default as Sites } from './Sites.vue';
 export { default as Site } from './Site.vue';
 export { default as Domains } from './Domains.vue';
 export { default as Settings } from './Settings.vue';
+export { default as NotBuiltYet } from './NotBuiltYet.vue';
+
+export { default as ApiKeys } from './settings/ApiKeys.vue';
+export { default as DomainDetails } from './domains/DomainDetails.vue';
+export { default as DNSRecords } from './domains/DNSRecords.vue';

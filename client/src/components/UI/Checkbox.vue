@@ -1,24 +1,33 @@
 <template>
   <label class="checkbox" :for="id">
-    <input type="checkbox"
-           :id="id"
-           :name="name"
-           class="checkbox__input"
-           :checked="checked"
-           @change="onChange"/>
+    <input
+      type="checkbox"
+      :id="id"
+      :name="name"
+      class="checkbox__input"
+      :checked="checked"
+      @change="onChange"
+      :indeterminate="indeterminate"
+    />
     <span class="checkbox__checkmark">
-      <CheckIcon class="checkbox__checkmark--check"/>
+      <template v-if="indeterminate && !checked">
+        <MinusIcon class="checkbox__checkmark--check"/>
+      </template>
+      <template v-else>
+        <CheckIcon class="checkbox__checkmark--check"/>
+      </template>
     </span>
   </label>
 </template>
 
 <script setup lang="ts">
-import { CheckIcon } from '@heroicons/vue/20/solid';
+import { CheckIcon, MinusIcon } from '@heroicons/vue/20/solid';
 
-defineProps<{
+const props = defineProps<{
   id: string;
   name: string;
   checked: boolean;
+  indeterminate?: boolean;
 }>();
 
 const emits = defineEmits<(event: 'onChange') => void>();
@@ -36,6 +45,14 @@ const onChange = () => {
       @apply w-0 h-0 absolute cursor-pointer;
 
       &:checked + .checkbox__checkmark {
+        @apply bg-dark-border dark:bg-light-border;
+
+        .checkbox__checkmark--check {
+          @apply block text-white dark:text-black;
+        }
+      }
+
+      &:indeterminate + .checkbox__checkmark {
         @apply bg-dark-border dark:bg-light-border;
 
         .checkbox__checkmark--check {

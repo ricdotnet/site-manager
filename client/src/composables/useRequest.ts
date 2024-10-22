@@ -9,12 +9,20 @@ type RequestOptions<T = unknown> = {
   method?: RequestVerb;
   needsAuth?: boolean;
   payload?: T;
+  useCache?: boolean;
+};
+
+type RequestCache<T = unknown> = {
+  duration: number;
+  data: T;
 };
 
 interface UseRequestResult<TResult, TError = unknown> {
   error: TError;
   data: TResult;
 }
+
+const requestCache = new Map<string, RequestCache>();
 
 export const useRequest = async <TResult>(
   options: RequestOptions,
@@ -28,6 +36,14 @@ export const useRequest = async <TResult>(
     ...(options.needsAuth === true ? { authorization: `Bearer ${localStorage.getItem('token')}` } : {}),
   };
 
+  if (options.useCache) {
+    const cached = requestCache.get(options.endpoint);
+    if (cached && Date.now() - cached.duration < 30000) {
+      data.value = cached.data as TResult;
+      return { error: unwrap(error), data: unwrap(data) as TResult };
+    }
+  }
+
   try {
     const response = await axios.request({
       url: `${api}${options.endpoint}`,
@@ -39,6 +55,13 @@ export const useRequest = async <TResult>(
     data.value = response.data;
   } catch (e) {
     error.value = e;
+  }
+
+  if (options.useCache && !error.value) {
+    requestCache.set(options.endpoint, {
+      duration: Date.now() + 30000,
+      data: data.value,
+    });
   }
 
   return { error: unwrap(error), data: unwrap(data) as TResult };

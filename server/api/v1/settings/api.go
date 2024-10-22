@@ -16,7 +16,6 @@ func New(db *gorm.DB) *SettingsAPI {
 	settingsRepo := &repository.SettingsRepo{Db: db}
 
 	return &SettingsAPI{
-		db:              db,
 		repo:            settingsRepo,
 		settingsService: services.NewSettingsService(),
 	}

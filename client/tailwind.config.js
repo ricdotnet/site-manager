@@ -16,6 +16,9 @@ export default {
         'cobalt-green': '#A2E3C4',
         'cobalt-green-darker': '#77BC99',
       },
+      gridTemplateColumns: {
+        'left-nav': '200px 1fr',
+      },
     },
   },
   plugins: [],

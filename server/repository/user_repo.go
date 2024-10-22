@@ -46,5 +46,5 @@ func (repo *UserRepo) CreateOne(item interface{}) error {
 
 func (repo *UserRepo) UpdateOne(item interface{}) error {
 	// query to update the user
-	return notImeplemented()
+	return notImplemented()
 }

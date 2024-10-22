@@ -9,8 +9,6 @@ func runMigrations(db *gorm.DB) {
 	if err := db.AutoMigrate(dbModels()...); err != nil {
 		panic(err.Error())
 	}
-
-	_ = db.Migrator().AddColumn(&models.Settings{}, "is_api_key")
 }
 
 func dbModels() []interface{} {

@@ -11,10 +11,9 @@ type UserAPI struct {
 }
 
 func New(db *gorm.DB) *UserAPI {
-	userRepositoy := &repository.UserRepo{Db: db}
+	userRepository := &repository.UserRepo{Db: db}
 
 	return &UserAPI{
-		db:   db,
-		repo: userRepositoy,
+		repo: userRepository,
 	}
 }
