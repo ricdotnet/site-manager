@@ -38,25 +38,25 @@ jobs:
       with:
         category: "/language:${{matrix.language}}"
   
-  # style-checks:
-  #   name: Code style checks
-  #   runs-on: ubuntu-latest
+  code-linting:
+    name: Code linting
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #   - name: Checkout repository
-  #     uses: actions/checkout@v4
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-  #   - name: Set up Node.js
-  #     uses: actions/setup-node@v4
-  #     with:
-  #       node-version: '20'
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
 
-  #   - run: corepack enable
+    - run: corepack enable
 
-  #   - name: Install dependencies
-  #     working-directory: ./client
-  #     run: yarn install
+    - name: Install dependencies
+      working-directory: ./client
+      run: yarn install
 
-  #   - name: Run biome checks
-  #     working-directory: ./client
-  #     run: yarn biome
+    - name: Run eslint
+      working-directory: ./client
+      run: yarn lint
