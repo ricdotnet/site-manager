@@ -1,13 +1,15 @@
 <template>
-  <button class="rounded-md button-hover-effect flex items-center space-x-1"
-          :class="computedStyles"
-          :name="name"
-          :value="value"
-          :type="buttonType"
-          :disabled="disabled || isActioning">
-    <slot/>
+  <button
+    class="rounded-md button-hover-effect flex items-center space-x-1"
+    :class="computedStyles"
+    :name="name"
+    :value="value"
+    :type="buttonType"
+    :disabled="disabled || isActioning"
+  >
+    <slot />
     <span v-if="text">{{ text }}</span>
-    <ArrowPathIcon v-if="isActioning" class="w-5 animate-spin"/>
+    <ArrowPathIcon v-if="isActioning" class="w-5 animate-spin" />
   </button>
 </template>
 
