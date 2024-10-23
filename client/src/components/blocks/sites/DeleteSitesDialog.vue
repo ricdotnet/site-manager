@@ -1,21 +1,24 @@
 <template>
-  <Dialog title="Delete selected sites"
-          confirm-label="Delete"
-          :is-open="isOpenDeleteSites"
-          :is-actioning="isDeletingSites"
-          @on-confirm-dialog="onConfirmDeleteSites">
-    Do you really want to delete the selected sites?
-    This will delete <b>all sites</b> from the database, <b>all *.conf</b> files, <b>all ssl certificates</b> and <b>disable
-    all</b> of them making them inaccessible.
+  <Dialog
+    title="Delete selected sites"
+    confirm-label="Delete"
+    :is-open="isOpenDeleteSites"
+    :is-actioning="isDeletingSites"
+    @on-confirm-dialog="onConfirmDeleteSites"
+  >
+    Do you really want to delete the selected sites? This will delete
+    <b>all sites</b> from the database, <b>all *.conf</b> files,
+    <b>all ssl certificates</b> and <b>disable all</b> of them making them
+    inaccessible.
   </Dialog>
 </template>
 
 <script setup lang="ts">
 import { Dialog } from '@components';
+import type { TSite } from '@types';
+import { ref } from 'vue';
 import { useRequest } from '@composables';
 import { useSitesStore } from '@stores';
-import { TSite } from '@types';
-import { ref } from 'vue';
 
 const sitesStore = useSitesStore();
 
@@ -29,10 +32,13 @@ const isDeletingSites = ref(false);
 const onConfirmDeleteSites = async () => {
   isDeletingSites.value = true;
 
-  const sitesToDelete = sitesStore.sites.reduce((sites: number[], site: TSite) => {
-    if (site.checked) sites.push(site.ID);
-    return sites;
-  }, []);
+  const sitesToDelete = sitesStore.sites.reduce(
+    (sites: number[], site: TSite) => {
+      if (site.checked) sites.push(site.ID);
+      return sites;
+    },
+    [],
+  );
 
   const { error } = await useRequest({
     endpoint: '/site/',

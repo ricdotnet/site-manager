@@ -1,6 +1,6 @@
-import { useUserStore } from '@stores';
-import { createRouter, createWebHistory } from 'vue-router';
 import * as pages from './pages';
+import { createRouter, createWebHistory } from 'vue-router';
+import { useUserStore } from '@stores';
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -111,9 +111,13 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const userStore = useUserStore();
 
-  if (!userStore.isAuthed && localStorage.getItem('token')) await userStore.tokenAuth();
+  if (!userStore.isAuthed && localStorage.getItem('token')) {
+    await userStore.tokenAuth();
+  }
 
-  if (to.meta.requiresAuth && !to.meta.isAuthPage && !userStore.isAuthed) return '/login';
+  if (to.meta.requiresAuth && !to.meta.isAuthPage && !userStore.isAuthed) {
+    return '/login';
+  }
 
   if (to.meta.isAuthPage && userStore.isAuthed) return '/';
 });

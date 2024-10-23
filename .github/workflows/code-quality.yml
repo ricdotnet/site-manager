@@ -38,8 +38,8 @@ jobs:
       with:
         category: "/language:${{matrix.language}}"
   
-  style-checks:
-    name: Code style checks
+  code-linting:
+    name: Code linting
     runs-on: ubuntu-latest
 
     steps:
@@ -57,6 +57,6 @@ jobs:
       working-directory: ./client
       run: yarn install
 
-    - name: Run biome checks
+    - name: Run eslint
       working-directory: ./client
-      run: yarn biome
+      run: yarn lint

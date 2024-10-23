@@ -1,6 +1,6 @@
 <template>
   <template v-if="!apiKeys.length">
-    <Empty message="You have not added any third party API Keys."/>
+    <Empty message="You have not added any third party API Keys." />
   </template>
   <template v-else>
     <Table>
@@ -12,8 +12,8 @@
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow v-for="apiKey in apiKeys" :key="apiKey.id">
-          <ApiKeysItem :apiKeyItem="apiKey"/>
+        <TableRow v-for="apiKey in apiKeys" :key="apiKey.ID">
+          <ApiKeysItem :apiKeyItem="apiKey" />
         </TableRow>
       </TableBody>
     </Table>
@@ -21,10 +21,18 @@
 </template>
 
 <script setup lang="ts">
-import { ApiKeysItem, Empty, Table, TableBody, TableHead, TableHeader, TableRow } from '@components';
-import { useApiKeysStore } from '@stores';
-import { storeToRefs } from 'pinia';
+import {
+  ApiKeysItem,
+  Empty,
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@components';
 import { onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useApiKeysStore } from '@stores';
 
 const apiKeysStore = useApiKeysStore();
 const { apiKeys } = storeToRefs(apiKeysStore);

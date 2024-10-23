@@ -21,7 +21,7 @@ export const useUserStore = defineStore('user', () => {
       setIsAuthed(true);
       setUserId(response.data.id);
       setUsername(response.data.username);
-    } catch (error) {
+    } catch (_) {
       localStorage.removeItem('token');
     }
   };
@@ -38,5 +38,14 @@ export const useUserStore = defineStore('user', () => {
     username.value = v;
   };
 
-  return { isAuthed, userId, username, isAdmin, tokenAuth, setIsAuthed, setUserId, setUsername };
+  return {
+    isAuthed,
+    userId,
+    username,
+    isAdmin,
+    tokenAuth,
+    setIsAuthed,
+    setUserId,
+    setUsername,
+  };
 });

@@ -1,25 +1,26 @@
 <template>
   <template v-if="isLoadingDomains">
-    <TableLoading/>
+    <TableLoading />
   </template>
   <template v-else-if="!domains.length">
-    <Empty class="mt-10" message="You have not registered any domains."/>
+    <Empty class="mt-10" message="You have not registered any domains." />
   </template>
   <template v-else>
-    <DomainsTable :domains="domains"/>
+    <DomainsTable :domains="domains" />
   </template>
 </template>
 
 <script setup lang="ts">
 import { DomainsTable, Empty, TableLoading } from '@components';
-import { useRequest } from '@composables';
 import { onMounted, ref } from 'vue';
+import { useRequest } from '@composables';
 
 const domains = ref([]);
 const isLoadingDomains = ref(true);
 
 onMounted(async () => {
-  const { data, error } = await useRequest({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await useRequest<any>({
     endpoint: '/domains/all',
     needsAuth: true,
   });

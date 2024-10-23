@@ -6,18 +6,20 @@
       </span>
 
       <div class="flex space-x-3">
-        <Toggle @ontoggle="toggleTheme"
-                :is-checked="isDark"
-                :is-theme-toggle="true"
-                name="themeToggle"
-                title="Theme toggle"/>
+        <Toggle
+          @ontoggle="toggleTheme"
+          :is-checked="isDark"
+          :is-theme-toggle="true"
+          name="themeToggle"
+          title="Theme toggle"
+        />
         <template v-if="!userStore.isAuthed">
-          <LinkButton href="login" text="Login"/>
-          <LinkButton href="register" text="Register"/>
+          <LinkButton href="login" text="Login" />
+          <LinkButton href="register" text="Register" />
         </template>
         <template v-else>
-          <LinkButton href="/dashboard" text="Dashboard"/>
-          <LinkButton @on-link-click="doLogout" text="Logout"/>
+          <LinkButton href="/dashboard" text="Dashboard" />
+          <LinkButton @on-link-click="doLogout" text="Logout" />
         </template>
       </div>
     </div>
@@ -26,10 +28,10 @@
 
 <script setup lang="ts">
 import { LinkButton, Toggle } from '@components';
-import { useTheme } from '@composables';
-import { useUserStore } from '@stores';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useTheme } from '@composables';
+import { useUserStore } from '@stores';
 
 const router = useRouter();
 const { toggleTheme, currentTheme } = useTheme();

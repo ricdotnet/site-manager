@@ -1,20 +1,22 @@
 <template>
-  <Dialog title="Delete API Key"
-          confirm-label="Delete"
-          :is-open="isOpenDeleteApiKey"
-          :is-actioning="isDeletingApiKey"
-          @on-close-dialog="onCloseDialog"
-          @on-confirm-dialog="onClickConfirmDialog">
-    Do you really want to delete this API Key?<br>
+  <Dialog
+    title="Delete API Key"
+    confirm-label="Delete"
+    :is-open="isOpenDeleteApiKey"
+    :is-actioning="isDeletingApiKey"
+    @on-close-dialog="onCloseDialog"
+    @on-confirm-dialog="onClickConfirmDialog"
+  >
+    Do you really want to delete this API Key?<br />
     All integrations that use this key will stop working.
   </Dialog>
 </template>
 
 <script setup lang="ts">
 import { Dialog } from '@components';
-import { useApiKeysStore } from '@stores';
-import { TApiKey } from '@types';
+import type { TApiKey } from '@types';
 import { ref } from 'vue';
+import { useApiKeysStore } from '@stores';
 
 const apiKeysStore = useApiKeysStore();
 const { deleteApiKey } = apiKeysStore;

@@ -5,21 +5,25 @@
         <div class="dialog dialog-box-transition">
           <h1 v-if="title" class="text-2xl text-center pt-5">{{ title }}</h1>
           <div class="dialog__content">
-            <slot/>
+            <slot />
           </div>
           <div class="dialog__footer" v-if="props.showActions">
-            <Button name="cancel"
-                    value="cancel"
-                    color="gray"
-                    :text="cancelLabel"
-                    :disabled="isActioning"
-                    @click="emits('onCloseDialog')"/>
-            <Button name="continue"
-                    value="continue"
-                    color="primary"
-                    :is-actioning="isActioning"
-                    :text="confirmLabel"
-                    @click="emits('onConfirmDialog')"/>
+            <Button
+              name="cancel"
+              value="cancel"
+              color="gray"
+              :text="cancelLabel"
+              :disabled="isActioning"
+              @click="emits('onCloseDialog')"
+            />
+            <Button
+              name="continue"
+              value="continue"
+              color="primary"
+              :is-actioning="isActioning"
+              :text="confirmLabel"
+              @click="emits('onConfirmDialog')"
+            />
           </div>
         </div>
       </div>
@@ -28,8 +32,8 @@
 </template>
 
 <script setup lang="ts">
-import { Button } from '@components';
 import { computed, watch } from 'vue';
+import { Button } from '@components';
 
 interface DialogProps {
   isOpen: boolean;
@@ -48,8 +52,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
 });
 
 const emits = defineEmits<{
-  (event: 'onCloseDialog'): void;
-  (event: 'onConfirmDialog'): void;
+  (event: 'onCloseDialog' | 'onConfirmDialog'): void;
 }>();
 
 const _isOpen = computed(() => props.isOpen);
@@ -75,8 +78,7 @@ watch(_isOpen, () => {
 
 <style scoped lang="scss">
 .wrapper {
-  @apply
-  fixed
+  @apply fixed
   top-0
   left-0
   bottom-0
@@ -88,8 +90,7 @@ watch(_isOpen, () => {
   justify-center;
 
   .dialog {
-    @apply
-    max-w-[600px]
+    @apply max-w-[600px]
     flex
     flex-col
     bg-white
@@ -106,8 +107,7 @@ watch(_isOpen, () => {
     }
 
     &__footer {
-      @apply
-      flex
+      @apply flex
       justify-between
       p-5
       border-t

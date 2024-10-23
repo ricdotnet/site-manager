@@ -4,16 +4,18 @@
       <h1 class="text-2xl mb-5">Domain Settings</h1>
       <div class="grid grid-cols-2 gap-5">
         <div>
-          <Input ref="domainInputRef"
-                 id="domain"
-                 placeholder="Domain"
-                 :validator="domainValidator"
+          <Input
+            ref="domainInputRef"
+            id="domain"
+            placeholder="Domain"
+            :validator="domainValidator"
           />
         </div>
         <div>
-          <Input ref="configNameInputRef"
-                 id="domain"
-                 placeholder="Config name"
+          <Input
+            ref="configNameInputRef"
+            id="domain"
+            placeholder="Config name"
           />
         </div>
       </div>
@@ -24,18 +26,25 @@
       <div ref="monacoRef" class="h-[500px] p-1 rounded-md bg-[#1E1E1E]"></div>
     </div>
 
-    <Button type="button" name="save" color="primary" text="Save" @click="onClick" :is-actioning="isSaving"/>
+    <Button
+      type="button"
+      name="save"
+      color="primary"
+      text="Save"
+      @click="onClick"
+      :is-actioning="isSaving"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import * as monaco from 'monaco-editor';
 import { Button, Input } from '@components';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useEditor, useRequest, useToaster } from '@composables';
-import { useSitesStore } from '@stores';
 import type { InputComponent } from '@types';
 import { domainValidator } from '@validators';
-import * as monaco from 'monaco-editor';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { useSitesStore } from '@stores';
 
 const { getSite } = useSitesStore();
 

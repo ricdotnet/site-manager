@@ -1,39 +1,49 @@
 <template>
-  <Dialog title="Add API Key"
-          confirm-label="Add"
-          :is-open="isAddingApiKey"
-          :is-actioning="isPostingApiKey"
-          @on-close-dialog="onCloseDialog"
-          @on-confirm-dialog="onClickConfirmDialog">
+  <Dialog
+    title="Add API Key"
+    confirm-label="Add"
+    :is-open="isAddingApiKey"
+    :is-actioning="isPostingApiKey"
+    @on-close-dialog="onCloseDialog"
+    @on-confirm-dialog="onClickConfirmDialog"
+  >
     <div class="flex flex-col gap-5">
-      <Input ref="apiKeyInput"
-             id="key"
-             placeholder="KEY"
-             :validator="apiKeyValidator"/>
-      <Input ref="apiKeyValueInput"
-             id="value"
-             placeholder="VALUE"
-             :validator="apiKeyValueValidator"/>
+      <Input
+        ref="apiKeyInput"
+        id="key"
+        placeholder="KEY"
+        :validator="apiKeyValidator"
+      />
+      <Input
+        ref="apiKeyValueInput"
+        id="value"
+        placeholder="VALUE"
+        :validator="apiKeyValueValidator"
+      />
       <Transition name="slide-down">
-        <div v-if="generalErrorMessage" class="text-center text-red-500" v-html="generalErrorMessage"></div>
+        <div
+          v-if="generalErrorMessage"
+          class="text-center text-red-500"
+          v-html="generalErrorMessage"
+        ></div>
       </Transition>
     </div>
 
     <AddApiKeyExistsDialog
       :is-api-key-exists-dialog-open="isApiKeyExistsDialogOpen"
       :on-confirm-dialog="postApiKey"
-      :on-close-dialog="() => isApiKeyExistsDialogOpen = false"
+      :on-close-dialog="() => (isApiKeyExistsDialogOpen = false)"
     />
   </Dialog>
 </template>
 
 <script setup lang="ts">
 import { AddApiKeyExistsDialog, Dialog, Input } from '@components';
-import { useApiKeysStore } from '@stores';
-import type { InputComponent } from '@types';
 import { apiKeyValidator, apiKeyValueValidator } from '@validators';
-import { storeToRefs } from 'pinia';
+import type { InputComponent } from '@types';
 import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useApiKeysStore } from '@stores';
 
 const props = defineProps<{
   isAddingApiKey: boolean;
@@ -68,7 +78,10 @@ const onCloseDialog = () => {
 const onClickConfirmDialog = async () => {
   formHasError.value = false;
 
-  if (!apiKeyInput.value?.getValue() || !apiKeyValueInput.value?.getValue()) {
+  const apiKeyKey = apiKeyInput.value?.getValue();
+  const apiKeyValue = apiKeyValueInput.value?.getValue();
+
+  if (!apiKeyKey || !apiKeyValue) {
     generalErrorMessage.value = 'Please fill in all fields.';
     formHasError.value = true;
 
@@ -83,7 +96,7 @@ const onClickConfirmDialog = async () => {
     return;
   }
 
-  const apiKeyExists = apiKeys.value.find((apiKey) => apiKey.key === apiKeyInput.value!.getValue());
+  const apiKeyExists = apiKeys.value.find((apiKey) => apiKey.key === apiKeyKey);
 
   if (apiKeyExists?.value) {
     isApiKeyExistsDialogOpen.value = true;
@@ -96,8 +109,8 @@ const onClickConfirmDialog = async () => {
 const postApiKey = async () => {
   isPostingApiKey.value = true;
   await apiKeysStore.addApiKey({
-    key: apiKeyInput.value!.getValue(),
-    value: apiKeyValueInput.value!.getValue(),
+    key: apiKeyInput.value?.getValue() ?? '',
+    value: apiKeyValueInput.value?.getValue() ?? '',
     is_api_key: true,
   });
   isPostingApiKey.value = false;

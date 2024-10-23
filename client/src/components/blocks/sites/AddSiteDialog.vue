@@ -1,26 +1,37 @@
 <template>
-  <Dialog title="Add a Site"
-          confirm-label="Add"
-          :is-open="isAddingSite"
-          :is-actioning="isPostingSite"
-          @on-close-dialog="onCloseDialog"
-          @on-confirm-dialog="onClickConfirmDialog">
+  <Dialog
+    title="Add a Site"
+    confirm-label="Add"
+    :is-open="isAddingSite"
+    :is-actioning="isPostingSite"
+    @on-close-dialog="onCloseDialog"
+    @on-confirm-dialog="onClickConfirmDialog"
+  >
     <div class="flex flex-col gap-5">
-      <Input ref="domainInput"
-             id="domain"
-             placeholder="Domain"
-             :validator="domainValidator"
-             @on-key-up="onDomainKeyUp"/>
-      <Input class="w-full" ref="configInput"
-             id="config"
-             placeholder="Config"
-             :validator="configValidator"
-             :readonly="!isEditingConf"
-             :is-editing="isEditingConf"
-             @on-double-click="onConfigDoubleClick"
-             @on-save="onSaveConfig"/>
+      <Input
+        ref="domainInput"
+        id="domain"
+        placeholder="Domain"
+        :validator="domainValidator"
+        @on-key-up="onDomainKeyUp"
+      />
+      <Input
+        class="w-full"
+        ref="configInput"
+        id="config"
+        placeholder="Config"
+        :validator="configValidator"
+        :readonly="!isEditingConf"
+        :is-editing="isEditingConf"
+        @on-double-click="onConfigDoubleClick"
+        @on-save="onSaveConfig"
+      />
       <Transition name="slide-down">
-        <div v-if="generalErrorMessage" class="text-center text-red-500" v-html="generalErrorMessage"></div>
+        <div
+          v-if="generalErrorMessage"
+          class="text-center text-red-500"
+          v-html="generalErrorMessage"
+        ></div>
       </Transition>
     </div>
   </Dialog>
@@ -28,12 +39,12 @@
 
 <script setup lang="ts">
 import { Dialog, Input } from '@components';
+import type { InputComponent, TSite } from '@types';
+import { configValidator, domainValidator } from '@validators';
+import { messages } from '@utils';
+import { ref } from 'vue';
 import { useRequest } from '@composables';
 import { useSitesStore } from '@stores';
-import type { InputComponent, TSite } from '@types';
-import { messages } from '@utils';
-import { configValidator, domainValidator } from '@validators';
-import { ref } from 'vue';
 
 const sitesStore = useSitesStore();
 
@@ -88,6 +99,7 @@ const onClickConfirmDialog = async () => {
   });
 
   if (error) {
+    // @ts-expect-error data exists in error.response
     generalErrorMessage.value = messages.site[error.response.data.message_code];
     return;
   }

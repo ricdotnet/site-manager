@@ -1,34 +1,43 @@
 <template>
   <div class="flex flex-col gap-2">
     <div class="flex gap-2">
-      <input class="input"
-             :class="errorClasses"
-             :id="id"
-             :type="type ?? 'text'"
-             :placeholder="placeholder"
-             :disabled="disabled"
-             :readonly="readonly"
-             ref="inputRef"
-             @keyup="onKeyUp"
-             @dblclick="onDoubleClick"
-             @focusout="onFocusOut"/>
-      <Button v-if="isEditing" name="save" id="save" color="primary" @click="onClickSave">
-        <CheckIcon class="w-5 h-5"/>
+      <input
+        class="input"
+        :class="errorClasses"
+        :id="id"
+        :type="type ?? 'text'"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        :readonly="readonly"
+        ref="inputRef"
+        @keyup="onKeyUp"
+        @dblclick="onDoubleClick"
+        @focusout="onFocusOut"
+      />
+      <Button
+        v-if="isEditing"
+        name="save"
+        id="save"
+        color="primary"
+        @click="onClickSave"
+      >
+        <CheckIcon class="w-5 h-5" />
       </Button>
     </div>
     <Transition name="slide-down">
-      <span v-if="errorMessageRef"
-            class="text-red-500 text-sm px-4">{{ errorMessageRef }}</span>
+      <span v-if="errorMessageRef" class="text-red-500 text-sm px-4">{{
+        errorMessageRef
+      }}</span>
     </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Button } from '@components';
-import { useDebounce } from '@composables';
-import { CheckIcon } from '@heroicons/vue/20/solid';
 import { type Validator, validate } from '@validators';
 import { computed, onUnmounted, reactive, ref } from 'vue';
+import { Button } from '@components';
+import { CheckIcon } from '@heroicons/vue/20/solid';
+import { useDebounce } from '@composables';
 
 const debounce = useDebounce();
 
@@ -61,34 +70,33 @@ const errorMessageRef = ref(state.errorMessage);
 
 const inputRef = ref<HTMLInputElement>();
 const hasError = ref(false);
-const timeout = ref<NodeJS.Timeout>();
+const timeoutCounter = ref<number>();
 const oldValue = ref('');
 
-const errorClasses = computed(() => {
+const errorClasses = () => {
   if (hasError.value) {
-    if (timeout.value) {
-      clearTimeout(timeout.value);
-      timeout.value = undefined;
+    if (timeoutCounter.value) {
+      clearTimeout(timeoutCounter.value);
+      timeoutCounter.value = undefined;
     }
-    timeout.value = setTimeout(() => {
+    // @ts-expect-error: the timeout will be a number in the browser
+    timeoutCounter.value = setTimeout(() => {
       setError(false);
       emits('onResetError', props.id);
     }, props.timeout ?? 20000);
     return 'outline outline-offset-2 outline-2 outline-red-500';
   }
   return 'outline-none focus:outline-cobalt-green';
-});
+};
 
 const emits = defineEmits<{
-  (event: 'onResetError', key: string): void;
-  (event: 'onKeyUp', value: string): void;
-  (event: 'onDoubleClick'): void;
-  (event: 'onSave'): void;
+  (event: 'onResetError' | 'onKeyUp', key: string): void;
+  (event: 'onDoubleClick' | 'onSave'): void;
 }>();
 
 const getValue = () => {
   const value = inputRef.value?.value;
-  if (props.validator) {
+  if (props.validator && value) {
     const error = validate(props.validator, value);
     if (error) {
       state.errorMessage = error;
@@ -126,7 +134,7 @@ const onDoubleClick = () => {
 const onFocusOut = () => {
   const value = inputRef.value?.value;
 
-  if (props.validator) {
+  if (props.validator && value) {
     const error = validate(props.validator, value);
     if (error) {
       state.errorMessage = error;
@@ -155,7 +163,7 @@ const setError = (bool: boolean, message?: string) => {
 };
 
 onUnmounted(() => {
-  clearTimeout(timeout.value);
+  clearTimeout(timeoutCounter.value);
 });
 
 defineExpose({ getValue, setValue, setError, hasError });
@@ -163,8 +171,7 @@ defineExpose({ getValue, setValue, setError, hasError });
 
 <style scoped lang="scss">
 .input {
-  @apply
-  w-full
+  @apply w-full
   py-3
   px-4
   bg-white

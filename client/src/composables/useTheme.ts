@@ -25,16 +25,16 @@ const useTheme = (): TUseTheme => {
 
   if (
     localStorage.theme === 'dark' ||
-    (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    (!('theme' in localStorage) &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches)
   ) {
     setDark(true);
   } else {
     setDark(false);
   }
 
-  const toggleTheme = (): void => {
+  const toggleTheme = () =>
     currentTheme.value === 'dark' ? setDark(false) : setDark(true);
-  };
 
   return {
     toggleTheme,

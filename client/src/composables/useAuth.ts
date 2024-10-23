@@ -1,14 +1,13 @@
-import { useUserStore } from '@stores';
-import type { RegisterData } from '@types';
 import type { AxiosError } from 'axios';
+import type { RegisterData } from '@types';
 import axios from 'axios';
 import { ref } from 'vue';
+import { useUserStore } from '@stores';
 
 const useAuth = () => {
   const api = import.meta.env.VITE_API;
   const userStore = useUserStore();
 
-  // @ts-ignore
   const login = async (username: string, password: string) => {
     const error = ref<unknown>();
 

@@ -20,18 +20,27 @@
 </template>
 
 <script setup lang="ts">
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components';
-import { useRequest } from '@composables';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@components';
 import { onMounted, ref } from 'vue';
+import { useRequest } from '@composables';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
-const records = ref([]);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const records = ref<any>([]);
 const isLoadingRecords = ref(true);
 
 onMounted(async () => {
-  const { data, error } = await useRequest({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await useRequest<any>({
     endpoint: `/domains/${route.params.domain}/${route.params.type}`,
     needsAuth: true,
   });
@@ -46,6 +55,4 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

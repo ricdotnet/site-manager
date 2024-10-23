@@ -1,19 +1,21 @@
 <template>
-  <button class="rounded-md button-hover-effect flex items-center space-x-1"
-          :class="computedStyles"
-          :name="name"
-          :value="value"
-          :type="buttonType"
-          :disabled="disabled || isActioning">
-    <slot/>
+  <button
+    class="rounded-md button-hover-effect flex items-center space-x-1"
+    :class="computedStyles"
+    :name="name"
+    :value="value"
+    :type="buttonType"
+    :disabled="disabled || isActioning"
+  >
+    <slot />
     <span v-if="text">{{ text }}</span>
-    <ArrowPathIcon v-if="isActioning" class="w-5 animate-spin"/>
+    <ArrowPathIcon v-if="isActioning" class="w-5 animate-spin" />
   </button>
 </template>
 
 <script setup lang="ts">
-import { ArrowPathIcon } from '@heroicons/vue/20/solid';
 import { ButtonColor, ButtonSize, ButtonType } from '@types';
+import { ArrowPathIcon } from '@heroicons/vue/20/solid';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -37,6 +39,8 @@ const buttonStyle = computed(() => {
       return 'bg-red-700 text-white';
     case 'icon':
       return 'bg-transparent text-white hover:bg-dark';
+    default:
+      return '';
   }
 });
 

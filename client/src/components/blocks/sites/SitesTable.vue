@@ -1,9 +1,9 @@
 <template>
   <template v-if="isLoading">
-    <TableLoading/>
+    <TableLoading />
   </template>
   <template v-else-if="!sitesStore.sites.length">
-    <Empty message="You have no sites to show"/>
+    <Empty message="You have no sites to show" />
   </template>
   <template v-else>
     <Table>
@@ -40,13 +40,18 @@
               :class="site.enabled ? 'bg-cobalt-green' : 'bg-red-500'"
               :title="isEnabled(site.enabled)"
             ></span>
-            <router-link :to="'/dashboard/sites/' + site.ID" class="table__body--col--link">
+            <router-link
+              :to="'/dashboard/sites/' + site.ID"
+              class="table__body--col--link"
+            >
               {{ site.domain }}
             </router-link>
           </TableCell>
           <TableCell>{{ site.config_name }}</TableCell>
           <TableCell>{{ new Date(site.created_at).toDateString() }}</TableCell>
-          <TableCell class="text-right">{{ site.has_ssl ? 'Yes' : 'No' }}</TableCell>
+          <TableCell class="text-right">
+            {{ site.has_ssl ? 'Yes' : 'No' }}
+          </TableCell>
         </TableRow>
       </TableBody>
     </Table>
@@ -65,12 +70,9 @@ import {
   TableLoading,
   TableRow,
 } from '@components';
-import { useEvents } from '@composables';
-import { useSitesStore } from '@stores';
+import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-
-const { addEvent, removeEvent } = useEvents();
+import { useSitesStore } from '@stores';
 
 const sitesStore = useSitesStore();
 const { sites } = storeToRefs(sitesStore);
@@ -78,7 +80,9 @@ const { sites } = storeToRefs(sitesStore);
 const fetchError = ref(false);
 const isLoading = ref(false);
 
-const allChecked = computed(() => !sites.value.filter((site) => !site.checked).length);
+const allChecked = computed(
+  () => !sites.value.filter((site) => !site.checked).length,
+);
 const anyChecked = computed(() => sites.value.some((site) => site.checked));
 
 onMounted(async () => {
@@ -128,14 +132,12 @@ const isEnabled = (isEnabled: boolean) => {
 
     &--col {
       &:not(:first-child) {
-        @apply
-        w-auto
+        @apply w-auto
         px-3
         py-5;
       }
 
-      @apply
-      w-12
+      @apply w-12
       pl-3
       transition
       ease-in-out
@@ -145,8 +147,7 @@ const isEnabled = (isEnabled: boolean) => {
       dark:group-hover:bg-dark-darker;
 
       &--link {
-        @apply
-        underline
+        @apply underline
         underline-offset-2
         decoration-dashed
         decoration-1
