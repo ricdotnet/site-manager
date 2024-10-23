@@ -1,7 +1,7 @@
-import { useRequest } from '@composables';
 import type { TApiKey } from '@types';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { useRequest } from '@composables';
 
 export const useApiKeysStore = defineStore('apiKeys', () => {
   const apiKeys = ref<TApiKey[]>([]);
@@ -19,7 +19,9 @@ export const useApiKeysStore = defineStore('apiKeys', () => {
     }
   };
 
-  const addApiKey = async (apiKey: TApiKey) => {
+  const addApiKey = async (
+    apiKey: Pick<TApiKey, 'key' | 'value' | 'is_api_key'>,
+  ) => {
     const { data, error } = await useRequest<TApiKey>({
       endpoint: '/settings',
       method: 'PUT',
@@ -32,7 +34,9 @@ export const useApiKeysStore = defineStore('apiKeys', () => {
     if (data) {
       const existingKey = apiKeys.value.find((key) => key.key === data.key);
       if (existingKey) {
-        apiKeys.value = apiKeys.value.map((key) => (key.key === data.key ? data : key));
+        apiKeys.value = apiKeys.value.map((key) =>
+          key.key === data.key ? data : key,
+        );
         return;
       }
       apiKeys.value = [...apiKeys.value, data];

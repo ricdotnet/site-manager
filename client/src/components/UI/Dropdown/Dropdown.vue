@@ -1,27 +1,37 @@
 <template>
   <div ref="dropdownRef" class="dropdown">
-    <slot name="caller"/>
+    <slot name="caller" />
     <template v-if="!slots.caller">
-      <Button :id="id" :name="name ?? `dropdown-button-${randomName}`" :color="color ?? 'primary'" @click="emits('onClick')">
+      <Button
+        :id="id"
+        :name="name ?? `dropdown-button-${randomName}`"
+        :color="color ?? 'primary'"
+        @click="emits('onClick')"
+      >
         <span>{{ text }}</span>
-        <ChevronDownIcon v-if="!isOpen" class="w-5"/>
-        <ChevronUpIcon v-if="isOpen" class="w-5"/>
+        <ChevronDownIcon v-if="!isOpen" class="w-5" />
+        <ChevronUpIcon v-if="isOpen" class="w-5" />
       </Button>
     </template>
 
     <Transition name="slide-down">
-      <div ref="itemsRef" v-if="isOpen && slots.items" class="dropdown__items" :class="itemsPosition">
-        <slot name="items"/>
+      <div
+        ref="itemsRef"
+        v-if="isOpen && slots.items"
+        class="dropdown__items"
+        :class="itemsPosition"
+      >
+        <slot name="items" />
       </div>
     </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Button } from '@components';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/20/solid';
-import { ButtonColor } from '@types';
 import { computed, ref, useSlots, watch } from 'vue';
+import { Button } from '@components';
+import { ButtonColor } from '@types';
 
 const props = defineProps<{
   id?: string;
@@ -50,6 +60,8 @@ const itemsPosition = computed(() => {
 
     return 'left-0';
   }
+
+  return null;
 });
 
 watch(
@@ -76,8 +88,7 @@ const onDropdownFocusOut = (e: FocusEvent) => {
   @apply relative;
 
   &__items {
-    @apply
-    absolute
+    @apply absolute
     w-max
     min-w-[150px]
     max-w-[250px]

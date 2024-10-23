@@ -11,9 +11,15 @@
         @click="isOpenDeleteSites = true"
       />
     </template>
-    <Button text="Add Site" color="primary" value="add-site" name="add-site" @click="onClickAddSite"/>
+    <Button
+      text="Add Site"
+      color="primary"
+      value="add-site"
+      name="add-site"
+      @click="onClickAddSite"
+    />
   </div>
-  <SitesTable/>
+  <SitesTable />
 
   <AddSiteDialog
     :is-adding-site="isAddingSite"
@@ -28,15 +34,22 @@
 </template>
 
 <script setup lang="ts">
-import { AddSiteDialog, Button, DeleteSitesDialog, SitesTable } from '@components';
-import { useSitesStore } from '@stores';
+import {
+  AddSiteDialog,
+  Button,
+  DeleteSitesDialog,
+  SitesTable,
+} from '@components';
 import { computed, ref } from 'vue';
+import { useSitesStore } from '@stores';
 
 const sitesStore = useSitesStore();
 const isAddingSite = ref(false);
 const isOpenDeleteSites = ref(false);
 
-const anySelected = computed(() => sitesStore.sites.find((site) => site.checked));
+const anySelected = computed(() =>
+  sitesStore.sites.find((site) => site.checked),
+);
 const isDeleting = ref(false);
 
 const onClickAddSite = () => {

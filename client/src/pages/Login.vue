@@ -5,23 +5,22 @@
       <form class="flex flex-col space-y-3" @submit="onSubmitLogin">
         <label for="username" class="flex flex-col space-y-2 relative">
           <span class="pl-4">Username</span>
-          <Input id="username"
-                 ref="username"/>
+          <Input id="username" ref="username" />
         </label>
         <label for="password" class="flex flex-col space-y-2">
           <span class="pl-4">Password</span>
-          <Input id="password"
-                 ref="password"
-                 type="password"/>
+          <Input id="password" ref="password" type="password" />
         </label>
         <ButtonGroup>
-          <LinkButton text="Forgot password" href="#"/>
-          <Button value="login_btn"
-                  name="login_btn"
-                  text="Login"
-                  color="primary"
-                  type="submit"
-                  :is-actioning="isLoggingIn"/>
+          <LinkButton text="Forgot password" href="#" />
+          <Button
+            value="login_btn"
+            name="login_btn"
+            text="Login"
+            color="primary"
+            type="submit"
+            :is-actioning="isLoggingIn"
+          />
         </ButtonGroup>
       </form>
     </div>
@@ -30,10 +29,10 @@
 
 <script setup lang="ts">
 import { Button, ButtonGroup, Input, LinkButton, Stack } from '@components';
-import { useAuth } from '@composables';
 import { InputComponent } from '@types';
 import { messages } from '@utils';
 import { ref } from 'vue';
+import { useAuth } from '@composables';
 import { useRouter } from 'vue-router';
 
 const username = ref<InputComponent>();

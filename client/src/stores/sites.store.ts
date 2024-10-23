@@ -1,8 +1,8 @@
-import { useRequest } from '@composables';
 import type { TSIteResponse, TSite, TSitesResponse } from '@types';
-import { unwrap } from '@utils';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { unwrap } from '@utils';
+import { useRequest } from '@composables';
 import { useRoute } from 'vue-router';
 
 export const useSitesStore = defineStore('sites', () => {

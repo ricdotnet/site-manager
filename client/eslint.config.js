@@ -1,7 +1,7 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
-import tseslint from 'typescript-eslint';
 import pluginVue from 'eslint-plugin-vue';
+import tseslint from 'typescript-eslint';
 
 export default [
   { files: ['**/*.{js,mjs,cjs,ts,vue}'] },
@@ -14,4 +14,18 @@ export default [
     languageOptions: { parserOptions: { parser: tseslint.parser } },
   },
   { ignores: ['node_modules/', 'dist/'] },
+  {
+    rules: {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      'sort-imports': 'error',
+      'vue/multi-word-component-names': 'off',
+    },
+  },
 ];

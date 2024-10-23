@@ -23,9 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import { useSitesStore } from '@stores';
-import { formatDate } from '@utils';
 import { computed } from 'vue';
+import { formatDate } from '@utils';
+import { useSitesStore } from '@stores';
 
 const sitesStore = useSitesStore();
 const { getSite } = sitesStore;
@@ -36,29 +36,25 @@ const lastUpdatedAt = computed(() => formatDate(getSite().updated_at));
 
 <style scoped lang="scss">
 .site-info-container {
-  @apply
-  px-10
+  @apply px-10
   py-10
   border-b
   border-light-border
   dark:border-dark-border;
 
   &__domain {
-    @apply
-    text-4xl
+    @apply text-4xl
     pb-3;
   }
 
   &__grid {
-    @apply
-    grid
+    @apply grid
     grid-rows-2
     grid-cols-2
     gap-y-5;
 
     &--cell {
-      @apply
-      h-10
+      @apply h-10
       flex
       flex-col;
 

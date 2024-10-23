@@ -14,8 +14,8 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowPathIcon } from '@heroicons/vue/20/solid';
 import { ButtonColor, ButtonSize, ButtonType } from '@types';
+import { ArrowPathIcon } from '@heroicons/vue/20/solid';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -39,6 +39,8 @@ const buttonStyle = computed(() => {
       return 'bg-red-700 text-white';
     case 'icon':
       return 'bg-transparent text-white hover:bg-dark';
+    default:
+      return '';
   }
 });
 

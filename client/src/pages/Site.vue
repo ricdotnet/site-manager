@@ -1,20 +1,16 @@
 <template>
-  <template v-if="isLoading">
-    Loading...
-  </template>
-  <template v-else-if="fetchError">
-    something went wrong...
-  </template>
+  <template v-if="isLoading"> Loading... </template>
+  <template v-else-if="fetchError"> something went wrong... </template>
   <template v-else>
-    <SiteInfo/>
-    <SiteItem/>
+    <SiteInfo />
+    <SiteItem />
   </template>
 </template>
 
 <script setup lang="ts">
 import { SiteInfo, SiteItem } from '@components';
-import { useSitesStore } from '@stores';
 import { onMounted, ref } from 'vue';
+import { useSitesStore } from '@stores';
 
 const sitesStore = useSitesStore();
 

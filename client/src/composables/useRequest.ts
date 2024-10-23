@@ -1,6 +1,6 @@
-import { unwrap } from '@utils';
-import axios from 'axios';
 import { type Ref, ref } from 'vue';
+import axios from 'axios';
+import { unwrap } from '@utils';
 
 type RequestVerb = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -33,7 +33,9 @@ export const useRequest = async <TResult>(
   const data = ref<TResult | null>(null) as Ref<TResult | null>;
 
   const headers = {
-    ...(options.needsAuth === true ? { authorization: `Bearer ${localStorage.getItem('token')}` } : {}),
+    ...(options.needsAuth === true
+      ? { authorization: `Bearer ${localStorage.getItem('token')}` }
+      : {}),
   };
 
   if (options.useCache) {

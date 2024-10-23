@@ -1,13 +1,32 @@
 <template>
   <div class="header mb-5">
     <div class="header__greeting">
-      Hello <span class="text-cobalt-green">{{ userStore.username }}</span>, welcome!
+      Hello <span class="text-cobalt-green">{{ userStore.username }}</span
+      >, welcome!
     </div>
     <div class="header__nav">
-      <LinkButton :class="{ active: isActive('overview') }" href="/dashboard" text="Overview"/>
-      <LinkButton :class="{ active: isActive(['sites', 'site-details']) }" href="/dashboard/sites" text="Sites"/>
-      <LinkButton :class="{ active: isActive(['domains', 'domain-details', 'dns-records']) }" href="/dashboard/domains" text="Domains"/>
-      <LinkButton :class="{ active: isActive(['settings', 'profile', 'api-keys']) }" href="/dashboard/settings" text="Settings"/>
+      <LinkButton
+        :class="{ active: isActive('overview') }"
+        href="/dashboard"
+        text="Overview"
+      />
+      <LinkButton
+        :class="{ active: isActive(['sites', 'site-details']) }"
+        href="/dashboard/sites"
+        text="Sites"
+      />
+      <LinkButton
+        :class="{
+          active: isActive(['domains', 'domain-details', 'dns-records']),
+        }"
+        href="/dashboard/domains"
+        text="Domains"
+      />
+      <LinkButton
+        :class="{ active: isActive(['settings', 'profile', 'api-keys']) }"
+        href="/dashboard/settings"
+        text="Settings"
+      />
     </div>
   </div>
   <router-view></router-view>
@@ -15,8 +34,8 @@
 
 <script setup lang="ts">
 import { LinkButton } from '@components';
-import { useUserStore } from '@stores';
 import { useRoute } from 'vue-router';
+import { useUserStore } from '@stores';
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -31,8 +50,7 @@ const isActive = (name: string | string[]) => {
 
 <style scoped lang="scss">
 .header {
-  @apply
-  pt-8
+  @apply pt-8
   grid
   grid-cols-1
   gap-y-3
@@ -52,8 +70,7 @@ const isActive = (name: string | string[]) => {
     }
 
     .active {
-      @apply
-      before:block
+      @apply before:block
       before:absolute
       before:h-0
       before:left-2
