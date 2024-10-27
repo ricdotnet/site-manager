@@ -1,9 +1,15 @@
 <template>
   <div class="mb-5 flex gap-2 justify-end">
-    <Button text="Add API Key" color="primary" value="add-api-key" name="add-api-key" @click="onClickAddApiKey"/>
+    <Button
+      text="Add API Key"
+      color="primary"
+      value="add-api-key"
+      name="add-api-key"
+      @click="onClickAddApiKey"
+    />
   </div>
   <div>
-    <ApiKeysTable/>
+    <ApiKeysTable />
   </div>
 
   <AddApiKeyDialog
@@ -27,6 +33,4 @@ const closeAddApiKeyDialog = () => {
 };
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

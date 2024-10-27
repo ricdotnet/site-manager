@@ -3,7 +3,7 @@
     <div class="flex gap-2">
       <input
         class="input"
-        :class="errorClasses"
+        :class="state.errorClasses"
         :id="id"
         :type="type ?? 'text'"
         :placeholder="placeholder"
@@ -25,16 +25,16 @@
       </Button>
     </div>
     <Transition name="slide-down">
-      <span v-if="errorMessageRef" class="text-red-500 text-sm px-4">{{
-        errorMessageRef
-      }}</span>
+      <span v-if="errorMessageRef" class="text-red-500 text-sm px-4">
+        {{ errorMessageRef }}
+      </span>
     </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
 import { type Validator, validate } from '@validators';
-import { computed, onUnmounted, reactive, ref } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { Button } from '@components';
 import { CheckIcon } from '@heroicons/vue/20/solid';
 import { useDebounce } from '@composables';
@@ -51,7 +51,18 @@ const props = defineProps<{
   disabled?: boolean;
   readonly?: boolean;
   isEditing?: boolean;
+  value?: string;
 }>();
+
+onMounted(() => {
+  if (inputRef.value && props.value) {
+    inputRef.value.value = props.value;
+  }
+});
+
+onUnmounted(() => {
+  clearTimeout(timeoutCounter.value);
+});
 
 const state = reactive({
   errorMessage: computed({
@@ -64,6 +75,7 @@ const state = reactive({
       errorMessageRef.value = v;
     },
   }),
+  errorClasses: '',
 });
 
 const errorMessageRef = ref(state.errorMessage);
@@ -79,14 +91,17 @@ const errorClasses = () => {
       clearTimeout(timeoutCounter.value);
       timeoutCounter.value = undefined;
     }
+
     // @ts-expect-error: the timeout will be a number in the browser
     timeoutCounter.value = setTimeout(() => {
       setError(false);
       emits('onResetError', props.id);
     }, props.timeout ?? 20000);
-    return 'outline outline-offset-2 outline-2 outline-red-500';
+    state.errorClasses = 'outline outline-offset-2 outline-2 outline-red-500';
+
+    return;
   }
-  return 'outline-none focus:outline-cobalt-green';
+  state.errorClasses = 'outline-none focus:outline-cobalt-green';
 };
 
 const emits = defineEmits<{
@@ -160,11 +175,9 @@ const setError = (bool: boolean, message?: string) => {
     state.errorMessage = '';
     emits('onResetError', props.id);
   }
-};
 
-onUnmounted(() => {
-  clearTimeout(timeoutCounter.value);
-});
+  errorClasses();
+};
 
 defineExpose({ getValue, setValue, setError, hasError });
 </script>

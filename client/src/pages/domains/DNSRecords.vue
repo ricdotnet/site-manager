@@ -6,20 +6,26 @@
         <TableHead>Value</TableHead>
         <TableHead>TTL</TableHead>
         <TableHead>Status</TableHead>
+        <TableHead />
       </TableRow>
     </TableHeader>
     <TableBody>
-      <TableRow v-for="record in records" :key="record.id">
+      <TableRow v-for="record in dnsRecords" :key="record.id">
         <TableCell>{{ record.host }}</TableCell>
         <TableCell>{{ record.value }}</TableCell>
         <TableCell>{{ record.ttl }}</TableCell>
         <TableCell>{{ record.status }}</TableCell>
+        <TableCell class="flex justify-end gap-2">
+          <PencilIcon class="w-5" />
+          <TrashIcon class="w-5" />
+        </TableCell>
       </TableRow>
     </TableBody>
   </Table>
 </template>
 
 <script setup lang="ts">
+import { PencilIcon, TrashIcon } from '@heroicons/vue/20/solid';
 import {
   Table,
   TableBody,
@@ -29,28 +35,17 @@ import {
   TableRow,
 } from '@components';
 import { onMounted, ref } from 'vue';
-import { useRequest } from '@composables';
-import { useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { useDnsRecordsStore } from '@stores';
 
-const route = useRoute();
+const dnsRecordsStore = useDnsRecordsStore();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const records = ref<any>([]);
 const isLoadingRecords = ref(true);
 
+const { dnsRecords } = storeToRefs(dnsRecordsStore);
+
 onMounted(async () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await useRequest<any>({
-    endpoint: `/domains/${route.params.domain}/${route.params.type}`,
-    needsAuth: true,
-  });
-
-  if (error) {
-    console.error(error);
-  } else {
-    records.value = data.message.records.records;
-  }
-
+  await dnsRecordsStore.fetchDnsRecords();
   isLoadingRecords.value = false;
 });
 </script>

@@ -1,6 +1,7 @@
 export * from './auth.validator.ts';
 export * from './site.validator.ts';
 export * from './apikey.validator.ts';
+export * from './dns.validator.ts';
 
 type Presence = {
   allowEmpty: boolean;
@@ -37,7 +38,8 @@ export function validate(validator: Validator | (() => void), data: string) {
   if (validator.match?.pattern) {
     const pattern = new RegExp(validator.match.pattern);
     if (!pattern.test(data)) {
-      if (!validator.match.message) return 'your data contains invalid characters';
+      if (!validator.match.message)
+        return 'your data contains invalid characters';
       return validator.match.message;
     }
   }
@@ -50,7 +52,8 @@ export function validate(validator: Validator | (() => void), data: string) {
     }
 
     if (validator.length.maximum && data.length > validator.length.maximum) {
-      if (!validator.length.message) return `your data cannot be longer than ${validator.length.maximum} characters`;
+      if (!validator.length.message)
+        return `your data cannot be longer than ${validator.length.maximum} characters`;
       return validator.length.message;
     }
   }

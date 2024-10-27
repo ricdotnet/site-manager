@@ -12,16 +12,15 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-  .dropdown-item {
-    @apply
-    uppercase
+.dropdown-item {
+  @apply uppercase
     font-light
-    text-dark
+    text-dark-darker
     dark:text-light
     text-sm
     p-3
-    hover:bg-light-lighter
-    dark:hover:bg-dark-border
+    hover:bg-light-border
+    dark:hover:bg-dark
     rounded-md;
-  }
+}
 </style>

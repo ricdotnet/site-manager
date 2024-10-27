@@ -1,33 +1,30 @@
-const events = new Map<string, (args: unknown[]) => void>();
+const _events: { [key: string]: (args: unknown[]) => unknown } = {};
 
 export const useEvents = () => {
-  const addEvent = (event: string, callback: (args: unknown[]) => void) => {
-    if (events.has(event)) {
-      console.warn(
-        `Event ${event} already exists. Clean up the event on unmount to register a new event with the same key.`,
-      );
-    }
-
-    events.set(event, callback);
+  const on = (key: string, callback: (...args: unknown[]) => unknown) => {
+    _events[key] = callback;
   };
 
-  const removeEvent = (event: keyof typeof events.keys) => {
-    if (!events.has(event)) {
-      console.error(`Event ${event} does not exist`);
+  const off = (key: string): unknown => {
+    if (!_events[key]) {
+      console.error(`Event ${key} does not exist`);
+      return;
     }
 
-    events.delete(event);
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete _events[key];
   };
 
-  const emitEvent = (event: keyof typeof events.keys, ...args: unknown[]) => {
-    if (!events.has(event)) {
-      console.error(`Event ${event} does not exist`);
+  const emit = (key: string, ...args: unknown[]) => {
+    if (!_events[key]) {
+      console.error(`Event ${key} does not exist`);
+      return;
     }
 
-    const eventFn = events.get(event);
-    if (!eventFn) return;
-    eventFn(args);
+    const eventFn = _events[key];
+    if (!eventFn) return {};
+    return eventFn(args);
   };
 
-  return { addEvent, removeEvent, emitEvent };
+  return { on, off, emit };
 };

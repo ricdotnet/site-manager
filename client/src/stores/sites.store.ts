@@ -1,4 +1,4 @@
-import type { TSIteResponse, TSite, TSitesResponse } from '@types';
+import type { TSite, TSiteResponse, TSitesResponse } from '@types';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { unwrap } from '@utils';
@@ -36,7 +36,7 @@ export const useSitesStore = defineStore('sites', () => {
   };
 
   const fetchSite = async (): Promise<Error | undefined> => {
-    const { data, error } = await useRequest<TSIteResponse>({
+    const { data, error } = await useRequest<TSiteResponse>({
       endpoint: `/site/${route.params.id}`,
       needsAuth: true,
     });

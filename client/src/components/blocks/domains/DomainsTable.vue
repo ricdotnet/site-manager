@@ -10,21 +10,26 @@
     </TableHeader>
     <TableBody>
       <TableRow v-for="domain in domains" :key="domain.order_id">
-        <DomainsTableItem :domain="domain"/>
+        <DomainsTableItem :domain="domain" />
       </TableRow>
     </TableBody>
   </Table>
 </template>
 
 <script setup lang="ts">
-import { DomainsTableItem, Table, TableBody, TableHead, TableHeader, TableRow } from '@components';
-import { TDomain } from '@types';
+import {
+  DomainsTableItem,
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@components';
+import type { TDomain } from '@types';
 
 defineProps<{
   domains: TDomain[];
 }>();
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

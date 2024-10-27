@@ -2,6 +2,7 @@ export type ButtonType = 'button' | 'reset' | 'submit';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type ButtonColor = 'primary' | 'gray' | 'danger' | 'icon';
 
+// components
 export type InputComponent = {
   getValue: () => string;
   setValue: (value: string) => void;
@@ -9,6 +10,32 @@ export type InputComponent = {
   hasError: boolean;
 };
 
+export type FormComponent = {
+  setFormError: (error: string | undefined) => void;
+  clearFormError: () => void;
+};
+
+// responses
+export type BaseResponse = {
+  code: number;
+  message?: string;
+};
+
+export type TSitesResponse = BaseResponse & {
+  sites: TSite[];
+};
+
+export type TSiteResponse = BaseResponse & {
+  site: TSite;
+};
+
+export type TDNSRecordsResponse = BaseResponse & {
+  records: {
+    records: TDNSRecord[];
+  };
+};
+
+// more
 export type RegisterData = {
   username: string;
   email: string;
@@ -26,18 +53,6 @@ export type TSite = {
   updated_at: string;
   config?: string;
   checked?: boolean;
-};
-
-export type TSitesResponse = {
-  code: number;
-  message: string;
-  sites: TSite[];
-};
-
-export type TSIteResponse = {
-  code: number;
-  message: string;
-  site: TSite;
 };
 
 export type TToast = {
@@ -61,4 +76,26 @@ export type TDomain = {
   name: string;
   created_at: string;
   renewal_at: string;
+};
+
+export type TDNSRecord = {
+  id: number;
+  host: string;
+  value: string;
+  ttl: string;
+  status: string;
+};
+
+export type TDNSRecordFormProps = {
+  onClearFormError: () => void;
+};
+
+export type TDNSRecordFormProcess = {
+  hasError?: boolean;
+  error?: string;
+  data?: {
+    host: string;
+    value: string;
+    ttl: string;
+  };
 };
