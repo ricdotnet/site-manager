@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import { computed, ref, useSlots, watch } from 'vue';
 import { Button } from '@components';
-import { ButtonColor } from '@types';
+import type { ButtonColor } from '@types';
 import { ChevronDownIcon } from '@heroicons/vue/20/solid';
 
 const props = defineProps<{
