@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { Button, ButtonGroup, Input, LinkButton, Stack } from '@components';
-import { InputComponent } from '@types';
+import type { InputComponent } from '@types';
 import { messages } from '@utils';
 import { ref } from 'vue';
 import { useAuth } from '@composables';
