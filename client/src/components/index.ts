@@ -15,6 +15,7 @@ export { default as TableBody } from './UI/Table/TableBody.vue';
 export { default as TableRow } from './UI/Table/TableRow.vue';
 export { default as TableHead } from './UI/Table/TableHead.vue';
 export { default as TableCell } from './UI/Table/TableCell.vue';
+export { default as Form } from './UI/Form.vue';
 
 // Blocks
 export { default as Nav } from './blocks/Nav.vue';
@@ -32,6 +33,12 @@ export { default as DeleteApiKeyDialog } from './blocks/settings/DeleteApiKeyDia
 export { default as AddApiKeyExistsDialog } from './blocks/settings/AddApiKeyExistsDialog.vue';
 export { default as DomainsTable } from './blocks/domains/DomainsTable.vue';
 export { default as DomainsTableItem } from './blocks/domains/DomainsTableItem.vue';
+export { default as AddDnsRecordDialog } from './blocks/domains/AddDnsRecordDialog.vue';
+export { default as ARecordForm } from './blocks/domains/ARecordForm.vue';
+export { default as AAAARecordForm } from './blocks/domains/AAAARecordForm.vue';
+export { default as CNAMERecordForm } from './blocks/domains/CNAMERecordForm.vue';
+export { default as TXTRecordForm } from './blocks/domains/TXTRecordForm.vue';
+export { default as DeleteDnsRecordDialog } from './blocks/domains/DeleteDnsRecordDialog.vue';
 
 export { default as TableLoading } from './blocks/TableLoading.vue';
 export { default as Empty } from './blocks/Empty.vue';

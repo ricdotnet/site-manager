@@ -6,21 +6,39 @@
         <TableHead>Value</TableHead>
         <TableHead>TTL</TableHead>
         <TableHead>Status</TableHead>
+        <TableHead />
       </TableRow>
     </TableHeader>
     <TableBody>
-      <TableRow v-for="record in records" :key="record.id">
+      <TableRow v-for="record in dnsRecords" :key="record.id">
         <TableCell>{{ record.host }}</TableCell>
         <TableCell>{{ record.value }}</TableCell>
         <TableCell>{{ record.ttl }}</TableCell>
         <TableCell>{{ record.status }}</TableCell>
+        <TableCell class="flex justify-end gap-2">
+          <PencilIcon class="w-5 cursor-not-allowed" />
+          <Button :name="`delete-${record.host}`" color="icon">
+            <TrashIcon
+              class="w-5"
+              @click="() => onClickDeleteDnsRecord(record)"
+            />
+          </Button>
+        </TableCell>
       </TableRow>
     </TableBody>
   </Table>
+
+  <DeleteDnsRecordDialog
+    :is-open="isDeletingDnsRecord"
+    :on-close-dialog="onCloseDeleteDnsRecordDialog"
+    :dns-record="dnsRecord"
+  />
 </template>
 
 <script setup lang="ts">
 import {
+  Button,
+  DeleteDnsRecordDialog,
   Table,
   TableBody,
   TableCell,
@@ -28,31 +46,34 @@ import {
   TableHeader,
   TableRow,
 } from '@components';
+import { PencilIcon, TrashIcon } from '@heroicons/vue/20/solid';
 import { onMounted, ref } from 'vue';
-import { useRequest } from '@composables';
-import { useRoute } from 'vue-router';
+import type { TDNSRecord } from '@types';
+import { storeToRefs } from 'pinia';
+import { useDnsRecordsStore } from '@stores';
 
-const route = useRoute();
+const dnsRecordsStore = useDnsRecordsStore();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const records = ref<any>([]);
 const isLoadingRecords = ref(true);
+const isDeletingDnsRecord = ref(false);
+const dnsRecord = ref<undefined | TDNSRecord>();
+
+const { dnsRecords } = storeToRefs(dnsRecordsStore);
 
 onMounted(async () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await useRequest<any>({
-    endpoint: `/domains/${route.params.domain}/${route.params.type}`,
-    needsAuth: true,
-  });
-
-  if (error) {
-    console.error(error);
-  } else {
-    records.value = data.message.records.records;
-  }
-
+  await dnsRecordsStore.fetchDnsRecords();
   isLoadingRecords.value = false;
 });
+
+const onClickDeleteDnsRecord = (record: TDNSRecord) => {
+  dnsRecord.value = record;
+  isDeletingDnsRecord.value = true;
+};
+
+const onCloseDeleteDnsRecordDialog = () => {
+  dnsRecord.value = undefined;
+  isDeletingDnsRecord.value = false;
+};
 </script>
 
 <style scoped lang="scss"></style>

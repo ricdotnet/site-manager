@@ -17,7 +17,7 @@ type RequestCache<T = unknown> = {
   data: T;
 };
 
-interface UseRequestResult<TResult, TError = unknown> {
+interface UseRequestResult<TResult, TError = string | undefined> {
   error: TError;
   data: TResult;
 }
@@ -26,10 +26,10 @@ const requestCache = new Map<string, RequestCache>();
 
 export const useRequest = async <TResult>(
   options: RequestOptions,
-): Promise<UseRequestResult<TResult | undefined, unknown>> => {
+): Promise<UseRequestResult<TResult | undefined>> => {
   const api = import.meta.env.VITE_API;
 
-  const error = ref<unknown>(null);
+  const error = ref<string | undefined>();
   const data = ref<TResult | null>(null) as Ref<TResult | null>;
 
   const headers = {
@@ -42,7 +42,10 @@ export const useRequest = async <TResult>(
     const cached = requestCache.get(options.endpoint);
     if (cached && Date.now() - cached.duration < 30000) {
       data.value = cached.data as TResult;
-      return { error: unwrap(error), data: unwrap(data) as TResult };
+      return {
+        error: unwrap(error) as unknown as string,
+        data: unwrap(data) as TResult,
+      };
     }
   }
 
@@ -56,7 +59,13 @@ export const useRequest = async <TResult>(
 
     data.value = response.data;
   } catch (e) {
-    error.value = e;
+    if (axios.isAxiosError(e) && e.response) {
+      error.value = e.response.data.message_code;
+    } else if (e instanceof Error) {
+      error.value = e.message;
+    } else {
+      error.value = 'Something went wrong';
+    }
   }
 
   if (options.useCache && !error.value) {
@@ -66,5 +75,8 @@ export const useRequest = async <TResult>(
     });
   }
 
-  return { error: unwrap(error), data: unwrap(data) as TResult };
+  return {
+    error: unwrap(error) as unknown as string,
+    data: unwrap(data) as TResult,
+  };
 };

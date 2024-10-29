@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/ricdotnet/goenvironmental"
@@ -39,4 +40,14 @@ func IsValidFilename(filename string) bool {
 	regex := regexp.MustCompile(pattern)
 
 	return regex.MatchString(filename)
+}
+
+func DomainsApiUrl(url, userId, apiKey string) string {
+	environment, _ := goenvironmental.Get("ENV")
+
+	if environment == "production" {
+		return fmt.Sprintf("https://httpapi.com/api/%s?auth-userid=%s&api-key=%s", url, userId, apiKey)
+	}
+
+	return fmt.Sprintf("https://test.httpapi.com/api/%s?auth-userid=%s&api-key=%s", url, userId, apiKey)
 }

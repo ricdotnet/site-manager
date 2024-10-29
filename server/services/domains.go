@@ -4,12 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/charmbracelet/log"
 	"gorm.io/gorm"
 	"io"
 	"net/http"
 	"ricr.dev/site-manager/models"
 	"ricr.dev/site-manager/repository"
+	"ricr.dev/site-manager/utils"
+	"slices"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type (
@@ -57,6 +62,13 @@ type (
 	}
 )
 
+var recordTypes = map[string]func(string) string{
+	"A":     func(action string) string { return fmt.Sprintf("%s-ipv4-record", action) },
+	"AAAA":  func(action string) string { return fmt.Sprintf("%s-ipv6-record", action) },
+	"CNAME": func(action string) string { return fmt.Sprintf("%s-cname-record", action) },
+	"TXT":   func(action string) string { return fmt.Sprintf("%s-txt-record", action) },
+}
+
 func NewDomainsService(db *gorm.DB) *DomainsService {
 	settingsRepo := &repository.SettingsRepo{Db: db}
 
@@ -66,7 +78,7 @@ func NewDomainsService(db *gorm.DB) *DomainsService {
 }
 
 func (d *DomainsService) GetDomains() (error, *Domains) {
-	response, _ := domainsHttpApi(d.SettingsRepo, "GET", "domains/search.json", "&no-of-records=20&page-no=1")
+	response, _ := domainsHttpApi(d.SettingsRepo, "GET", "domains/search.json", "&no-of-records=20&page-no=1", nil)
 	domains := &Domains{}
 
 	responseBuf, _ := io.ReadAll(response.Body)
@@ -84,10 +96,17 @@ func (d *DomainsService) GetDomains() (error, *Domains) {
 		domains.Domains = append(domains.Domains, *domain)
 	}
 
+	slices.SortFunc(domains.Domains, func(i, j Domain) int {
+		orderId1, _ := strconv.Atoi(i.OrderId)
+		orderId2, _ := strconv.Atoi(j.OrderId)
+
+		return orderId1 - orderId2
+	})
+
 	return nil, domains
 }
 
-func (d *DomainsService) GetDomain(domain string) interface{} {
+func (d *DomainsService) GetDomain(domain string) (error, interface{}) {
 	unmarshal := func(data []byte) interface{} {
 		var result map[string]json.RawMessage
 		_ = json.Unmarshal(data, &result)
@@ -96,17 +115,26 @@ func (d *DomainsService) GetDomain(domain string) interface{} {
 	}
 
 	query := fmt.Sprintf("&domain-name=%s&options=%s", domain, "all")
-	response, _ := domainsHttpApi(d.SettingsRepo, "GET", "domains/details-by-name.json", query)
+	response, err := domainsHttpApi(d.SettingsRepo, "GET", "domains/details-by-name.json", query, nil)
+
+	if err != nil {
+		return err, nil
+	}
 
 	responseBuf, _ := io.ReadAll(response.Body)
 	result := unmarshal(responseBuf)
 
-	return result
+	return nil, result
 }
 
-func (d *DomainsService) GetRecords(domain string, recordType string) *Records {
+func (d *DomainsService) GetRecords(domain string, recordType string) (error, *Records) {
 	query := fmt.Sprintf("&domain-name=%s&type=%s&no-of-records=%d&page-no=%d", domain, recordType, 20, 1)
-	response, _ := domainsHttpApi(d.SettingsRepo, "GET", "dns/manage/search-records.json", query)
+	response, err := domainsHttpApi(d.SettingsRepo, "GET", "dns/manage/search-records.json", query, nil)
+
+	if err != nil {
+		return err, nil
+	}
+
 	records := &Records{}
 
 	responseBuf, _ := io.ReadAll(response.Body)
@@ -122,7 +150,33 @@ func (d *DomainsService) GetRecords(domain string, recordType string) *Records {
 		records.Records = append(records.Records, record)
 	}
 
-	return records
+	slices.SortFunc(records.Records, func(i, j Record) int {
+		return strings.Compare(i.Host, j.Host)
+	})
+
+	return nil, records
+}
+
+func (d *DomainsService) AddRecord(recordType string, query string) (error, interface{}) {
+	url := fmt.Sprintf("dns/manage/%s.json", recordTypes[strings.ToUpper(recordType)]("add"))
+	response, err := domainsHttpApi(d.SettingsRepo, "POST", url, query, nil)
+
+	if err != nil {
+		return err, nil
+	}
+
+	return nil, response
+}
+
+func (d *DomainsService) DeleteRecord(recordType string, query string) (error, interface{}) {
+	url := fmt.Sprintf("dns/manage/%s.json", recordTypes[strings.ToUpper(recordType)]("delete"))
+	response, err := domainsHttpApi(d.SettingsRepo, "POST", url, query, nil)
+
+	if err != nil {
+		return err, nil
+	}
+
+	return nil, response
 }
 
 func unmarshalGeneric(data []byte, pagination *Pagination) []json.RawMessage {
@@ -151,23 +205,39 @@ func unmarshalGeneric(data []byte, pagination *Pagination) []json.RawMessage {
 	return dataArray
 }
 
-func domainsHttpApi(repo *repository.SettingsRepo, method string, url string, query string) (*http.Response, error) {
+func domainsHttpApi(repo *repository.SettingsRepo, method string, url string, query string, payload []byte) (*http.Response, error) {
 	apiKey := &models.Settings{}
 	referrerId := &models.Settings{}
 
 	_ = repo.GetOne("DOMAINS", apiKey)
 	_ = repo.GetOne("DOMAINS_ID", referrerId)
 
-	api := fmt.Sprintf("https://test.httpapi.com/api/%s?auth-userid=%s&api-key=%s%s", url, referrerId.Value, apiKey.Value, query)
+	api := fmt.Sprintf("%s%s", utils.DomainsApiUrl(url, referrerId.Value, apiKey.Value), query)
 
-	req, _ := http.NewRequest(method, api, nil)
+	var payloadReader io.Reader
+
+	if payload != nil {
+		payloadReader = strings.NewReader(string(payload))
+	}
+
+	log.Infof("Sending request to: %s", api)
+
+	domainsApiRequestStart := time.Now()
+
+	req, _ := http.NewRequest(method, api, payloadReader)
 
 	client := &http.Client{}
 	response, err := client.Do(req)
+
+	log.Infof("Request took: %s", time.Since(domainsApiRequestStart))
+
+	if err != nil {
+		return nil, err
+	}
 
 	if response.StatusCode > 299 {
 		return nil, errors.New("Request failed with status code: " + response.Status)
 	}
 
-	return response, err
+	return response, nil
 }

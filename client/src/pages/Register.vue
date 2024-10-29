@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { Button, ButtonGroup, Input, LinkButton, Stack } from '@components';
-import { InputComponent, RegisterData } from '@types';
+import type { InputComponent, RegisterData } from '@types';
 import {
   emailValidator,
   passwordConfirmValidator,

@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { Button, DeleteApiKeyDialog, TableCell } from '@components';
 import { EyeIcon, EyeSlashIcon, TrashIcon } from '@heroicons/vue/20/solid';
-import { TApiKey } from '@types';
+import type { TApiKey } from '@types';
 import { ref } from 'vue';
 
 const isHidden = ref(true);

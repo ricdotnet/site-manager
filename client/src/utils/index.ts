@@ -18,4 +18,5 @@ export function formatDate(date: string): string {
   return new Date(date).toDateString();
 }
 
-export const sleep = (ms: number) => new Promise((r) => setTimeout(() => r(true), ms));
+export const sleep = (ms: number) =>
+  new Promise((r) => setTimeout(() => r(true), ms));

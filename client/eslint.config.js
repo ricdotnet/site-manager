@@ -26,6 +26,7 @@ export default [
       ],
       'sort-imports': 'error',
       'vue/multi-word-component-names': 'off',
+      '@typescript-eslint/consistent-type-imports': 'error',
     },
   },
 ];

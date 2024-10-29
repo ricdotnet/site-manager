@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { ButtonColor, ButtonSize, ButtonType } from '@types';
+import type { ButtonColor, ButtonSize, ButtonType } from '@types';
 import { ArrowPathIcon } from '@heroicons/vue/20/solid';
 import { computed } from 'vue';
 

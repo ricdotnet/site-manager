@@ -8,9 +8,11 @@
         :color="color ?? 'primary'"
         @click="emits('onClick')"
       >
-        <span>{{ text }}</span>
-        <ChevronDownIcon v-if="!isOpen" class="w-5" />
-        <ChevronUpIcon v-if="isOpen" class="w-5" />
+        <span v-if="text">{{ text }}</span>
+        <ChevronDownIcon
+          class="w-5 transition-all"
+          :class="isOpen ? 'rotate-180' : ''"
+        />
       </Button>
     </template>
 
@@ -28,10 +30,10 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/20/solid';
 import { computed, ref, useSlots, watch } from 'vue';
 import { Button } from '@components';
-import { ButtonColor } from '@types';
+import type { ButtonColor } from '@types';
+import { ChevronDownIcon } from '@heroicons/vue/20/solid';
 
 const props = defineProps<{
   id?: string;
@@ -94,12 +96,15 @@ const onDropdownFocusOut = (e: FocusEvent) => {
     max-w-[250px]
     mt-2
     p-3
-    bg-light-border
-    dark:bg-dark
+    bg-light-lighter
+    dark:bg-dark-darker
     flex
     flex-col
     rounded-md
-    z-10;
+    z-10
+    border
+    border-light-border
+    dark:border-dark;
   }
 }
 </style>

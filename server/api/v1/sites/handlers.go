@@ -47,7 +47,7 @@ func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 		})
 	}
 
-	return ctx.JSON(http.StatusOK, Response{
+	return ctx.JSON(http.StatusOK, &Response{
 		ApiResponse: config.ApiResponse{
 			Code:        http.StatusOK,
 			MessageCode: "sites_fetch_success",
@@ -78,7 +78,7 @@ func (s *SitesAPI) getSite(ctx echo.Context) error {
 		})
 	}
 
-	return ctx.JSON(http.StatusOK, Response{
+	return ctx.JSON(http.StatusOK, &Response{
 		ApiResponse: config.ApiResponse{
 			Code:    http.StatusOK,
 			Message: "site_found",
@@ -109,7 +109,7 @@ func (s *SitesAPI) createSite(ctx echo.Context) error {
 	if err != nil {
 		log.Warnf("Failed to create a site with the domain %s", site.Domain)
 
-		return ctx.JSON(http.StatusBadRequest, Response{
+		return ctx.JSON(http.StatusBadRequest, &Response{
 			ApiResponse: config.ApiResponse{
 				Code:        http.StatusBadRequest,
 				MessageCode: "site_create_error",
@@ -124,7 +124,7 @@ func (s *SitesAPI) createSite(ctx echo.Context) error {
 
 	log.Info("Exiting create a site")
 
-	return ctx.JSON(http.StatusCreated, Response{
+	return ctx.JSON(http.StatusCreated, &Response{
 		ApiResponse: config.ApiResponse{
 			Code:    http.StatusCreated,
 			Message: "site_create_success",
@@ -164,7 +164,7 @@ func (s *SitesAPI) updateSite(ctx echo.Context) error {
 		println(err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, Response{
+	return ctx.JSON(http.StatusOK, &Response{
 		ApiResponse: config.ApiResponse{
 			Code:    200,
 			Message: "Site updated successfully",
@@ -191,7 +191,7 @@ func (s *SitesAPI) updateSiteStatus(ctx echo.Context) error {
 
 	log.Info(stdout)
 
-	return ctx.JSON(http.StatusOK, Response{
+	return ctx.JSON(http.StatusOK, &Response{
 		ApiResponse: config.ApiResponse{
 			Code:    200,
 			Message: "Site updated successfully",
@@ -216,7 +216,7 @@ func (s *SitesAPI) deleteSite(ctx echo.Context) error {
 
 	log.Info("Exiting delete sites handler")
 
-	return ctx.JSON(http.StatusOK, Response{
+	return ctx.JSON(http.StatusOK, &Response{
 		ApiResponse: config.ApiResponse{
 			Code:    http.StatusOK,
 			Message: "delete_sites_success",
