@@ -26,9 +26,9 @@ export const useDnsRecordsStore = defineStore('dnsRecords', () => {
     }
   };
 
-  const addDnsRecord = async (data: TDNSRecordFormProcess['data']) => {
-    if (!data) return;
-
+  const addDnsRecord = async (
+    data: NonNullable<TDNSRecordFormProcess['data']>,
+  ) => {
     const nextId = dnsRecords.value.length + 1;
 
     const { error } = await useRequest({
@@ -56,5 +56,24 @@ export const useDnsRecordsStore = defineStore('dnsRecords', () => {
     });
   };
 
-  return { addDnsRecord, dnsRecords, fetchDnsRecords };
+  const deleteDnsRecord = async (
+    data: NonNullable<TDNSRecordFormProcess['data']>,
+  ) => {
+    const { error } = await useRequest({
+      endpoint: `/domains/dns/${route.params.domain}/${route.params.type}`,
+      method: 'DELETE',
+      needsAuth: true,
+      payload: data,
+    });
+
+    if (error) {
+      throw new Error(error);
+    }
+
+    dnsRecords.value = dnsRecords.value.filter(
+      (record) => record.host !== data.host,
+    );
+  };
+
+  return { addDnsRecord, deleteDnsRecord, dnsRecords, fetchDnsRecords };
 });

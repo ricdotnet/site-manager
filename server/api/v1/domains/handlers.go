@@ -127,3 +127,51 @@ func (d *DomainsAPI) addRecord(c echo.Context) error {
 		},
 	})
 }
+
+func (d *DomainsAPI) deleteRecord(c echo.Context) error {
+	domainName := c.Param("domain")
+	recordType := c.Param("type")
+
+	body := &DNSRecord{}
+
+	if err := c.Bind(body); err != nil {
+		return c.JSON(http.StatusBadRequest, &Response{
+			ApiResponse: config.ApiResponse{
+				Code:        http.StatusBadRequest,
+				MessageCode: "invalid_request_body",
+			},
+		})
+	}
+
+	var query string
+
+	switch strings.ToUpper(recordType) {
+	case "A", "AAAA", "CNAME", "TXT":
+		query = fmt.Sprintf("&domain-name=%s&host=%s&value=%s&ttl=%s", domainName, body.Host, body.Value, body.TTL)
+	default:
+		return c.JSON(http.StatusBadRequest, &Response{
+			ApiResponse: config.ApiResponse{
+				Code:        http.StatusBadRequest,
+				MessageCode: "invalid_record_type",
+			},
+		})
+	}
+
+	err, _ := d.domainsService.DeleteRecord(recordType, query)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, &Response{
+			ApiResponse: config.ApiResponse{
+				Code:        http.StatusInternalServerError,
+				MessageCode: "error_deleting_record",
+			},
+		})
+	}
+
+	return c.JSON(http.StatusOK, &Response{
+		ApiResponse: config.ApiResponse{
+			Code:        http.StatusOK,
+			MessageCode: "record_deleted",
+		},
+	})
+}

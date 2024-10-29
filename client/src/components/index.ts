@@ -38,6 +38,7 @@ export { default as ARecordForm } from './blocks/domains/ARecordForm.vue';
 export { default as AAAARecordForm } from './blocks/domains/AAAARecordForm.vue';
 export { default as CNAMERecordForm } from './blocks/domains/CNAMERecordForm.vue';
 export { default as TXTRecordForm } from './blocks/domains/TXTRecordForm.vue';
+export { default as DeleteDnsRecordDialog } from './blocks/domains/DeleteDnsRecordDialog.vue';
 
 export { default as TableLoading } from './blocks/TableLoading.vue';
 export { default as Empty } from './blocks/Empty.vue';

@@ -15,4 +15,5 @@ func Routes(v1 *echo.Group, db *gorm.DB) {
 	domains.GET("/:domain", domainsApi.getDomain)
 	domains.GET("/dns/:domain/:type", domainsApi.getRecords)
 	domains.PUT("/dns/:domain/:type", domainsApi.addRecord)
+	domains.DELETE("/dns/:domain/:type", domainsApi.deleteRecord)
 }

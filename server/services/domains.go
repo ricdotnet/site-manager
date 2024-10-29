@@ -62,11 +62,11 @@ type (
 	}
 )
 
-var recordTypes = map[string]string{
-	"A":     "add-ipv4-record",
-	"AAAA":  "add-ipv6-record",
-	"CNAME": "add-cname-record",
-	"TXT":   "add-txt-record",
+var recordTypes = map[string]func(string) string{
+	"A":     func(action string) string { return fmt.Sprintf("%s-ipv4-record", action) },
+	"AAAA":  func(action string) string { return fmt.Sprintf("%s-ipv6-record", action) },
+	"CNAME": func(action string) string { return fmt.Sprintf("%s-cname-record", action) },
+	"TXT":   func(action string) string { return fmt.Sprintf("%s-txt-record", action) },
 }
 
 func NewDomainsService(db *gorm.DB) *DomainsService {
@@ -158,7 +158,18 @@ func (d *DomainsService) GetRecords(domain string, recordType string) (error, *R
 }
 
 func (d *DomainsService) AddRecord(recordType string, query string) (error, interface{}) {
-	url := fmt.Sprintf("dns/manage/%s.json", recordTypes[strings.ToUpper(recordType)])
+	url := fmt.Sprintf("dns/manage/%s.json", recordTypes[strings.ToUpper(recordType)]("add"))
+	response, err := domainsHttpApi(d.SettingsRepo, "POST", url, query, nil)
+
+	if err != nil {
+		return err, nil
+	}
+
+	return nil, response
+}
+
+func (d *DomainsService) DeleteRecord(recordType string, query string) (error, interface{}) {
+	url := fmt.Sprintf("dns/manage/%s.json", recordTypes[strings.ToUpper(recordType)]("delete"))
 	response, err := domainsHttpApi(d.SettingsRepo, "POST", url, query, nil)
 
 	if err != nil {
