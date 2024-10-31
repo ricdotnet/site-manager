@@ -16,6 +16,8 @@ export { default as TableRow } from './UI/Table/TableRow.vue';
 export { default as TableHead } from './UI/Table/TableHead.vue';
 export { default as TableCell } from './UI/Table/TableCell.vue';
 export { default as Form } from './UI/Form.vue';
+export { default as Breadcrumbs } from './UI/Breadcrumbs/Breadcrumbs.vue';
+export { default as BreadcrumbSeparator } from './UI/Breadcrumbs/BreadcrumbSeparator.vue';
 
 // Blocks
 export { default as Nav } from './blocks/Nav.vue';
@@ -39,6 +41,7 @@ export { default as AAAARecordForm } from './blocks/domains/AAAARecordForm.vue';
 export { default as CNAMERecordForm } from './blocks/domains/CNAMERecordForm.vue';
 export { default as TXTRecordForm } from './blocks/domains/TXTRecordForm.vue';
 export { default as DeleteDnsRecordDialog } from './blocks/domains/DeleteDnsRecordDialog.vue';
+export { default as DnsRecordTypeDropdown } from './blocks/domains/DnsRecordTypeDropdown.vue';
 
 export { default as TableLoading } from './blocks/TableLoading.vue';
 export { default as Empty } from './blocks/Empty.vue';

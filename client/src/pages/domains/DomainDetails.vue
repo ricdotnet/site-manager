@@ -1,6 +1,15 @@
 <template>
   <div class="flex justify-between mb-5">
-    {{ $route.params.domain }}
+    <Breadcrumbs>
+      <span>{{ $route.params.domain }}</span>
+      <BreadcrumbSeparator />
+      <DnsRecordTypeDropdown
+        :is-open="isDropdownOpen"
+        :domain-name="<string>$route.params.domain"
+        :on-click-dropdown="onClickDropdown"
+        :is-breadcrumb-link="true"
+      />
+    </Breadcrumbs>
     <div>
       <Button
         name="add-dns-record"
@@ -11,7 +20,7 @@
       </Button>
     </div>
   </div>
-  <router-view />
+  <router-view :key="<string>$route.params.type" />
 
   <AddDnsRecordDialog
     :is-open="isAddingDnsRecord"
@@ -20,8 +29,19 @@
 </template>
 
 <script setup lang="ts">
-import { AddDnsRecordDialog, Button } from '@components';
+import {
+  AddDnsRecordDialog,
+  BreadcrumbSeparator,
+  Breadcrumbs,
+  Button,
+  DnsRecordTypeDropdown,
+} from '@components';
 import { ref } from 'vue';
 
 const isAddingDnsRecord = ref(false);
+const isDropdownOpen = ref(false);
+
+const onClickDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
 </script>

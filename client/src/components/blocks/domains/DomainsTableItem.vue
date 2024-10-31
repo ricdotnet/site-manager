@@ -14,31 +14,16 @@
     {{ new Date(parseInt(domain.renewal_at) * 1000).toDateString() }}
   </TableCell>
   <TableCell class="flex justify-end">
-    <Dropdown
-      @on-click="isDropdownOpen = !isDropdownOpen"
+    <DnsRecordTypeDropdown
       :is-open="isDropdownOpen"
-    >
-      <template #items>
-        <DropdownItem :href="`domains/${domain.name}/a`" text="A Records" />
-        <DropdownItem
-          :href="`domains/${domain.name}/aaaa`"
-          text="AAAA Records"
-        />
-        <DropdownItem
-          :href="`domains/${domain.name}/cname`"
-          text="CNAME Records"
-        />
-        <DropdownItem :href="`domains/${domain.name}/txt`" text="TXT Records" />
-        <!-- <DropdownItem :href="`domains/${domain.name}/srv`" text="SRV Records"/> -->
-        <!-- <DropdownItem :href="`domains/${domain.name}/ns`" text="NS Records" /> -->
-        <!-- <DropdownItem :href="`domains/${domain.name}/mx`" text="MX Records"/> -->
-      </template>
-    </Dropdown>
+      :domain-name="domain.name"
+      :on-click-dropdown="onClickDropdown"
+    />
   </TableCell>
 </template>
 
 <script setup lang="ts">
-import { Dropdown, DropdownItem, TableCell } from '@components';
+import { DnsRecordTypeDropdown, TableCell } from '@components';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/20/solid';
 import type { TDomain } from '@types';
 import { ref } from 'vue';
@@ -48,4 +33,8 @@ defineProps<{
 }>();
 
 const isDropdownOpen = ref(false);
+
+const onClickDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
 </script>
