@@ -1,10 +1,10 @@
 <template>
   <template v-if="isLoading">
-    <TableLoading/>
+    <TableLoading />
   </template>
   <template v-else>
-    <table class="w-full table-fixed">
-      <slot/>
+    <table class="w-full table-auto">
+      <slot />
     </table>
   </template>
 </template>

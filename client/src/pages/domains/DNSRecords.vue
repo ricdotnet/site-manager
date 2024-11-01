@@ -1,32 +1,53 @@
 <template>
-  <Table :is-loading="isLoadingRecords">
-    <TableHeader>
-      <TableRow>
-        <TableHead>Name</TableHead>
-        <TableHead>Value</TableHead>
-        <TableHead>TTL</TableHead>
-        <TableHead>Status</TableHead>
-        <TableHead />
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      <TableRow v-for="record in dnsRecords" :key="record.id">
-        <TableCell>{{ record.host }}</TableCell>
-        <TableCell>{{ record.value }}</TableCell>
-        <TableCell>{{ record.ttl }}</TableCell>
-        <TableCell>{{ record.status }}</TableCell>
-        <TableCell class="flex justify-end gap-2">
-          <PencilIcon class="w-5 cursor-not-allowed" />
-          <Button :name="`delete-${record.host}`" color="icon">
-            <TrashIcon
-              class="w-5"
-              @click="() => onClickDeleteDnsRecord(record)"
-            />
-          </Button>
-        </TableCell>
-      </TableRow>
-    </TableBody>
-  </Table>
+  <template v-if="isLoadingRecords">
+    <TableLoading />
+  </template>
+  <template v-else-if="!dnsRecords.length">
+    <Empty
+      message="No DNS record available."
+      v-if="!isLoadingRecords && !dnsRecords.length"
+    />
+  </template>
+  <template v-else>
+    <Table :is-loading="isLoadingRecords">
+      <TableHeader>
+        <TableRow>
+          <TableHead class="w-[10%]">Name</TableHead>
+          <TableHead>Value</TableHead>
+          <TableHead class="hidden lg:table-cell w-[1px] whitespace-nowrap">
+            TTL
+          </TableHead>
+          <TableHead class="hidden lg:table-cell w-[1px] whitespace-nowrap">
+            Status
+          </TableHead>
+          <TableHead class="w-[1px] whitespace-nowrap" />
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow v-for="record in dnsRecords" :key="record.id">
+          <TableCell class="max-w-[150px] overflow-auto">
+            {{ record.host }}
+          </TableCell>
+          <TableCell class="max-w-[1px] overflow-auto">
+            {{ record.value }}
+          </TableCell>
+          <TableCell class="hidden lg:table-cell">{{ record.ttl }}</TableCell>
+          <TableCell class="hidden lg:table-cell">
+            {{ record.status }}
+          </TableCell>
+          <TableCell class="flex justify-end gap-2">
+            <PencilIcon class="w-5 cursor-not-allowed" />
+            <Button :name="`delete-${record.host}`" color="icon">
+              <TrashIcon
+                class="w-5"
+                @click="() => onClickDeleteDnsRecord(record)"
+              />
+            </Button>
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  </template>
 
   <DeleteDnsRecordDialog
     :is-open="isDeletingDnsRecord"
@@ -39,11 +60,13 @@
 import {
   Button,
   DeleteDnsRecordDialog,
+  Empty,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
+  TableLoading,
   TableRow,
 } from '@components';
 import { PencilIcon, TrashIcon } from '@heroicons/vue/20/solid';
@@ -75,5 +98,3 @@ const onCloseDeleteDnsRecordDialog = () => {
   isDeletingDnsRecord.value = false;
 };
 </script>
-
-<style scoped lang="scss"></style>

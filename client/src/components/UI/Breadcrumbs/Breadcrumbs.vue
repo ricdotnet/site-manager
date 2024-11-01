@@ -1,5 +1,5 @@
 <template>
-  <ol class="flex gap-4">
+  <ol class="flex gap-4 items-center">
     <slot />
   </ol>
 </template>
