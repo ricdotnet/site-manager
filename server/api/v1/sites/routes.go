@@ -11,7 +11,7 @@ import (
 func Routes(v1 *echo.Group, db *gorm.DB) {
 	sitesApi := New(db)
 
-	sites := v1.Group("/site", middlewares.AuthMiddleware())
+	sites := v1.Group("/site", middlewares.CookieMiddleware)
 
 	sites.GET("/all", sitesApi.getAllSites)
 	sites.GET("/:id", sitesApi.getSite)

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/ricdotnet/goenvironmental"
 	"net/http"
 	"regexp"
 
@@ -97,6 +98,21 @@ func (u *UserAPI) loginUser(ctx echo.Context) error {
 	token := utils.MakeToken(user)
 
 	log.Info("Exiting /login handler")
+
+	cookieName, _ := goenvironmental.Get("COOKIE_NAME")
+	cookieDomain, _ := goenvironmental.Get("COOKIE_DOMAIN")
+
+	cookie := &http.Cookie{
+		Name:     cookieName,
+		Value:    token,
+		HttpOnly: true,
+		Secure:   true,
+		Path:     "/",
+		SameSite: http.SameSiteLaxMode,
+		Domain:   cookieDomain,
+	}
+
+	ctx.SetCookie(cookie)
 
 	return ctx.JSON(http.StatusOK, Response{
 		ID:       user.ID,

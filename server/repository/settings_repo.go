@@ -46,8 +46,10 @@ func (repo *SettingsRepo) CreateOrUpdateOne(item interface{}) (interface{}, erro
 	return setting, nil
 }
 
-func (repo *SettingsRepo) DeleteOne(key string) error {
-	if err := repo.Db.Delete(&Setting{}, "`key` = ?", key).Error; err != nil {
+func (repo *SettingsRepo) DeleteOne(key string, opts ...interface{}) error {
+	userId := opts[0].(uint)
+
+	if err := repo.Db.Delete(&Setting{}, "`key` = ? and `user_id` = ?", key, userId).Error; err != nil {
 		return err
 	}
 

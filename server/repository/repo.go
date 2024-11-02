@@ -32,7 +32,7 @@ type (
 	}
 
 	DeleteOne interface {
-		DeleteOne(string) error
+		DeleteOne(string, ...interface{}) error
 	}
 
 	DeleteManyByID interface {

@@ -12,7 +12,6 @@ import (
 
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
-	"ricr.dev/site-manager/utils"
 )
 
 type Site = models.Site
@@ -36,8 +35,8 @@ type DeleteSites struct {
 
 // TODO: Add pagination
 func (s *SitesAPI) getAllSites(ctx echo.Context) error {
-	userCtx := utils.GetTokenClaims(ctx)
 	sites := &[]Site{}
+	userCtx := ctx.Get("user")
 
 	err := s.repo.GetAll(sites, userCtx)
 	if err != nil {
@@ -57,8 +56,8 @@ func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 }
 
 func (s *SitesAPI) getSite(ctx echo.Context) error {
-	userCtx := utils.GetTokenClaims(ctx)
 	site := &Site{}
+	userCtx := ctx.Get("user")
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	err := s.repo.GetOneByID(uint(id), site, userCtx)
@@ -102,7 +101,7 @@ func (s *SitesAPI) createSite(ctx echo.Context) error {
 		})
 	}
 
-	userCtx := utils.GetTokenClaims(ctx)
+	userCtx := ctx.Get("user").(*config.Session)
 	site.UserID = userCtx.UserID
 
 	err := s.repo.CreateOne(site)
@@ -142,7 +141,7 @@ func (s *SitesAPI) updateSite(ctx echo.Context) error {
 
 	oldSite := &Site{}
 
-	err = s.repo.GetOneByID(body.Site.ID, oldSite, utils.GetTokenClaims(ctx))
+	err = s.repo.GetOneByID(body.Site.ID, oldSite, ctx.Get("user").(*config.Session))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "This site does not exist")
 	}

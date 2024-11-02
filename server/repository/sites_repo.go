@@ -15,20 +15,20 @@ type Site = models.Site
 
 func (repo *SitesRepo) GetAll(items ...interface{}) error {
 	sites := items[0].(*[]Site)
-	user := items[1].(*config.JwtCustomClaims)
+	user := items[1].(*config.Session)
 
 	if err := repo.Db.Find(&sites, "user_id = ?", user.UserID).Error; err != nil {
 		return err
 	}
 
-	log.Infof("Found %d site records for user %s", len(*sites), user.Username)
+	log.Infof("Found %d site records for user %s", len(*sites), user.UserID)
 
 	return nil
 }
 
 func (repo *SitesRepo) GetOneByID(id uint, items ...interface{}) error {
 	site := items[0].(*Site)
-	user := items[1].(*config.JwtCustomClaims)
+	user := items[1].(*config.Session)
 
 	if err := repo.Db.First(site, "id = ? AND user_id = ?", id, user.UserID).Error; err != nil {
 		return err
@@ -38,7 +38,7 @@ func (repo *SitesRepo) GetOneByID(id uint, items ...interface{}) error {
 		return gorm.ErrRecordNotFound
 	}
 
-	log.Infof("Found 1 site record with id %d for user %s", id, user.Username)
+	log.Infof("Found 1 site record with id %d for user %s", id, user.UserID)
 
 	return nil
 }
