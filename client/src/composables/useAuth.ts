@@ -12,12 +12,16 @@ const useAuth = () => {
     const error = ref<unknown>();
 
     try {
-      const { data } = await axios.post(`${api}/user/login`, {
-        username: username,
-        password: password,
-      });
+      const { data } = await axios.post(
+        `${api}/user/login`,
+        {
+          username: username,
+          password: password,
+        },
+        { withCredentials: true },
+      );
 
-      localStorage.setItem('token', data.token);
+      // localStorage.setItem('token', data.token);
 
       userStore.setIsAuthed(true);
       userStore.setUserId(data.id);

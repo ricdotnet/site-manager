@@ -55,6 +55,7 @@ export const useRequest = async <TResult>(
       method: options.method ?? 'GET',
       headers,
       data: options.payload,
+      withCredentials: true,
     });
 
     data.value = response.data;
