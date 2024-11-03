@@ -1,31 +1,36 @@
 package utils
 
 import (
+	"crypto/rand"
+	"encoding/base32"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/ricdotnet/goenvironmental"
+	"net/http"
 	"regexp"
 	"ricr.dev/site-manager/config"
-	"ricr.dev/site-manager/models"
 	"time"
 )
 
-func MakeToken(user *models.User) string {
-	claims := &config.JwtCustomClaims{
-		UserID:   user.ID,
-		Username: user.Username,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
-		},
+func MakeToken() string {
+	bytes := make([]byte, 15)
+	_, _ = rand.Read(bytes)
+	return base32.StdEncoding.EncodeToString(bytes)
+}
+
+func MakeEmptyCookie() *http.Cookie {
+	now := time.Now()
+
+	cookieName, _ := goenvironmental.Get("COOKIE_NAME")
+	cookieDomain, _ := goenvironmental.Get("COOKIE_DOMAIN")
+
+	return &http.Cookie{
+		Name:    cookieName,
+		Domain:  cookieDomain,
+		Path:    "/",
+		Expires: now.AddDate(0, 0, -1),
 	}
-
-	// Create token with claims
-	secret, _ := goenvironmental.Get("APP_KEY")
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, _ := token.SignedString([]byte(secret))
-
-	return t
 }
 
 func GetTokenClaims(ctx echo.Context) *config.JwtCustomClaims {

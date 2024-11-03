@@ -9,7 +9,7 @@ import (
 func Routes(v1 *echo.Group, db *gorm.DB) {
 	settingsApi := New(db)
 
-	settings := v1.Group("/settings", middlewares.CookieMiddleware)
+	settings := v1.Group("/settings", middlewares.CookieMiddleware(db))
 
 	settings.GET("", settingsApi.getAllApiKeys)
 	settings.GET("/:key", settingsApi.getApiKey)

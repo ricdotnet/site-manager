@@ -17,5 +17,6 @@ func dbModels() []interface{} {
 		&models.Site{},
 		&models.SiteData{},
 		&models.Settings{},
+		&models.Session{},
 	}
 }

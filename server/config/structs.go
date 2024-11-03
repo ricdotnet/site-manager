@@ -20,8 +20,10 @@ type (
 	}
 
 	Session struct {
-		UserID uint
-		Role   string
+		UserID   uint
+		Username string
+		Email    string
+		Role     string
 	}
 
 	JwtCustomClaims struct {

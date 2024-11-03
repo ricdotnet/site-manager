@@ -9,7 +9,7 @@ import (
 func Routes(v1 *echo.Group, db *gorm.DB) {
 	domainsApi := New(db)
 
-	domains := v1.Group("/domains", middlewares.AuthMiddleware())
+	domains := v1.Group("/domains", middlewares.CookieMiddleware(db))
 
 	domains.GET("/all", domainsApi.getAllDomains)
 	domains.GET("/:domain", domainsApi.getDomain)

@@ -1,6 +1,8 @@
 package repository
 
-import "errors"
+import (
+	"errors"
+)
 
 type (
 	GetOne interface {
@@ -32,7 +34,7 @@ type (
 	}
 
 	DeleteOne interface {
-		DeleteOne(string, ...interface{}) error
+		DeleteOne(...interface{}) error
 	}
 
 	DeleteManyByID interface {
@@ -42,6 +44,7 @@ type (
 	UserRepository interface {
 		GetOne
 		CreateOne
+		GetOneByID
 	}
 
 	SitesRepository interface {
@@ -56,6 +59,12 @@ type (
 		GetAll
 		GetOne
 		CreateOrUpdateOne
+		DeleteOne
+	}
+
+	SessionRepository interface {
+		GetOne
+		CreateOne
 		DeleteOne
 	}
 )

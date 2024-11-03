@@ -24,6 +24,12 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
+  const logout = async () => {
+    await axios.get(`${api}/user/logout`, {
+      withCredentials: true,
+    });
+  };
+
   const setIsAuthed = (v: boolean) => {
     isAuthed.value = v;
   };
@@ -45,5 +51,6 @@ export const useUserStore = defineStore('user', () => {
     setIsAuthed,
     setUserId,
     setUsername,
+    logout,
   };
 });

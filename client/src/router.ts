@@ -111,7 +111,7 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const userStore = useUserStore();
 
-  if (!userStore.isAuthed && localStorage.getItem('token')) {
+  if (!userStore.isAuthed && !to.meta.isAuthPage) {
     await userStore.tokenAuth();
   }
 

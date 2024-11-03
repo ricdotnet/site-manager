@@ -37,8 +37,8 @@ const router = useRouter();
 const { toggleTheme, currentTheme } = useTheme();
 const userStore = useUserStore();
 
-const doLogout = () => {
-  localStorage.removeItem('token');
+const doLogout = async () => {
+  await userStore.logout();
   userStore.setUsername('');
   userStore.setIsAuthed(false);
   userStore.setUserId('');
