@@ -26,6 +26,7 @@ export type TSitesResponse = BaseResponse & {
 };
 
 export type TSiteResponse = BaseResponse & {
+  config: string;
   site: TSite;
 };
 

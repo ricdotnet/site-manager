@@ -21,7 +21,7 @@ func (repo *SitesRepo) GetAll(items ...interface{}) error {
 		return err
 	}
 
-	log.Infof("Found %d site records for user %s", len(*sites), user.UserID)
+	log.Infof("Found %d site records for user %s", len(*sites), user.Username)
 
 	return nil
 }
@@ -38,7 +38,7 @@ func (repo *SitesRepo) GetOneByID(id uint, items ...interface{}) error {
 		return gorm.ErrRecordNotFound
 	}
 
-	log.Infof("Found 1 site record with id %d for user %s", id, user.UserID)
+	log.Infof("Found 1 site record with id %d for user %s", id, user.Username)
 
 	return nil
 }

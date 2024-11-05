@@ -1,6 +1,8 @@
 <template>
-  <template v-if="isLoading"> Loading... </template>
-  <template v-else-if="fetchError"> something went wrong... </template>
+  <template v-if="isLoading">
+    <Loading class="w-full m-auto" />
+  </template>
+  <template v-else-if="fetchError"> something went wrong...</template>
   <template v-else>
     <SiteInfo />
     <SiteItem />
@@ -8,17 +10,17 @@
 </template>
 
 <script setup lang="ts">
-import { SiteInfo, SiteItem } from '@components';
+import { Loading, SiteInfo, SiteItem } from '@components';
 import { onMounted, ref } from 'vue';
 import { useSitesStore } from '@stores';
 
-const sitesStore = useSitesStore();
+const { fetchSite } = useSitesStore();
 
 const isLoading = ref(true);
 const fetchError = ref(false);
 
 onMounted(async () => {
-  const error = await sitesStore.fetchSite();
+  const error = await fetchSite();
   if (error) fetchError.value = true;
 
   isLoading.value = false;

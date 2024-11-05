@@ -21,6 +21,7 @@ export const messages: { [key: string]: { [key: string]: string } } = {
     site_create_success: 'The new site was created with success',
     site_create_error:
       'Could not add a new site. Please check your data and try again.<br>Hint: config names must be unique.',
+    failed_to_write_file_config: 'Failed to write the new site config.'
   },
   generic: {
     not_implemented: 'This functionality is not fully working yet',

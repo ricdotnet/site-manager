@@ -61,9 +61,9 @@ export const useRequest = async <TResult>(
     data.value = response.data;
   } catch (e) {
     if (axios.isAxiosError(e) && e.response) {
-      error.value = e.response.data.message_code;
+      error.value = e.response.data.message_code ?? 'generic_error';
     } else if (e instanceof Error) {
-      error.value = e.message;
+      error.value = e.message ?? 'generic_error';
     } else {
       error.value = 'Something went wrong';
     }
