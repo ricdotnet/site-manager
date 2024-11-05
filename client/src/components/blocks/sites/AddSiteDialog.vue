@@ -99,8 +99,7 @@ const onClickConfirmDialog = async () => {
   });
 
   if (error) {
-    // @ts-expect-error data exists in error.response
-    generalErrorMessage.value = messages.site[error.response.data.message_code];
+    generalErrorMessage.value = messages.site[error];
     return;
   }
 

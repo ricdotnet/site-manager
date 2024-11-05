@@ -39,7 +39,7 @@ func (ss *SitesService) ReadSingle(dir string, name string) ([]byte, error) {
 
 	conf, err := os.ReadFile(filepath.Join(dir, name))
 	if err != nil {
-		log.Errorf("Failed to read a vhosts: %s", name)
+		log.Errorf("Failed to read an nginx config: %s", name)
 		return nil, err
 	}
 
@@ -48,7 +48,7 @@ func (ss *SitesService) ReadSingle(dir string, name string) ([]byte, error) {
 }
 
 func (ss *SitesService) WriteSingle(name string, content string) error {
-	nginxDir, _ := goenvironmental.Get("SITES_AVAILABLE_PATH")
+	nginxDir, _ := goenvironmental.Get("NGINX_PATH")
 
 	if !utils.IsValidFilename(name) {
 		log.Errorf("The filename used %s is not valid", name)
@@ -82,12 +82,13 @@ func (ss *SitesService) UpdateName(curr string, new string) error {
 		return fmt.Errorf("the filename used %s is not a valid filename", new)
 	}
 
-	nginxDir, _ := goenvironmental.Get("SITES_AVAILABLE_PATH")
+	nginxDir, _ := goenvironmental.Get("NGINX_PATH")
 
 	oldPath := filepath.Join(nginxDir, curr)
 	newPath := filepath.Join(nginxDir, new)
 
-	if err := os.Rename(oldPath, newPath); err != nil {
+	err := os.Rename(oldPath, newPath)
+	if err != nil {
 		return err
 	}
 

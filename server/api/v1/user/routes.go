@@ -13,6 +13,7 @@ func Routes(v1 *echo.Group, db *gorm.DB) {
 
 	user.POST("/login", userApi.loginUser)
 	user.POST("/register", userApi.registerUser)
-	user.PATCH("/update", userApi.updateUser, middlewares.AuthMiddleware())
-	user.GET("/auth", userApi.authUser, middlewares.AuthMiddleware())
+	user.PATCH("/update", userApi.updateUser, middlewares.CookieMiddleware(db))
+	user.GET("/auth", userApi.authUser, middlewares.CookieMiddleware(db))
+	user.GET("/logout", userApi.logout, middlewares.CookieMiddleware(db))
 }

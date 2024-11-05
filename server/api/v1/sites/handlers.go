@@ -12,7 +12,6 @@ import (
 
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
-	"ricr.dev/site-manager/utils"
 )
 
 type Site = models.Site
@@ -36,8 +35,8 @@ type DeleteSites struct {
 
 // TODO: Add pagination
 func (s *SitesAPI) getAllSites(ctx echo.Context) error {
-	userCtx := utils.GetTokenClaims(ctx)
 	sites := &[]Site{}
+	userCtx := ctx.Get("user")
 
 	err := s.repo.GetAll(sites, userCtx)
 	if err != nil {
@@ -57,24 +56,25 @@ func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 }
 
 func (s *SitesAPI) getSite(ctx echo.Context) error {
-	userCtx := utils.GetTokenClaims(ctx)
 	site := &Site{}
+	userCtx := ctx.Get("user")
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	err := s.repo.GetOneByID(uint(id), site, userCtx)
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, "site_not_found")
+		return echo.NewHTTPError(http.StatusNotFound, &config.ApiResponse{
+			Code:        http.StatusNotFound,
+			MessageCode: "site_not_found",
+		})
 	}
 
-	nginxDir, _ := goenvironmental.Get("SITES_AVAILABLE_PATH")
+	nginxDir, _ := goenvironmental.Get("NGINX_PATH")
 	conf, err := s.sitesService.ReadSingle(nginxDir, site.ConfigName)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:    400,
-				Message: "We have a database record for that name but could not read the file",
-			},
+		return echo.NewHTTPError(http.StatusBadRequest, &config.ApiResponse{
+			Code:        400,
+			MessageCode: "database_record_exists_but_file_not_found",
 		})
 	}
 
@@ -95,32 +95,41 @@ func (s *SitesAPI) createSite(ctx echo.Context) error {
 	if err := ctx.Bind(site); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if errorCode := s.validateSite(site); errorCode != nil {
+	if errorCode := s.validateSite(site); errorCode != "" {
 		return ctx.JSON(http.StatusBadRequest, &config.ApiResponse{
 			Code:        http.StatusBadRequest,
-			MessageCode: *errorCode,
+			MessageCode: errorCode,
 		})
 	}
 
-	userCtx := utils.GetTokenClaims(ctx)
+	userCtx := ctx.Get("user").(*config.Session)
 	site.UserID = userCtx.UserID
 
-	err := s.repo.CreateOne(site)
+	transaction := s.db.Begin()
+
+	//err := s.repo.CreateOne(site)
+	err := transaction.Create(site).Error
 	if err != nil {
 		log.Warnf("Failed to create a site with the domain %s", site.Domain)
 
-		return ctx.JSON(http.StatusBadRequest, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:        http.StatusBadRequest,
-				MessageCode: "site_create_error",
-			},
+		transaction.Rollback()
+
+		return ctx.JSON(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "site_create_error",
 		})
 	}
 
 	if err = s.sitesService.WriteSingle(site.ConfigName, ""); err != nil {
 		log.Errorf("Failed to write the new site config: %s", err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write the new site config")
+		transaction.Rollback()
+		return echo.NewHTTPError(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "failed_to_write_file_config",
+		})
 	}
+
+	transaction.Commit()
 
 	log.Info("Exiting create a site")
 
@@ -142,33 +151,50 @@ func (s *SitesAPI) updateSite(ctx echo.Context) error {
 
 	oldSite := &Site{}
 
-	err = s.repo.GetOneByID(body.Site.ID, oldSite, utils.GetTokenClaims(ctx))
+	err = s.repo.GetOneByID(body.Site.ID, oldSite, ctx.Get("user").(*config.Session))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, "This site does not exist")
+		return echo.NewHTTPError(http.StatusNotFound, &config.ApiResponse{
+			Code:        http.StatusNotFound,
+			MessageCode: "site_not_found",
+		})
 	}
 
-	err = s.repo.UpdateOne(body.Site)
+	transaction := s.db.Begin()
+	err = transaction.Updates(body.Site).Error
+
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
+		transaction.Rollback()
+		return echo.NewHTTPError(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "update_site_failed",
+		})
 	}
 
 	if oldSite.ConfigName != body.Site.ConfigName {
 		err = s.sitesService.UpdateName(oldSite.ConfigName, body.Site.ConfigName)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update site")
+			transaction.Rollback()
+			return echo.NewHTTPError(http.StatusBadRequest, &config.ApiResponse{
+				Code:        http.StatusBadRequest,
+				MessageCode: "site_config_rename_failed",
+			})
 		}
 	}
 
 	err = s.sitesService.WriteSingle(body.Site.ConfigName, body.Config)
 	if err != nil {
-		println(err.Error())
+		transaction.Rollback()
+		return echo.NewHTTPError(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "site_config_update_failed",
+		})
 	}
 
-	return ctx.JSON(http.StatusOK, &Response{
-		ApiResponse: config.ApiResponse{
-			Code:    200,
-			Message: "Site updated successfully",
-		},
+	transaction.Commit()
+
+	return ctx.JSON(http.StatusOK, &config.ApiResponse{
+		Code:        200,
+		MessageCode: "site_updated",
 	})
 }
 
@@ -224,33 +250,29 @@ func (s *SitesAPI) deleteSite(ctx echo.Context) error {
 	})
 }
 
-func (s *SitesAPI) validateSite(site *Site) *string {
+func (s *SitesAPI) validateSite(site *Site) string {
 	domainRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$"
 	configRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*.[A-Za-z]{2,}\\.conf$"
 
 	if site.Domain == "" {
 		log.Warn("Tried to add a site with no domain")
-		errCode := "site_missing_domain"
-		return &errCode
+		return "site_missing_domain"
 	}
 
 	if match, _ := regexp.MatchString(domainRegex, site.Domain); !match {
 		log.Warnf("Tried to add a site with an invalid domain %s", site.Domain)
-		errCode := "site_invalid_domain"
-		return &errCode
+		return "site_invalid_domain"
 	}
 
 	if site.ConfigName == "" {
 		log.Warn("Tried to add a site with no config name")
-		errCode := "site_missing_config"
-		return &errCode
+		return "site_missing_config"
 	}
 
 	if match, _ := regexp.MatchString(configRegex, site.ConfigName); !match {
 		log.Warnf("Tried to add a site with an invalid config name %s", site.ConfigName)
-		errCode := "site_invalid_config"
-		return &errCode
+		return "site_invalid_config"
 	}
 
-	return nil
+	return ""
 }

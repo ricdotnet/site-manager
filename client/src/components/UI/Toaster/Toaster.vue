@@ -23,6 +23,6 @@ const { toasts, removeToast } = useToaster();
 }
 
 .toast {
-  @apply py-4 px-8 rounded-md cursor-pointer border dark:border-dark-border border-light-border;
+  @apply py-4 px-8 rounded-md cursor-pointer border dark:border-dark-border border-light-border bg-light dark:bg-dark-darker;
 }
 </style>

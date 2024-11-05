@@ -1,5 +1,8 @@
 <template>
-  <template v-if="!apiKeys.length">
+  <template v-if="isLoadingApiKeys">
+    <TableLoading />
+  </template>
+  <template v-else-if="!apiKeys.length && !isLoadingApiKeys">
     <Empty message="You have not added any third party API Keys." />
   </template>
   <template v-else>
@@ -28,16 +31,20 @@ import {
   TableBody,
   TableHead,
   TableHeader,
+  TableLoading,
   TableRow,
 } from '@components';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useApiKeysStore } from '@stores';
 
 const apiKeysStore = useApiKeysStore();
 const { apiKeys } = storeToRefs(apiKeysStore);
 
+const isLoadingApiKeys = ref(true);
+
 onMounted(async () => {
   await apiKeysStore.fetchApiKeys();
+  isLoadingApiKeys.value = false;
 });
 </script>

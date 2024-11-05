@@ -3,6 +3,7 @@ package v1
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/ricdotnet/goenvironmental"
 	"gorm.io/gorm"
 	"net/http"
 	"ricr.dev/site-manager/api/v1/domains"
@@ -18,8 +19,13 @@ type HealthResponse struct {
 }
 
 func NewRouter(db *gorm.DB) *echo.Echo {
+	allowedOrigins, _ := goenvironmental.Get("CORS_ORIGINS")
+
 	e := echo.New()
-	e.Use(middleware.CORS())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     []string{allowedOrigins},
+		AllowCredentials: true,
+	}))
 
 	// ping endpoint to test if the api is running
 	e.GET("/ping", func(ctx echo.Context) error {

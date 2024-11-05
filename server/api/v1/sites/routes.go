@@ -11,12 +11,12 @@ import (
 func Routes(v1 *echo.Group, db *gorm.DB) {
 	sitesApi := New(db)
 
-	sites := v1.Group("/site", middlewares.AuthMiddleware())
+	sites := v1.Group("/site", middlewares.CookieMiddleware(db))
 
 	sites.GET("/all", sitesApi.getAllSites)
 	sites.GET("/:id", sitesApi.getSite)
 	sites.POST("/", sitesApi.createSite)
 	sites.PATCH("/:id", sitesApi.updateSite)
-	sites.PATCH("/:id/status", sitesApi.updateSiteStatus) // a2ensite / a2dissite
+	sites.PATCH("/:id/status", sitesApi.updateSiteStatus)
 	sites.DELETE("/", sitesApi.deleteSite)
 }

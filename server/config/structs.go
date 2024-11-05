@@ -19,6 +19,13 @@ type (
 		UpdatedAt time.Time `json:"updated_at"`
 	}
 
+	Session struct {
+		UserID   uint
+		Username string
+		Email    string
+		Role     string
+	}
+
 	JwtCustomClaims struct {
 		UserID   uint   `json:"id"`
 		Username string `json:"username"`

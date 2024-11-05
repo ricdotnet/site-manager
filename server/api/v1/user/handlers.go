@@ -1,8 +1,11 @@
 package user
 
 import (
+	"github.com/ricdotnet/goenvironmental"
 	"net/http"
 	"regexp"
+	"ricr.dev/site-manager/utils"
+	"time"
 
 	"github.com/alexedwards/argon2id"
 	"github.com/charmbracelet/log"
@@ -10,7 +13,6 @@ import (
 
 	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
-	"ricr.dev/site-manager/utils"
 )
 
 type User = models.User
@@ -19,15 +21,19 @@ type Response struct {
 	config.ApiResponse
 	ID       uint   `json:"id,omitempty"`
 	Username string `json:"username,omitempty"`
-	Token    string `json:"token,omitempty"`
+	Email    string `json:"email,omitempty"`
 }
 
 func (u *UserAPI) authUser(ctx echo.Context) error {
-	userCtx := utils.GetTokenClaims(ctx)
+	session := ctx.Get("user").(*config.Session)
+
+	user := &models.User{}
+	_ = u.repo.GetOneByID(session.UserID, user)
 
 	return ctx.JSON(http.StatusOK, Response{
-		ID:       userCtx.UserID,
-		Username: userCtx.Username,
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
 		ApiResponse: config.ApiResponse{
 			Code:        http.StatusOK,
 			MessageCode: "valid_token",
@@ -94,14 +100,39 @@ func (u *UserAPI) loginUser(ctx echo.Context) error {
 		})
 	}
 
-	token := utils.MakeToken(user)
+	token := utils.MakeToken()
+
+	session := &models.Session{}
+	session.Token = token
+	session.UserId = user.ID
+
+	expiresAt := time.Now()
+	expiresAt = expiresAt.AddDate(0, 0, 10)
+
+	session.ExpiresAt = expiresAt
+	_ = u.sessionRepo.CreateOne(session)
+
+	cookieName, _ := goenvironmental.Get("COOKIE_NAME")
+	cookieDomain, _ := goenvironmental.Get("COOKIE_DOMAIN")
+
+	cookie := &http.Cookie{
+		Name:     cookieName,
+		Value:    token,
+		HttpOnly: true,
+		Secure:   true,
+		Path:     "/",
+		SameSite: http.SameSiteLaxMode,
+		Domain:   cookieDomain,
+	}
+
+	ctx.SetCookie(cookie)
 
 	log.Info("Exiting /login handler")
 
 	return ctx.JSON(http.StatusOK, Response{
 		ID:       user.ID,
 		Username: user.Username,
-		Token:    token,
+		Email:    user.Email,
 		ApiResponse: config.ApiResponse{
 			Code:        http.StatusOK,
 			MessageCode: "login_success",
@@ -128,7 +159,7 @@ func (u *UserAPI) registerUser(ctx echo.Context) error {
 
 	password, _ := argon2id.CreateHash(user.Password, argon2id.DefaultParams)
 	user.Password = password
-	u.repo.CreateOne(user)
+	_ = u.repo.CreateOne(user)
 
 	log.Info("Exiting the /register handler")
 
@@ -148,6 +179,18 @@ func (u *UserAPI) updateUser(ctx echo.Context) error {
 	return ctx.JSON(http.StatusNotImplemented, config.ApiResponse{
 		Code:        http.StatusNotImplemented,
 		MessageCode: "not_implemented",
+	})
+}
+
+func (u *UserAPI) logout(ctx echo.Context) error {
+	log.Info("Entering the /logout handler")
+
+	_ = u.sessionRepo.DeleteOne(ctx.Get("token"))
+	ctx.SetCookie(utils.MakeEmptyCookie())
+
+	return ctx.JSON(http.StatusOK, config.ApiResponse{
+		Code:        http.StatusOK,
+		MessageCode: "logout_success",
 	})
 }
 

@@ -13,9 +13,7 @@ export const useUserStore = defineStore('user', () => {
   const tokenAuth = async () => {
     try {
       const response = await axios.get(`${api}/user/auth`, {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+        withCredentials: true,
       });
 
       setIsAuthed(true);
@@ -24,6 +22,12 @@ export const useUserStore = defineStore('user', () => {
     } catch (_) {
       localStorage.removeItem('token');
     }
+  };
+
+  const logout = async () => {
+    await axios.get(`${api}/user/logout`, {
+      withCredentials: true,
+    });
   };
 
   const setIsAuthed = (v: boolean) => {
@@ -47,5 +51,6 @@ export const useUserStore = defineStore('user', () => {
     setIsAuthed,
     setUserId,
     setUsername,
+    logout,
   };
 });

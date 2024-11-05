@@ -14,6 +14,7 @@ type SitesAPI struct {
 
 func New(db *gorm.DB) *SitesAPI {
 	return &SitesAPI{
+		db:           db,
 		repo:         &repository.SitesRepo{Db: db},
 		sitesService: services.NewSitesService(),
 	}

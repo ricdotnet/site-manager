@@ -10,6 +10,17 @@ type UserRepo struct {
 	Db *gorm.DB
 }
 
+func (repo *UserRepo) GetOneByID(userId uint, items ...interface{}) error {
+	user := items[0].(*models.User)
+	err := repo.Db.Where("id = ?", userId).First(user).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (repo *UserRepo) GetOne(key string, items ...interface{}) error {
 	user := items[0].(*models.User)
 	isEmail := items[1].(bool)

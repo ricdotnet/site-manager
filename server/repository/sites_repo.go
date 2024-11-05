@@ -15,7 +15,7 @@ type Site = models.Site
 
 func (repo *SitesRepo) GetAll(items ...interface{}) error {
 	sites := items[0].(*[]Site)
-	user := items[1].(*config.JwtCustomClaims)
+	user := items[1].(*config.Session)
 
 	if err := repo.Db.Find(&sites, "user_id = ?", user.UserID).Error; err != nil {
 		return err
@@ -28,7 +28,7 @@ func (repo *SitesRepo) GetAll(items ...interface{}) error {
 
 func (repo *SitesRepo) GetOneByID(id uint, items ...interface{}) error {
 	site := items[0].(*Site)
-	user := items[1].(*config.JwtCustomClaims)
+	user := items[1].(*config.Session)
 
 	if err := repo.Db.First(site, "id = ? AND user_id = ?", id, user.UserID).Error; err != nil {
 		return err
