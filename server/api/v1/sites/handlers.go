@@ -33,7 +33,6 @@ type DeleteSites struct {
 	Sites []uint
 }
 
-// TODO: Add pagination
 func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 	sites := &[]Site{}
 	userCtx := ctx.Get("user")
@@ -45,6 +44,8 @@ func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 			MessageCode: "sites_fetch_error",
 		})
 	}
+
+	_ = s.sitesService.FindFileOnly(sites)
 
 	return ctx.JSON(http.StatusOK, &Response{
 		ApiResponse: config.ApiResponse{
@@ -107,7 +108,6 @@ func (s *SitesAPI) createSite(ctx echo.Context) error {
 
 	transaction := s.db.Begin()
 
-	//err := s.repo.CreateOne(site)
 	err := transaction.Create(site).Error
 	if err != nil {
 		log.Warnf("Failed to create a site with the domain %s", site.Domain)
@@ -120,16 +120,20 @@ func (s *SitesAPI) createSite(ctx echo.Context) error {
 		})
 	}
 
-	if err = s.sitesService.WriteSingle(site.ConfigName, ""); err != nil {
-		log.Errorf("Failed to write the new site config: %s", err.Error())
-		transaction.Rollback()
-		return echo.NewHTTPError(http.StatusBadRequest, &config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "failed_to_write_file_config",
-		})
+	if !site.ConfigOnly {
+		err = s.sitesService.WriteSingle(site.ConfigName, "")
+		if err != nil {
+			log.Errorf("Failed to write the new site config: %s", err.Error())
+			transaction.Rollback()
+			return echo.NewHTTPError(http.StatusBadRequest, &config.ApiResponse{
+				Code:        http.StatusBadRequest,
+				MessageCode: "failed_to_write_file_config",
+			})
+		}
 	}
 
 	transaction.Commit()
+	site.ConfigOnly = false
 
 	log.Info("Exiting create a site")
 

@@ -68,6 +68,10 @@ export const useSitesStore = defineStore('sites', () => {
     return <TSite>unwrap(site);
   };
 
+  const getSites = (): TSite[] => {
+    return sites.value.filter((site) => !site.config_only);
+  }
+
   return {
     sites,
     addSite,
@@ -77,5 +81,6 @@ export const useSitesStore = defineStore('sites', () => {
     checkAll,
     removeSites,
     getSite,
+    getSites,
   };
 });

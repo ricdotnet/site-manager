@@ -10,7 +10,9 @@ type Site struct {
 	ConfigName string `json:"config_name" gorm:"size:255;unique"`
 	Enabled    bool   `json:"enabled" gorm:"default:0"`
 	HasSSL     bool   `json:"has_ssl" gorm:"default:0"`
-	UserID     uint   `json:"user_id"`
+	UserID     uint   `json:"user_id" gorm:"foreignKey:User"`
+	User       User
+	ConfigOnly bool `json:"config_only" gorm:"-"`
 }
 
 type SiteData struct {

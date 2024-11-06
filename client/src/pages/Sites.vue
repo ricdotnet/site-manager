@@ -21,10 +21,17 @@
   </div>
   <SitesTable />
 
+  <template v-if="configOnlySites.length">
+    <div v-for="configOnlySite of configOnlySites" @click="() => onClickAddConfigOnlySite(configOnlySite)">
+      {{ configOnlySite.config_name }}
+    </div>
+  </template>
+
   <AddSiteDialog
     :is-adding-site="isAddingSite"
     :close-dialog="closeAddSiteDialog"
     @on-close-dialog="closeAddSiteDialog"
+    :site="configOnlySiteToCreate"
   />
   <DeleteSitesDialog
     :close-dialog="closeDeleteSitesDialog"
@@ -42,22 +49,33 @@ import {
 } from '@components';
 import { computed, ref } from 'vue';
 import { useSitesStore } from '@stores';
+import { TSite } from '@types';
 
 const sitesStore = useSitesStore();
 const isAddingSite = ref(false);
 const isOpenDeleteSites = ref(false);
+const isDeleting = ref(false);
+const configOnlySiteToCreate = ref<TSite | undefined>();
 
 const anySelected = computed(() =>
   sitesStore.sites.find((site) => site.checked),
 );
-const isDeleting = ref(false);
+const configOnlySites = computed(() =>
+  sitesStore.sites.filter((site) => site.config_only),
+);
 
 const onClickAddSite = () => {
   isAddingSite.value = true;
 };
 
+const onClickAddConfigOnlySite = (site: TSite) => {
+  configOnlySiteToCreate.value = site;
+  isAddingSite.value = true;
+}
+
 const closeAddSiteDialog = () => {
   isAddingSite.value = false;
+  configOnlySiteToCreate.value = undefined;
 };
 
 const closeDeleteSitesDialog = () => {

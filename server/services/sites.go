@@ -6,7 +6,10 @@ import (
 	"github.com/ricdotnet/goenvironmental"
 	"os"
 	"path/filepath"
+	"ricr.dev/site-manager/models"
 	"ricr.dev/site-manager/utils"
+	"slices"
+	"strings"
 )
 
 type SitesService struct {
@@ -72,8 +75,6 @@ func (ss *SitesService) DeleteSingle(dir string, name string) {
 	// not implemented yet
 }
 
-// UpdateName
-// update the name of a .conf file
 func (ss *SitesService) UpdateName(curr string, new string) error {
 	log.Infof("Updating the name of %s to %s", curr, new)
 
@@ -93,5 +94,28 @@ func (ss *SitesService) UpdateName(curr string, new string) error {
 	}
 
 	log.Infof("Finished updating the name of %s to %s", curr, new)
+	return nil
+}
+
+func (ss *SitesService) FindFileOnly(sites *[]models.Site) error {
+	nginxPath, _ := goenvironmental.Get("NGINX_PATH")
+
+	files, err := os.ReadDir(nginxPath)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		contains := slices.ContainsFunc(*sites, func(site models.Site) bool {
+			return site.ConfigName == file.Name()
+		})
+		if !contains && strings.HasSuffix(file.Name(), ".conf") {
+			*sites = append(*sites, models.Site{
+				ConfigName: file.Name(),
+				ConfigOnly: true,
+			})
+		}
+	}
+
 	return nil
 }

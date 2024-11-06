@@ -25,7 +25,7 @@
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow v-for="site in sitesStore.sites" :key="site.ID">
+        <TableRow v-for="site in sitesStore.getSites()" :key="site.ID">
           <TableCell>
             <Checkbox
               :id="'site-' + site.ID"

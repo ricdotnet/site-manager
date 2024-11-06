@@ -13,6 +13,7 @@
         id="domain"
         placeholder="Domain"
         :validator="domainValidator"
+        :value="site?.domain"
         @on-key-up="onDomainKeyUp"
       />
       <Input
@@ -23,6 +24,7 @@
         :validator="configValidator"
         :readonly="!isEditingConf"
         :is-editing="isEditingConf"
+        :value="site?.config_name"
         @on-double-click="onConfigDoubleClick"
         @on-save="onSaveConfig"
       />
@@ -51,6 +53,7 @@ const sitesStore = useSitesStore();
 const props = defineProps<{
   isAddingSite: boolean;
   closeDialog: () => void;
+  site?: TSite;
 }>();
 const isPostingSite = ref(false);
 
@@ -95,6 +98,7 @@ const onClickConfirmDialog = async () => {
     payload: {
       domain: domainInput.value?.getValue(),
       config_name: configInput.value?.getValue(),
+      config_only: props.site?.config_only,
     },
   });
 
@@ -112,7 +116,7 @@ const onClickConfirmDialog = async () => {
 const onDomainKeyUp = () => {
   const domainValue = domainInput.value?.getValue();
 
-  if (domainValue) {
+  if (domainValue && !props.site) {
     configInput.value?.setValue(`${domainValue}.conf`);
   }
 };

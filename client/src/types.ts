@@ -54,6 +54,7 @@ export type TSite = {
   updated_at: string;
   config?: string;
   checked?: boolean;
+  config_only?: boolean;
 };
 
 export type TToast = {
