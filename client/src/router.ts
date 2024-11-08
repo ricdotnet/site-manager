@@ -92,6 +92,11 @@ const routes = [
             component: pages.ApiKeys,
             name: 'api-keys',
           },
+          {
+            path: 'active-sessions',
+            component: pages.NotBuiltYet,
+            name: 'active-sessions',
+          },
         ],
       },
     ],

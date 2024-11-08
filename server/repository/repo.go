@@ -45,6 +45,7 @@ type (
 		GetOne
 		CreateOne
 		GetOneByID
+		UpdateOne
 	}
 
 	SitesRepository interface {
@@ -63,9 +64,11 @@ type (
 	}
 
 	SessionRepository interface {
+		GetAll
 		GetOne
 		CreateOne
 		DeleteOne
+		UpdateOne
 	}
 )
 

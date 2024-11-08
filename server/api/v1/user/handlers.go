@@ -19,9 +19,10 @@ type User = models.User
 
 type Response struct {
 	config.ApiResponse
-	ID       uint   `json:"id,omitempty"`
-	Username string `json:"username,omitempty"`
-	Email    string `json:"email,omitempty"`
+	ID             uint              `json:"id,omitempty"`
+	Username       string            `json:"username,omitempty"`
+	Email          string            `json:"email,omitempty"`
+	ActiveSessions *[]models.Session `json:"active_sessions,omitempty"`
 }
 
 func (u *UserAPI) authUser(ctx echo.Context) error {
@@ -102,12 +103,16 @@ func (u *UserAPI) loginUser(ctx echo.Context) error {
 
 	token := utils.MakeToken()
 
+	userAgent := ctx.Request().Header.Get("User-Agent")
+
 	session := &models.Session{}
 	session.Token = token
-	session.UserId = user.ID
+	session.UserID = user.ID
+	session.UserAgent = userAgent
+	session.LastActive = time.Now()
 
 	expiresAt := time.Now()
-	expiresAt = expiresAt.AddDate(0, 0, 10)
+	expiresAt = expiresAt.AddDate(0, 0, 30)
 
 	session.ExpiresAt = expiresAt
 	_ = u.sessionRepo.CreateOne(session)
@@ -123,9 +128,14 @@ func (u *UserAPI) loginUser(ctx echo.Context) error {
 		Path:     "/",
 		SameSite: http.SameSiteLaxMode,
 		Domain:   cookieDomain,
+		Expires:  expiresAt,
 	}
 
 	ctx.SetCookie(cookie)
+
+	user.LastLogin = time.Now()
+
+	_ = u.repo.UpdateOne(user)
 
 	log.Info("Exiting /login handler")
 
@@ -179,6 +189,25 @@ func (u *UserAPI) updateUser(ctx echo.Context) error {
 	return ctx.JSON(http.StatusNotImplemented, config.ApiResponse{
 		Code:        http.StatusNotImplemented,
 		MessageCode: "not_implemented",
+	})
+}
+
+func (u *UserAPI) getSessions(ctx echo.Context) error {
+	log.Info("Entering the /sessions handler")
+
+	session := ctx.Get("user").(*config.Session)
+
+	activeSessions := &[]models.Session{}
+	_ = u.sessionRepo.GetAll(activeSessions, session)
+
+	log.Info("Exiting the /sessions handler")
+
+	return ctx.JSON(http.StatusNotImplemented, &Response{
+		ApiResponse: config.ApiResponse{
+			Code:        http.StatusNotImplemented,
+			MessageCode: "found_sessions",
+		},
+		ActiveSessions: activeSessions,
 	})
 }
 

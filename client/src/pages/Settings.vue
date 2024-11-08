@@ -4,6 +4,7 @@
       <div data-role="header">General</div>
       <LinkButton :class="isActive(['profile', 'settings']) ? 'active' : ''" href="/dashboard/settings/profile" text="Profile"/>
       <LinkButton :class="isActive('api-keys') ? 'active' : ''" href="/dashboard/settings/api-keys" text="API Keys"/>
+      <LinkButton :class="isActive('active-sessions') ? 'active' : ''" href="/dashboard/settings/active-sessions" text="Active Sessions"/>
     </div>
     <div>
       <router-view/>

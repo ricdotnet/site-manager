@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/charmbracelet/log"
 	"gorm.io/gorm"
+	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
 )
 
@@ -16,6 +17,10 @@ func (repo *SessionRepo) CreateOne(session interface{}) error {
 	return repo.Db.Create(session).Error
 }
 
+func (repo *SessionRepo) UpdateOne(session interface{}) error {
+	return repo.Db.Save(session).Error
+}
+
 func (repo *SessionRepo) GetOne(token string, items ...interface{}) error {
 	log.Info("Will look for a user session")
 
@@ -26,9 +31,16 @@ func (repo *SessionRepo) GetOne(token string, items ...interface{}) error {
 		return err
 	}
 
-	log.Infof("Found session for user %d", session.UserId)
+	log.Infof("Found session for userid %d", session.UserID)
 
 	return nil
+}
+
+func (repo *SessionRepo) GetAll(items ...interface{}) error {
+	sessions := items[0].(*[]Session)
+	session := items[1].(*config.Session)
+
+	return repo.Db.Where("`user_id` = ?", session.UserID).Find(sessions).Error
 }
 
 func (repo *SessionRepo) DeleteOne(opts ...interface{}) error {

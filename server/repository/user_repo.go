@@ -55,7 +55,6 @@ func (repo *UserRepo) CreateOne(item interface{}) error {
 	return nil
 }
 
-func (repo *UserRepo) UpdateOne(item interface{}) error {
-	// query to update the user
-	return notImplemented()
+func (repo *UserRepo) UpdateOne(user interface{}) error {
+	return repo.Db.Save(user).Error
 }

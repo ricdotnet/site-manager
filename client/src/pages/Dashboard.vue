@@ -23,7 +23,7 @@
         text="Domains"
       />
       <LinkButton
-        :class="{ active: isActive(['settings', 'profile', 'api-keys']) }"
+        :class="{ active: isActive(['settings', 'profile', 'api-keys', 'active-sessions']) }"
         href="/dashboard/settings"
         text="Settings"
       />
