@@ -22,7 +22,11 @@
   <SitesTable />
 
   <template v-if="configOnlySites.length">
-    <div v-for="configOnlySite of configOnlySites" @click="() => onClickAddConfigOnlySite(configOnlySite)">
+    <div
+      v-for="configOnlySite of configOnlySites"
+      @click="() => onClickAddConfigOnlySite(configOnlySite)"
+      :key="configOnlySite.id"
+    >
       {{ configOnlySite.config_name }}
     </div>
   </template>
@@ -48,8 +52,8 @@ import {
   SitesTable,
 } from '@components';
 import { computed, ref } from 'vue';
+import type { TSite } from '@types';
 import { useSitesStore } from '@stores';
-import { TSite } from '@types';
 
 const sitesStore = useSitesStore();
 const isAddingSite = ref(false);
@@ -71,7 +75,7 @@ const onClickAddSite = () => {
 const onClickAddConfigOnlySite = (site: TSite) => {
   configOnlySiteToCreate.value = site;
   isAddingSite.value = true;
-}
+};
 
 const closeAddSiteDialog = () => {
   isAddingSite.value = false;
