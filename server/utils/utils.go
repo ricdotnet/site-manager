@@ -4,12 +4,9 @@ import (
 	"crypto/rand"
 	"encoding/base32"
 	"fmt"
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/labstack/echo/v4"
 	"github.com/ricdotnet/goenvironmental"
 	"net/http"
 	"regexp"
-	"ricr.dev/site-manager/config"
 	"time"
 )
 
@@ -31,13 +28,6 @@ func MakeEmptyCookie() *http.Cookie {
 		Path:    "/",
 		Expires: now.AddDate(0, 0, -1),
 	}
-}
-
-func GetTokenClaims(ctx echo.Context) *config.JwtCustomClaims {
-	user := ctx.Get("user").(*jwt.Token)
-	claims := user.Claims.(*config.JwtCustomClaims)
-
-	return claims
 }
 
 func IsValidFilename(filename string) bool {

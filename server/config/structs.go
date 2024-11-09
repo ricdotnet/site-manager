@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/golang-jwt/jwt/v4"
 	"time"
 )
 
@@ -14,7 +13,7 @@ type (
 	}
 
 	BaseModel struct {
-		ID        uint      `gorm:"primaryKey"`
+		ID        uint      `json:"id" gorm:"primaryKey"`
 		CreatedAt time.Time `json:"created_at"`
 		UpdatedAt time.Time `json:"updated_at"`
 	}
@@ -24,11 +23,5 @@ type (
 		Username string
 		Email    string
 		Role     string
-	}
-
-	JwtCustomClaims struct {
-		UserID   uint   `json:"id"`
-		Username string `json:"username"`
-		jwt.RegisteredClaims
 	}
 )

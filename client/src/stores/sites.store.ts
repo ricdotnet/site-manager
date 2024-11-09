@@ -17,7 +17,7 @@ export const useSitesStore = defineStore('sites', () => {
 
   const removeSites = (ids: number[]): void => {
     sites.value = sites.value.reduce((filtered: TSite[], site: TSite) => {
-      if (!ids.includes(site.ID)) filtered.push(site);
+      if (!ids.includes(site.id)) filtered.push(site);
       return filtered;
     }, []);
   };
@@ -51,7 +51,7 @@ export const useSitesStore = defineStore('sites', () => {
 
   const checkSite = (id: number): void => {
     sites.value.forEach((site) => {
-      if (site.ID === id) {
+      if (site.id === id) {
         site.checked = !site.checked;
       }
     });

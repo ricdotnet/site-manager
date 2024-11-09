@@ -16,7 +16,6 @@ func Routes(v1 *echo.Group, db *gorm.DB) {
 	sites.GET("/all", sitesApi.getAllSites)
 	sites.GET("/:id", sitesApi.getSite)
 	sites.POST("/", sitesApi.createSite)
-	sites.PATCH("/:id", sitesApi.updateSite)
-	sites.PATCH("/:id/status", sitesApi.updateSiteStatus)
+	sites.PATCH("/", sitesApi.updateSite)
 	sites.DELETE("/", sitesApi.deleteSite)
 }

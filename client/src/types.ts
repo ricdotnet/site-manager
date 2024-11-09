@@ -45,7 +45,7 @@ export type RegisterData = {
 };
 
 export type TSite = {
-  ID: number;
+  id: number;
   domain: string;
   config_name: string;
   enabled: boolean;
@@ -65,7 +65,7 @@ export type TToast = {
 };
 
 export type TApiKey = {
-  ID: number;
+  id: number;
   key: string;
   value: string;
   is_api_key: boolean;

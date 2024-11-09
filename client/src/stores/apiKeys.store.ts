@@ -52,7 +52,7 @@ export const useApiKeysStore = defineStore('apiKeys', () => {
 
     if (error) return error;
 
-    apiKeys.value = apiKeys.value.filter((key) => key.ID !== apiKey.ID);
+    apiKeys.value = apiKeys.value.filter((key) => key.id !== apiKey.id);
   };
 
   return { apiKeys, fetchApiKeys, addApiKey, deleteApiKey };

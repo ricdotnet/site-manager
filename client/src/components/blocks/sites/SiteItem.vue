@@ -73,12 +73,12 @@ const onClick = async () => {
   isSaving.value = true;
 
   const { error } = await useRequest<never>({
-    endpoint: `/site/${getSite().ID}`,
+    endpoint: `/site/`,
     method: 'PATCH',
     needsAuth: true,
     payload: {
       site: {
-        id: getSite().ID,
+        id: getSite().id,
         domain: domainInputRef.value?.getValue(),
         config_name: configNameInputRef.value?.getValue(),
       },

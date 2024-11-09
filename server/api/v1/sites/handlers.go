@@ -2,7 +2,6 @@ package sites
 
 import (
 	"net/http"
-	"os/exec"
 	"regexp"
 	"strconv"
 
@@ -30,7 +29,7 @@ type RequestBody struct {
 }
 
 type DeleteSites struct {
-	Sites []uint
+	Id []uint
 }
 
 func (s *SitesAPI) getAllSites(ctx echo.Context) error {
@@ -39,7 +38,7 @@ func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 
 	err := s.repo.GetAll(sites, userCtx)
 	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, config.ApiResponse{
+		return ctx.JSON(http.StatusInternalServerError, &config.ApiResponse{
 			Code:        http.StatusInternalServerError,
 			MessageCode: "sites_fetch_error",
 		})
@@ -202,33 +201,6 @@ func (s *SitesAPI) updateSite(ctx echo.Context) error {
 	})
 }
 
-func (s *SitesAPI) updateSiteStatus(ctx echo.Context) error {
-	site := &Site{}
-	err := ctx.Bind(site)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong when binding the interface to the context")
-	}
-
-	id, _ := strconv.ParseUint(ctx.Param("id"), 10, 32)
-	site.ID = uint(id)
-
-	if err = s.repo.UpdateOne(site); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Unable to update site status")
-	}
-
-	cmd := exec.Command("systemctl", "reload", "apache2")
-	stdout, _ := cmd.Output()
-
-	log.Info(stdout)
-
-	return ctx.JSON(http.StatusOK, &Response{
-		ApiResponse: config.ApiResponse{
-			Code:    200,
-			Message: "Site updated successfully",
-		},
-	})
-}
-
 func (s *SitesAPI) deleteSite(ctx echo.Context) error {
 	log.Info("Entering delete sites handler")
 
@@ -239,18 +211,26 @@ func (s *SitesAPI) deleteSite(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
 
-	if err = s.repo.DeleteManyByID(sites.Sites); err != nil {
+	if len(sites.Id) == 0 {
+		return ctx.JSON(http.StatusOK, &config.ApiResponse{
+			Code:        http.StatusOK,
+			MessageCode: "nothing_to_delete",
+		})
+	}
+
+	if err = s.repo.DeleteManyByID(sites.Id); err != nil {
 		log.Error(err.Error())
-		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
+		return echo.NewHTTPError(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "delete_sites_failed",
+		})
 	}
 
 	log.Info("Exiting delete sites handler")
 
-	return ctx.JSON(http.StatusOK, &Response{
-		ApiResponse: config.ApiResponse{
-			Code:    http.StatusOK,
-			Message: "delete_sites_success",
-		},
+	return ctx.JSON(http.StatusOK, &config.ApiResponse{
+		Code:        http.StatusOK,
+		MessageCode: "delete_sites_success",
 	})
 }
 

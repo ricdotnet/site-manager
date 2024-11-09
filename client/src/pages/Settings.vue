@@ -20,7 +20,7 @@ const route = useRoute();
 
 const isActive = (name: string | string[]) => {
   if (Array.isArray(name)) {
-    return name.includes(route.name);
+    return name.includes(route.name as string);
   }
   return route.name === name;
 };

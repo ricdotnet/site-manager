@@ -25,13 +25,13 @@
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow v-for="site in sitesStore.getSites()" :key="site.ID">
+        <TableRow v-for="site in sitesStore.getSites()" :key="site.id">
           <TableCell>
             <Checkbox
-              :id="'site-' + site.ID"
-              :name="'site-' + site.ID"
+              :id="'site-' + site.id"
+              :name="'site-' + site.id"
               :checked="site.checked ?? false"
-              @on-change="onCheckSite(site.ID)"
+              @on-change="onCheckSite(site.id)"
             />
           </TableCell>
           <TableCell>
@@ -41,7 +41,7 @@
               :title="isEnabled(site.enabled)"
             ></span>
             <router-link
-              :to="'/dashboard/sites/' + site.ID"
+              :to="'/dashboard/sites/' + site.id"
               class="table__body--col--link"
             >
               {{ site.domain }}

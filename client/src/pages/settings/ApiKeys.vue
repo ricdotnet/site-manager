@@ -32,5 +32,3 @@ const closeAddApiKeyDialog = () => {
   isAddingApiKey.value = false;
 };
 </script>
-
-<style scoped lang="scss"></style>
