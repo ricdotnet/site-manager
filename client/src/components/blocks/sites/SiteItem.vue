@@ -75,7 +75,6 @@ const onClick = async () => {
   const { error } = await useRequest<never>({
     endpoint: `/site/`,
     method: 'PATCH',
-    needsAuth: true,
     payload: {
       site: {
         id: getSite().id,

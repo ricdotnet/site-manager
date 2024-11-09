@@ -22,7 +22,6 @@ onMounted(async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await useRequest<any>({
     endpoint: '/domains/all',
-    needsAuth: true,
   });
 
   if (error) {

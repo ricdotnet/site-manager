@@ -19,6 +19,7 @@ export type FormComponent = {
 export type BaseResponse = {
   code: number;
   message?: string;
+  message_code?: string;
 };
 
 export type TSitesResponse = BaseResponse & {
@@ -34,6 +35,10 @@ export type TDNSRecordsResponse = BaseResponse & {
   records: {
     records: TDNSRecord[];
   };
+};
+
+export type TActiveSessionsResponse = BaseResponse & {
+  active_sessions: TSession[];
 };
 
 // more
@@ -99,5 +104,22 @@ export type TDNSRecordFormProcess = {
     host: string;
     value: string;
     ttl: string;
+  };
+};
+
+export type TSession = {
+  id: number;
+  user_agent: string;
+  last_active: string;
+  this_device: boolean;
+  ip_address: string;
+  parsed_user_agent: {
+    name: string;
+    version: string;
+    os: string;
+    os_version: string;
+    is_desktop: boolean;
+    is_mobile: boolean;
+    is_tablet: boolean;
   };
 };

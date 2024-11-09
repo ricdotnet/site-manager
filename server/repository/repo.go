@@ -37,6 +37,10 @@ type (
 		DeleteOne(...interface{}) error
 	}
 
+	DeleteOneByID interface {
+		DeleteOneByID(uint) error
+	}
+
 	DeleteManyByID interface {
 		DeleteManyByID([]uint) error
 	}
@@ -69,6 +73,7 @@ type (
 		CreateOne
 		DeleteOne
 		UpdateOne
+		DeleteOneByID
 	}
 )
 

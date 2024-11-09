@@ -16,7 +16,6 @@ export const useDnsRecordsStore = defineStore('dnsRecords', () => {
   const fetchDnsRecords = async () => {
     const { data, error } = await useRequest<TDNSRecordsResponse>({
       endpoint: `/domains/dns/${route.params.domain}/${route.params.type}`,
-      needsAuth: true,
     });
 
     if (error) return error;
@@ -34,7 +33,6 @@ export const useDnsRecordsStore = defineStore('dnsRecords', () => {
     const { error } = await useRequest({
       endpoint: `/domains/dns/${route.params.domain}/${route.params.type}`,
       method: 'PUT',
-      needsAuth: true,
       payload: data,
     });
 
@@ -62,7 +60,6 @@ export const useDnsRecordsStore = defineStore('dnsRecords', () => {
     const { error } = await useRequest({
       endpoint: `/domains/dns/${route.params.domain}/${route.params.type}`,
       method: 'DELETE',
-      needsAuth: true,
       payload: data,
     });
 

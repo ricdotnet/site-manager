@@ -94,7 +94,7 @@ const routes = [
           },
           {
             path: 'active-sessions',
-            component: pages.NotBuiltYet,
+            component: pages.ActiveSessions,
             name: 'active-sessions',
           },
         ],

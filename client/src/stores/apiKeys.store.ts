@@ -9,7 +9,6 @@ export const useApiKeysStore = defineStore('apiKeys', () => {
   const fetchApiKeys = async () => {
     const { data, error } = await useRequest<TApiKey[]>({
       endpoint: '/settings',
-      needsAuth: true,
     });
 
     if (error) return error;
@@ -25,7 +24,6 @@ export const useApiKeysStore = defineStore('apiKeys', () => {
     const { data, error } = await useRequest<TApiKey>({
       endpoint: '/settings',
       method: 'PUT',
-      needsAuth: true,
       payload: apiKey,
     });
 
@@ -47,7 +45,6 @@ export const useApiKeysStore = defineStore('apiKeys', () => {
     const { error } = await useRequest<TApiKey>({
       endpoint: `/settings/${apiKey.key}`,
       method: 'DELETE',
-      needsAuth: true,
     });
 
     if (error) return error;

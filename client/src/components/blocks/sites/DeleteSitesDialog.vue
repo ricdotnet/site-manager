@@ -46,7 +46,6 @@ const onConfirmDeleteSites = async () => {
     payload: {
       sites: sitesToDelete,
     },
-    needsAuth: true,
   });
 
   // TODO: revise this error here

@@ -94,7 +94,6 @@ const onClickConfirmDialog = async () => {
   const { data, error } = await useRequest<AddSiteResponse>({
     endpoint: '/site/',
     method: 'POST',
-    needsAuth: true,
     payload: {
       domain: domainInput.value?.getValue(),
       config_name: configInput.value?.getValue(),

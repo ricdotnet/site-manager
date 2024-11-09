@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"regexp"
 	"ricr.dev/site-manager/utils"
+	"strconv"
 	"time"
 
 	"github.com/alexedwards/argon2id"
@@ -110,6 +111,7 @@ func (u *UserAPI) loginUser(ctx echo.Context) error {
 	session.UserID = user.ID
 	session.UserAgent = userAgent
 	session.LastActive = time.Now()
+	session.IpAddress = ctx.RealIP()
 
 	expiresAt := time.Now()
 	expiresAt = expiresAt.AddDate(0, 0, 30)
@@ -200,14 +202,37 @@ func (u *UserAPI) getSessions(ctx echo.Context) error {
 	activeSessions := &[]models.Session{}
 	_ = u.sessionRepo.GetAll(activeSessions, session)
 
+	newActiveSessions := make([]models.Session, 0)
+
+	for _, s := range *activeSessions {
+		userAgent := &models.UserAgent{}
+		utils.ParseUserAgent(s.UserAgent, userAgent)
+
+		s.ParsedUserAgent = *userAgent
+		s.ThisDevice = ctx.Get("token") == s.Token
+
+		newActiveSessions = append(newActiveSessions, s)
+	}
+
 	log.Info("Exiting the /sessions handler")
 
-	return ctx.JSON(http.StatusNotImplemented, &Response{
+	return ctx.JSON(http.StatusOK, &Response{
 		ApiResponse: config.ApiResponse{
-			Code:        http.StatusNotImplemented,
+			Code:        http.StatusOK,
 			MessageCode: "found_sessions",
 		},
-		ActiveSessions: activeSessions,
+		ActiveSessions: &newActiveSessions,
+	})
+}
+
+func (u *UserAPI) deleteSession(ctx echo.Context) error {
+	id, _ := strconv.Atoi(ctx.Param("id"))
+
+	_ = u.sessionRepo.DeleteOneByID(uint(id))
+
+	return ctx.JSON(http.StatusOK, config.ApiResponse{
+		Code:        http.StatusOK,
+		MessageCode: "session_deleted",
 	})
 }
 

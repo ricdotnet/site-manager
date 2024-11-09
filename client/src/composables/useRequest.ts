@@ -7,7 +7,6 @@ type RequestVerb = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 type RequestOptions<T = unknown> = {
   endpoint: string;
   method?: RequestVerb;
-  needsAuth?: boolean;
   payload?: T;
   useCache?: boolean;
 };
@@ -32,12 +31,6 @@ export const useRequest = async <TResult>(
   const error = ref<string | undefined>();
   const data = ref<TResult | null>(null) as Ref<TResult | null>;
 
-  const headers = {
-    ...(options.needsAuth === true
-      ? { authorization: `Bearer ${localStorage.getItem('token')}` }
-      : {}),
-  };
-
   if (options.useCache) {
     const cached = requestCache.get(options.endpoint);
     if (cached && Date.now() - cached.duration < 30000) {
@@ -53,7 +46,6 @@ export const useRequest = async <TResult>(
     const response = await axios.request({
       url: `${api}${options.endpoint}`,
       method: options.method ?? 'GET',
-      headers,
       data: options.payload,
       withCredentials: true,
     });

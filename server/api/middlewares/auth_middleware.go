@@ -41,6 +41,15 @@ func CookieMiddleware(db *gorm.DB) echo.MiddlewareFunc {
 				return ctx.JSON(http.StatusUnauthorized, map[string]interface{}{})
 			}
 
+			if session.IpAddress != ctx.RealIP() {
+				log.Warnf("Session %s for user %s is invalid because IP address does not match our records", session.Token, user.Username)
+
+				_ = sessionRepo.DeleteOne(session.Token)
+				ctx.SetCookie(utils.MakeEmptyCookie())
+
+				return ctx.JSON(http.StatusUnauthorized, map[string]interface{}{})
+			}
+
 			if session.UserAgent != userAgent {
 				log.Warnf("Session %s for user %s is invalid because user agent does not match our records", session.Token, user.Username)
 

@@ -25,7 +25,6 @@ export const useSitesStore = defineStore('sites', () => {
   const fetchSites = async (): Promise<string | undefined> => {
     const { data, error } = await useRequest<TSitesResponse>({
       endpoint: '/site/all',
-      needsAuth: true,
     });
 
     if (error) return error;
@@ -38,7 +37,6 @@ export const useSitesStore = defineStore('sites', () => {
   const fetchSite = async (): Promise<string | undefined> => {
     const { data, error } = await useRequest<TSiteResponse>({
       endpoint: `/site/${route.params.id}`,
-      needsAuth: true,
     });
 
     if (error) return error;
@@ -70,7 +68,7 @@ export const useSitesStore = defineStore('sites', () => {
 
   const getSites = (): TSite[] => {
     return sites.value.filter((site) => !site.config_only);
-  }
+  };
 
   return {
     sites,

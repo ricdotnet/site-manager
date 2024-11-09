@@ -4,9 +4,11 @@ import (
 	"crypto/rand"
 	"encoding/base32"
 	"fmt"
+	"github.com/mileusna/useragent"
 	"github.com/ricdotnet/goenvironmental"
 	"net/http"
 	"regexp"
+	"ricr.dev/site-manager/models"
 	"time"
 )
 
@@ -45,4 +47,16 @@ func DomainsApiUrl(url, userId, apiKey string) string {
 	}
 
 	return fmt.Sprintf("https://test.httpapi.com/api/%s?auth-userid=%s&api-key=%s", url, userId, apiKey)
+}
+
+func ParseUserAgent(userAgentString string, userAgent *models.UserAgent) {
+	parsedUserAgent := useragent.Parse(userAgentString)
+
+	userAgent.Browser = parsedUserAgent.Name
+	userAgent.BrowserVersion = parsedUserAgent.Version
+	userAgent.Os = parsedUserAgent.OS
+	userAgent.OsVersion = parsedUserAgent.OSVersion
+	userAgent.IsDesktop = parsedUserAgent.Desktop
+	userAgent.IsMobile = parsedUserAgent.Mobile
+	userAgent.IsTablet = parsedUserAgent.Tablet
 }

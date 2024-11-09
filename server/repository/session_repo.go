@@ -40,11 +40,15 @@ func (repo *SessionRepo) GetAll(items ...interface{}) error {
 	sessions := items[0].(*[]Session)
 	session := items[1].(*config.Session)
 
-	return repo.Db.Where("`user_id` = ?", session.UserID).Find(sessions).Error
+	return repo.Db.Where("`user_id` = ?", session.UserID).Order("created_at DESC").Find(sessions).Error
 }
 
 func (repo *SessionRepo) DeleteOne(opts ...interface{}) error {
 	token := opts[0].(string)
 
 	return repo.Db.Delete(&Session{}, "`token` = ?", token).Error
+}
+
+func (repo *SessionRepo) DeleteOneByID(id uint) error {
+	return repo.Db.Delete(&Session{}, "`id` = ?", id).Error
 }

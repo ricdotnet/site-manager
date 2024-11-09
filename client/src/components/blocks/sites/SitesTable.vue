@@ -81,7 +81,8 @@ const fetchError = ref(false);
 const isLoading = ref(false);
 
 const allChecked = computed(
-  () => !sites.value.filter((site) => !site.checked).length,
+  () =>
+    !sites.value.filter((site) => !site.checked && !site.config_only).length,
 );
 const anyChecked = computed(() => sites.value.some((site) => site.checked));
 
@@ -106,55 +107,3 @@ const isEnabled = (isEnabled: boolean) => {
   return isEnabled ? 'Site enabled' : 'Site disabled';
 };
 </script>
-
-<style scoped lang="scss">
-.table {
-  @apply w-full;
-
-  &__head {
-    @apply uppercase text-sm bg-light-lighter dark:bg-dark-darker;
-
-    &--col {
-      @apply py-3 pl-3 text-left;
-
-      &:first-child {
-        @apply rounded-l-md;
-      }
-
-      &:last-child {
-        @apply rounded-r-md;
-      }
-    }
-  }
-
-  &__body {
-    @apply divide-y divide-light-border dark:divide-dark-border;
-
-    &--col {
-      &:not(:first-child) {
-        @apply w-auto
-        px-3
-        py-5;
-      }
-
-      @apply w-12
-      pl-3
-      transition
-      ease-in-out
-      duration-200
-      whitespace-nowrap
-      group-hover:bg-light-lighter
-      dark:group-hover:bg-dark-darker;
-
-      &--link {
-        @apply underline
-        underline-offset-2
-        decoration-dashed
-        decoration-1
-        decoration-dark/60
-        dark:decoration-white/40;
-      }
-    }
-  }
-}
-</style>

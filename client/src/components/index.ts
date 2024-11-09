@@ -19,6 +19,7 @@ export { default as Form } from './UI/Form.vue';
 export { default as Breadcrumbs } from './UI/Breadcrumbs/Breadcrumbs.vue';
 export { default as BreadcrumbSeparator } from './UI/Breadcrumbs/BreadcrumbSeparator.vue';
 export { default as Loading } from './UI/Loading.vue';
+export { default as ActiveSessionsTable } from './blocks/settings/ActiveSessionsList.vue';
 
 // Blocks
 export { default as Nav } from './blocks/Nav.vue';
