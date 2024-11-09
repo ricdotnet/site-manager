@@ -23,7 +23,7 @@ func NewRouter(db *gorm.DB) *echo.Echo {
 
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{allowedOrigins, "https://hoppscotch.io"},
+		AllowOrigins:     []string{allowedOrigins},
 		AllowCredentials: true,
 	}))
 
