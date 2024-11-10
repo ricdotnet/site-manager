@@ -8,7 +8,6 @@ FROM node:22-alpine AS frontend
 
 WORKDIR /builder
 COPY ./client .
-COPY ./.env .env
 RUN corepack enable
 RUN yarn install
 RUN yarn build
