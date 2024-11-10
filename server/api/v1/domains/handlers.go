@@ -27,7 +27,7 @@ type (
 func (d *DomainsAPI) getAllDomains(c echo.Context) error {
 	err, domains := d.domainsService.GetDomains()
 
-	if err.Error() == "record not found" {
+	if err != nil && err.Error() == "record not found" {
 		return c.JSON(http.StatusNoContent, &Response{
 			ApiResponse: config.ApiResponse{
 				Code: http.StatusNoContent,
