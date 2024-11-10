@@ -300,15 +300,17 @@ func (u *UserAPI) registerValidationHelper(user *User) string {
 		return "passwords_not_match"
 	}
 
-	_ = u.repo.GetOne(user.Username, user, false)
-	if user.Username != "" {
+	_userUsername := &User{}
+	_ = u.repo.GetOne(user.Username, _userUsername, false)
+	if _userUsername != nil {
 		log.Warnf("Username %s is already registered", user.Username)
 
 		return "username_exists"
 	}
 
-	_ = u.repo.GetOne(user.Email, user, true)
-	if user.Email != "" {
+	_userEmail := &User{}
+	_ = u.repo.GetOne(user.Email, _userEmail, true)
+	if _userEmail != nil {
 		log.Warnf("Email %s is already registered", user.Email)
 
 		return "email_exists"
