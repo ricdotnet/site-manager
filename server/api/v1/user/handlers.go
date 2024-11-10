@@ -302,7 +302,7 @@ func (u *UserAPI) registerValidationHelper(user *User) string {
 
 	_userUsername := &User{}
 	_ = u.repo.GetOne(user.Username, _userUsername, false)
-	if _userUsername != nil {
+	if _userUsername.Username != "" {
 		log.Warnf("Username %s is already registered", user.Username)
 
 		return "username_exists"
@@ -310,7 +310,7 @@ func (u *UserAPI) registerValidationHelper(user *User) string {
 
 	_userEmail := &User{}
 	_ = u.repo.GetOne(user.Email, _userEmail, true)
-	if _userEmail != nil {
+	if _userEmail.Email != "" {
 		log.Warnf("Email %s is already registered", user.Email)
 
 		return "email_exists"
