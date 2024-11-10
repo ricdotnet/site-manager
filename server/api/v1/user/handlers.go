@@ -301,14 +301,14 @@ func (u *UserAPI) registerValidationHelper(user *User) string {
 	}
 
 	_ = u.repo.GetOne(user.Username, user, false)
-	if user != nil {
+	if user.Username != "" {
 		log.Warnf("Username %s is already registered", user.Username)
 
 		return "username_exists"
 	}
 
 	_ = u.repo.GetOne(user.Email, user, true)
-	if user != nil {
+	if user.Email != "" {
 		log.Warnf("Email %s is already registered", user.Email)
 
 		return "email_exists"
