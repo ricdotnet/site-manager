@@ -9,8 +9,10 @@ FROM node:22-alpine AS frontend
 WORKDIR /builder
 COPY ./client .
 
-ENV VITE_BASE=https://site-manager.ricr.dev
-ENV VITE_API=https://site-manager.ricr.dev/api
+ARG VITE_BASE
+ENV VITE_BASE ${VITE_BASE}
+ARG VITE_API
+ENV VITE_API ${VITE_API}
 
 RUN corepack enable
 RUN yarn install

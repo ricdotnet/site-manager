@@ -31,3 +31,6 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository }}:latest
+          build-args: |
+            VITE_BASE=${{ vars.VITE_BASE }}
+            VITE_API=${{ vars.VITE_API }}
