@@ -11,8 +11,8 @@ jobs:
     name: Build Docker Image
     runs-on: ubuntu-latest
     env:
-      VITE_BASE: ${{ env.VITE_BASE }}
-      VITE_API: ${{ env.VITE_API }}
+      VITE_BASE: ${{ vars.VITE_BASE }}
+      VITE_API: ${{ vars.VITE_API }}
 
     steps:
       - name: Checkout
