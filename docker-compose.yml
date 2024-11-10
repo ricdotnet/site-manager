@@ -1,7 +1,0 @@
-services:
-  api:
-    image: site-manager-api:latest
-    container_name: site-manager-api
-    build:
-      context: .
-      dockerfile: ./server/Dockerfile

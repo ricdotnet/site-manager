@@ -15,7 +15,7 @@
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow v-for="apiKey in apiKeys" :key="apiKey.ID">
+        <TableRow v-for="apiKey in apiKeys" :key="apiKey.id">
           <ApiKeysItem :apiKeyItem="apiKey" />
         </TableRow>
       </TableBody>

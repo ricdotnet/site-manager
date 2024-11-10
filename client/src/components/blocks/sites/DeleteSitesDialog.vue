@@ -34,7 +34,7 @@ const onConfirmDeleteSites = async () => {
 
   const sitesToDelete = sitesStore.sites.reduce(
     (sites: number[], site: TSite) => {
-      if (site.checked) sites.push(site.ID);
+      if (site.checked) sites.push(site.id);
       return sites;
     },
     [],

@@ -42,8 +42,7 @@ func NewRouter(db *gorm.DB) *echo.Echo {
 		})
 	})
 
-	api := e.Group("/api") // /api group
-	v1 := api.Group("/v1") // /v1 group
+	v1 := e.Group("/v1") // /v1 group
 
 	sites.Routes(v1, db)
 	user.Routes(v1, db)
