@@ -18,12 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Test step
-        run: echo $VITE_BASE
-
-      - name: Another test step
-        run: echo $VITE_API
-
       - name: Log in to the Container registry
         uses: docker/login-action@v3.3.0
         with:
