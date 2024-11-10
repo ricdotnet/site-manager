@@ -27,8 +27,7 @@ onMounted(async () => {
   if (error) {
     console.error(error);
   } else {
-    console.log(data);
-    domains.value = data.domains.domains;
+    domains.value = data.domains?.domains ?? [];
   }
 
   isLoadingDomains.value = false;

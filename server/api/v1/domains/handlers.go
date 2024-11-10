@@ -27,12 +27,19 @@ type (
 func (d *DomainsAPI) getAllDomains(c echo.Context) error {
 	err, domains := d.domainsService.GetDomains()
 
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &Response{
+	if err.Error() == "record not found" {
+		return c.JSON(http.StatusNoContent, &Response{
 			ApiResponse: config.ApiResponse{
-				Code:        http.StatusInternalServerError,
-				MessageCode: "error_getting_domains",
+				Code: http.StatusNoContent,
 			},
+			Domains: &services.Domains{},
+		})
+	}
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, &config.ApiResponse{
+			Code:        http.StatusInternalServerError,
+			MessageCode: "error_getting_domains",
 		})
 	}
 
@@ -50,11 +57,9 @@ func (d *DomainsAPI) getDomain(c echo.Context) error {
 	err, domain := d.domainsService.GetDomain(domainName)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:        http.StatusInternalServerError,
-				MessageCode: "error_getting_domain",
-			},
+		return c.JSON(http.StatusInternalServerError, &config.ApiResponse{
+			Code:        http.StatusInternalServerError,
+			MessageCode: "error_getting_domain",
 		})
 	}
 
@@ -87,11 +92,9 @@ func (d *DomainsAPI) addRecord(c echo.Context) error {
 	body := &DNSRecord{}
 
 	if err := c.Bind(body); err != nil {
-		return c.JSON(http.StatusBadRequest, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:        http.StatusBadRequest,
-				MessageCode: "invalid_request_body",
-			},
+		return c.JSON(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "invalid_request_body",
 		})
 	}
 
@@ -101,30 +104,24 @@ func (d *DomainsAPI) addRecord(c echo.Context) error {
 	case "A", "AAAA", "CNAME", "TXT":
 		query = fmt.Sprintf("&domain-name=%s&host=%s&value=%s&ttl=%s", domainName, body.Host, body.Value, body.TTL)
 	default:
-		return c.JSON(http.StatusBadRequest, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:        http.StatusBadRequest,
-				MessageCode: "invalid_record_type",
-			},
+		return c.JSON(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "invalid_record_type",
 		})
 	}
 
 	err, _ := d.domainsService.AddRecord(recordType, query)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:        http.StatusInternalServerError,
-				MessageCode: "error_adding_record",
-			},
+		return c.JSON(http.StatusInternalServerError, &config.ApiResponse{
+			Code:        http.StatusInternalServerError,
+			MessageCode: "error_adding_record",
 		})
 	}
 
-	return c.JSON(http.StatusOK, &Response{
-		ApiResponse: config.ApiResponse{
-			Code:        http.StatusOK,
-			MessageCode: "record_added",
-		},
+	return c.JSON(http.StatusOK, &config.ApiResponse{
+		Code:        http.StatusOK,
+		MessageCode: "record_added",
 	})
 }
 
@@ -135,11 +132,9 @@ func (d *DomainsAPI) deleteRecord(c echo.Context) error {
 	body := &DNSRecord{}
 
 	if err := c.Bind(body); err != nil {
-		return c.JSON(http.StatusBadRequest, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:        http.StatusBadRequest,
-				MessageCode: "invalid_request_body",
-			},
+		return c.JSON(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "invalid_request_body",
 		})
 	}
 
@@ -149,29 +144,23 @@ func (d *DomainsAPI) deleteRecord(c echo.Context) error {
 	case "A", "AAAA", "CNAME", "TXT":
 		query = fmt.Sprintf("&domain-name=%s&host=%s&value=%s&ttl=%s", domainName, body.Host, body.Value, body.TTL)
 	default:
-		return c.JSON(http.StatusBadRequest, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:        http.StatusBadRequest,
-				MessageCode: "invalid_record_type",
-			},
+		return c.JSON(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "invalid_record_type",
 		})
 	}
 
 	err, _ := d.domainsService.DeleteRecord(recordType, query)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:        http.StatusInternalServerError,
-				MessageCode: "error_deleting_record",
-			},
+		return c.JSON(http.StatusInternalServerError, &config.ApiResponse{
+			Code:        http.StatusInternalServerError,
+			MessageCode: "error_deleting_record",
 		})
 	}
 
-	return c.JSON(http.StatusOK, &Response{
-		ApiResponse: config.ApiResponse{
-			Code:        http.StatusOK,
-			MessageCode: "record_deleted",
-		},
+	return c.JSON(http.StatusOK, &config.ApiResponse{
+		Code:        http.StatusOK,
+		MessageCode: "record_deleted",
 	})
 }

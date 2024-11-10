@@ -11,6 +11,13 @@ func Routes(v1 *echo.Group, db *gorm.DB) {
 
 	domains := v1.Group("/domains", middlewares.CookieMiddleware(db))
 
+	domains.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			domainsApi.domainsService.Context = c
+			return next(c)
+		}
+	})
+
 	domains.GET("/all", domainsApi.getAllDomains)
 	domains.GET("/:domain", domainsApi.getDomain)
 	domains.GET("/dns/:domain/:type", domainsApi.getRecords)

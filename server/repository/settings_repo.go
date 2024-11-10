@@ -25,8 +25,9 @@ func (repo *SettingsRepo) GetAll(item ...interface{}) error {
 
 func (repo *SettingsRepo) GetOne(key string, item ...interface{}) error {
 	setting := item[0].(*Setting)
+	userId := item[1].(uint)
 
-	if err := repo.Db.First(setting, "`key` = ?", key).Error; err != nil {
+	if err := repo.Db.First(setting, "`key` = ? and `user_id` = ?", key, userId).Error; err != nil {
 		return err
 	}
 

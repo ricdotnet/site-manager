@@ -7,7 +7,7 @@ import (
 type Site struct {
 	config.BaseModel
 	Domain     string `json:"domain" gorm:"size:255;"`
-	ConfigName string `json:"config_name" gorm:"size:255;unique"`
+	ConfigName string `json:"config_name" gorm:"size:255;"`
 	Enabled    bool   `json:"enabled" gorm:"default:0"`
 	HasSSL     bool   `json:"has_ssl" gorm:"default:0"`
 	UserID     uint   `json:"user_id" gorm:"foreignKey:User"`

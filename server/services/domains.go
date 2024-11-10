@@ -5,9 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/charmbracelet/log"
+	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"io"
 	"net/http"
+	"ricr.dev/site-manager/config"
 	"ricr.dev/site-manager/models"
 	"ricr.dev/site-manager/repository"
 	"ricr.dev/site-manager/utils"
@@ -20,6 +22,7 @@ import (
 type (
 	DomainsService struct {
 		SettingsRepo *repository.SettingsRepo
+		Context      echo.Context
 	}
 
 	Pagination struct {
@@ -78,7 +81,12 @@ func NewDomainsService(db *gorm.DB) *DomainsService {
 }
 
 func (d *DomainsService) GetDomains() (error, *Domains) {
-	response, _ := domainsHttpApi(d.SettingsRepo, "GET", "domains/search.json", "&no-of-records=20&page-no=1", nil)
+	response, err := domainsHttpApi(d.Context, d.SettingsRepo, "GET", "domains/search.json", "&no-of-records=20&page-no=1", nil)
+
+	if err != nil {
+		return err, nil
+	}
+
 	domains := &Domains{}
 
 	responseBuf, _ := io.ReadAll(response.Body)
@@ -115,7 +123,7 @@ func (d *DomainsService) GetDomain(domain string) (error, interface{}) {
 	}
 
 	query := fmt.Sprintf("&domain-name=%s&options=%s", domain, "all")
-	response, err := domainsHttpApi(d.SettingsRepo, "GET", "domains/details-by-name.json", query, nil)
+	response, err := domainsHttpApi(d.Context, d.SettingsRepo, "GET", "domains/details-by-name.json", query, nil)
 
 	if err != nil {
 		return err, nil
@@ -129,7 +137,7 @@ func (d *DomainsService) GetDomain(domain string) (error, interface{}) {
 
 func (d *DomainsService) GetRecords(domain string, recordType string) (error, *Records) {
 	query := fmt.Sprintf("&domain-name=%s&type=%s&no-of-records=%d&page-no=%d", domain, recordType, 20, 1)
-	response, err := domainsHttpApi(d.SettingsRepo, "GET", "dns/manage/search-records.json", query, nil)
+	response, err := domainsHttpApi(d.Context, d.SettingsRepo, "GET", "dns/manage/search-records.json", query, nil)
 
 	if err != nil {
 		return err, nil
@@ -159,7 +167,7 @@ func (d *DomainsService) GetRecords(domain string, recordType string) (error, *R
 
 func (d *DomainsService) AddRecord(recordType string, query string) (error, interface{}) {
 	url := fmt.Sprintf("dns/manage/%s.json", recordTypes[strings.ToUpper(recordType)]("add"))
-	response, err := domainsHttpApi(d.SettingsRepo, "POST", url, query, nil)
+	response, err := domainsHttpApi(d.Context, d.SettingsRepo, "POST", url, query, nil)
 
 	if err != nil {
 		return err, nil
@@ -170,7 +178,7 @@ func (d *DomainsService) AddRecord(recordType string, query string) (error, inte
 
 func (d *DomainsService) DeleteRecord(recordType string, query string) (error, interface{}) {
 	url := fmt.Sprintf("dns/manage/%s.json", recordTypes[strings.ToUpper(recordType)]("delete"))
-	response, err := domainsHttpApi(d.SettingsRepo, "POST", url, query, nil)
+	response, err := domainsHttpApi(d.Context, d.SettingsRepo, "POST", url, query, nil)
 
 	if err != nil {
 		return err, nil
@@ -205,12 +213,18 @@ func unmarshalGeneric(data []byte, pagination *Pagination) []json.RawMessage {
 	return dataArray
 }
 
-func domainsHttpApi(repo *repository.SettingsRepo, method string, url string, query string, payload []byte) (*http.Response, error) {
+func domainsHttpApi(ctx echo.Context, repo *repository.SettingsRepo, method string, url string, query string, payload []byte) (*http.Response, error) {
+	session := ctx.Get("user").(*config.Session)
+
 	apiKey := &models.Settings{}
 	referrerId := &models.Settings{}
 
-	_ = repo.GetOne("DOMAINS", apiKey)
-	_ = repo.GetOne("DOMAINS_ID", referrerId)
+	if err := repo.GetOne("DOMAINS", apiKey, session.UserID); err != nil {
+		return nil, err
+	}
+	if err := repo.GetOne("DOMAINS_ID", referrerId, session.UserID); err != nil {
+		return nil, err
+	}
 
 	api := fmt.Sprintf("%s%s", utils.DomainsApiUrl(url, referrerId.Value, apiKey.Value), query)
 
