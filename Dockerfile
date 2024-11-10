@@ -9,9 +9,6 @@ FROM node:22-alpine AS frontend
 WORKDIR /builder
 COPY ./client .
 
-RUN echo $VITE_BASE
-RUN echo $VITE_API
-
 RUN corepack enable
 RUN yarn install
 RUN yarn build
