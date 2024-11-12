@@ -2,6 +2,7 @@ package sites
 
 import (
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 
@@ -231,6 +232,39 @@ func (s *SitesAPI) deleteSite(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, &config.ApiResponse{
 		Code:        http.StatusOK,
 		MessageCode: "delete_sites_success",
+	})
+}
+
+func (s *SitesAPI) reloadNginx(ctx echo.Context) error {
+	commandPipePath, _ := goenvironmental.Get("COMMAND_PIPE")
+
+	commandPipe, err := os.OpenFile(commandPipePath, os.O_WRONLY, os.ModeNamedPipe)
+	defer commandPipe.Close()
+
+	if err != nil {
+		log.Errorf("Failed to open the command pipe: %s", commandPipePath)
+		return echo.NewHTTPError(http.StatusInternalServerError, &config.ApiResponse{
+			Code:        http.StatusInternalServerError,
+			MessageCode: "nginx_reload_failed",
+		})
+	}
+
+	command := "echo 'Hello world!! From the container!'"
+	_, err = commandPipe.WriteString(command + "\n")
+
+	if err != nil {
+		log.Errorf("Failed to write command: %s", command)
+		return echo.NewHTTPError(http.StatusInternalServerError, &config.ApiResponse{
+			Code:        http.StatusInternalServerError,
+			MessageCode: "nginx_reload_failed",
+		})
+	}
+
+	log.Info("Nginx reloaded")
+
+	return ctx.JSON(http.StatusOK, &config.ApiResponse{
+		Code:        http.StatusOK,
+		MessageCode: "nginx_reloaded",
 	})
 }
 
