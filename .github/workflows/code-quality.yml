@@ -55,7 +55,7 @@ jobs:
 
     - name: Install dependencies
       working-directory: ./client
-      run: yarn install --frozen-lockfile
+      run: yarn install --immutable
 
     - name: Run eslint
       working-directory: ./client
