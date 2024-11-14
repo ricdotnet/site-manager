@@ -249,7 +249,7 @@ func (s *SitesAPI) reloadNginx(ctx echo.Context) error {
 		})
 	}
 
-	command := "echo 'Hello world!! From the container!'"
+	command := "nginx -s reload"
 	_, err = commandPipe.WriteString(command + "\n")
 
 	if err != nil {
