@@ -64,7 +64,7 @@ import {
 } from '@components';
 import { computed, ref } from 'vue';
 import type { TSite } from '@types';
-import { messages, sleep } from '@utils';
+import { messages } from '@utils';
 import { useSitesStore } from '@stores';
 import { useToaster } from '@composables';
 
