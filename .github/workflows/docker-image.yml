@@ -36,12 +36,11 @@ jobs:
           fi
 
       - name: Build and push image
-        run: echo ${{ env.TAG }}
-#        uses: docker/build-push-action@v6
-#        with:
-#          context: .
-#          push: true
-#          tags: ghcr.io/${{ github.repository }}:latest
-#          build-args: |
-#            VITE_BASE=${{ vars.VITE_BASE }}
-#            VITE_API=${{ vars.VITE_API }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ env.TAG }}
+          build-args: |
+            VITE_BASE=${{ vars.VITE_BASE }}
+            VITE_API=${{ vars.VITE_API }}
