@@ -1,4 +1,9 @@
-import type { TSite, TSiteResponse, TSitesResponse } from '@types';
+import type {
+  BaseResponse,
+  TSite,
+  TSiteResponse,
+  TSitesResponse,
+} from '@types';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { unwrap } from '@utils';
@@ -70,6 +75,17 @@ export const useSitesStore = defineStore('sites', () => {
     return sites.value.filter((site) => !site.config_only);
   };
 
+  const reloadNginx = async (): Promise<{
+    error: string | undefined;
+    data: string | undefined;
+  }> => {
+    const { error, data } = await useRequest<BaseResponse>({
+      endpoint: '/site/reload',
+    });
+
+    return { error, data: data?.message_code };
+  };
+
   return {
     sites,
     addSite,
@@ -80,5 +96,6 @@ export const useSitesStore = defineStore('sites', () => {
     removeSites,
     getSite,
     getSites,
+    reloadNginx,
   };
 });

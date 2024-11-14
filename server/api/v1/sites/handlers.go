@@ -264,7 +264,7 @@ func (s *SitesAPI) reloadNginx(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, &config.ApiResponse{
 		Code:        http.StatusOK,
-		MessageCode: "nginx_reloaded",
+		MessageCode: "nginx_reload_success",
 	})
 }
 
