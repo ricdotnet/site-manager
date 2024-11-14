@@ -1,9 +1,14 @@
 <template>
   <div class="toast-container">
     <TransitionGroup name="slide-right">
-      <div v-for="toast in toasts" class="toast" @click="removeToast(toast.id)" :key="toast.id">
+      <div
+        v-for="toast in toasts"
+        class="toast cursor-pointer"
+        @click="removeToast(toast.id)"
+        :key="toast.id"
+      >
         <div class="flex gap-x-2">
-          <Toast :toast="toast"/>
+          <Toast :toast="toast" />
         </div>
       </div>
     </TransitionGroup>

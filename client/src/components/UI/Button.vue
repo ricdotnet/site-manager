@@ -37,6 +37,8 @@ const buttonStyle = computed(() => {
       return 'bg-dark-dim text-white';
     case 'danger':
       return 'bg-red-700 text-white';
+    case 'bordered':
+      return 'border dark:border-dark-border border-light-border';
     case 'icon':
       return 'bg-transparent text-white hover:bg-dark';
     default:

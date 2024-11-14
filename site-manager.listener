@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [[ $1 == "" ]]; then
+  echo "Pipe directory not provided"
+  exit 1
+fi
+
+while true; do
+  if read command < $1; then
+    case $command in
+      "nginx -s reload")
+        echo "Reloading Nginx"
+        nginx -s reload
+        ;;
+      *)
+        echo "Unknown command: $command"
+        ;;
+    esac
+  fi
+done

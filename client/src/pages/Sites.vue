@@ -1,23 +1,34 @@
 <template>
-  <div class="mb-5 flex gap-2 justify-end">
-    <template v-if="anySelected">
+  <div class="flex justify-between">
+    <div>
       <Button
-        text="Delete Selected"
-        color="danger"
-        value="delete-selected"
-        name="delete-selected"
-        :disabled="isDeleting"
-        :is-actioning="isDeleting"
-        @click="isOpenDeleteSites = true"
+        name="reload-nginx"
+        color="bordered"
+        text="Reload nginx"
+        :is-actioning="isReloadingNginx"
+        @click="onClickReloadNginx"
       />
-    </template>
-    <Button
-      text="Add Site"
-      color="primary"
-      value="add-site"
-      name="add-site"
-      @click="onClickAddSite"
-    />
+    </div>
+    <div class="mb-5 flex gap-2">
+      <template v-if="anySelected">
+        <Button
+          text="Delete Selected"
+          color="danger"
+          value="delete-selected"
+          name="delete-selected"
+          :disabled="isDeleting"
+          :is-actioning="isDeleting"
+          @click="isOpenDeleteSites = true"
+        />
+      </template>
+      <Button
+        text="Add Site"
+        color="primary"
+        value="add-site"
+        name="add-site"
+        @click="onClickAddSite"
+      />
+    </div>
   </div>
   <SitesTable />
 
@@ -53,12 +64,17 @@ import {
 } from '@components';
 import { computed, ref } from 'vue';
 import type { TSite } from '@types';
+import { messages } from '@utils';
 import { useSitesStore } from '@stores';
+import { useToaster } from '@composables';
 
 const sitesStore = useSitesStore();
+const { addToast } = useToaster();
+
 const isAddingSite = ref(false);
 const isOpenDeleteSites = ref(false);
 const isDeleting = ref(false);
+const isReloadingNginx = ref(false);
 const configOnlySiteToCreate = ref<TSite | undefined>();
 
 const anySelected = computed(() =>
@@ -84,5 +100,21 @@ const closeAddSiteDialog = () => {
 
 const closeDeleteSitesDialog = () => {
   isOpenDeleteSites.value = false;
+};
+
+const onClickReloadNginx = async () => {
+  isReloadingNginx.value = true;
+  const { error, data } = await sitesStore.reloadNginx();
+
+  if (error) {
+    isReloadingNginx.value = false;
+    addToast('error', messages.site[error]);
+    return;
+  }
+
+  isReloadingNginx.value = false;
+
+  if (!data) return;
+  addToast('success', messages.site[data]);
 };
 </script>

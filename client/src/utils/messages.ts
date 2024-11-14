@@ -26,6 +26,8 @@ export const messages: { [key: string]: { [key: string]: string } } = {
     site_create_error:
       'Could not add a new site. Please check your data and try again.<br>Hint: config names must be unique.',
     failed_to_write_file_config: 'Failed to write the new site config.',
+    nginx_reload_failed: "Failed to reload Nginx's configuration",
+    nginx_reload_success: "Nginx's configuration was reloaded successfully",
   },
   generic: {
     not_implemented: 'This functionality is not fully working yet',
