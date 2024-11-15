@@ -30,7 +30,7 @@ type RequestBody struct {
 }
 
 type DeleteSites struct {
-	Id []uint
+	Sites []uint `json:"sites"`
 }
 
 func (s *SitesAPI) getAllSites(ctx echo.Context) error {
@@ -212,14 +212,14 @@ func (s *SitesAPI) deleteSite(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "delete_sites_failed")
 	}
 
-	if len(sites.Id) == 0 {
+	if len(sites.Sites) == 0 {
 		return ctx.JSON(http.StatusOK, &config.ApiResponse{
 			Code:        http.StatusOK,
 			MessageCode: "nothing_to_delete",
 		})
 	}
 
-	if err = s.repo.DeleteManyByID(sites.Id); err != nil {
+	if err = s.repo.DeleteManyByID(sites.Sites); err != nil {
 		log.Error(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, &config.ApiResponse{
 			Code:        http.StatusBadRequest,

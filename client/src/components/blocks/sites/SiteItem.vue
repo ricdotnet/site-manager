@@ -26,14 +26,24 @@
       <div ref="monacoRef" class="h-[500px] p-1 rounded-md bg-[#1E1E1E]"></div>
     </div>
 
-    <Button
-      type="button"
-      name="save"
-      color="primary"
-      text="Save"
-      @click="onClick"
-      :is-actioning="isSaving"
-    />
+    <div class="flex gap-x-2">
+      <Button
+        type="button"
+        name="save"
+        color="primary"
+        text="Save"
+        @click="onClickSave"
+        :is-actioning="isSaving"
+      />
+      <Button
+        type="button"
+        name="reload-nginx"
+        text="Reload nginx"
+        color="bordered"
+        @click="onClickReloadNginx"
+        :is-actioning="isReloadingNginx"
+      />
+    </div>
   </div>
 </template>
 
@@ -44,11 +54,14 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { useEditor, useRequest, useToaster } from '@composables';
 import type { InputComponent } from '@types';
 import { domainValidator } from '@validators';
+import { messages } from '@utils';
 import { useSitesStore } from '@stores';
 
-const { getSite } = useSitesStore();
+const { getSite, reloadNginx } = useSitesStore();
 
 const isSaving = ref(false);
+const isReloadingNginx = ref(false);
+
 const domainInputRef = ref<InputComponent>();
 const configNameInputRef = ref<InputComponent>();
 
@@ -69,7 +82,7 @@ onUnmounted(() => {
   monaco.editor.getModels()[0].dispose();
 });
 
-const onClick = async () => {
+const onClickSave = async () => {
   isSaving.value = true;
 
   const { error } = await useRequest<never>({
@@ -93,5 +106,21 @@ const onClick = async () => {
 
   addToast('success', 'Site updated successfully');
   isSaving.value = false;
+};
+
+const onClickReloadNginx = async () => {
+  isReloadingNginx.value = true;
+  const { error, data } = await reloadNginx();
+
+  if (error) {
+    isReloadingNginx.value = false;
+    addToast('error', messages.site[error]);
+    return;
+  }
+
+  isReloadingNginx.value = false;
+
+  if (!data) return;
+  addToast('success', messages.site[data]);
 };
 </script>

@@ -1,9 +1,9 @@
 <template>
-  <div class="toast-container">
+  <div class="fixed bottom-4 left-4 z-50 w-[300px] flex flex-col gap-y-2">
     <TransitionGroup name="slide-right">
       <div
         v-for="toast in toasts"
-        class="toast cursor-pointer"
+        class="py-4 px-8 rounded-md border dark:border-dark-border border-light-border bg-light dark:bg-dark-darker cursor-pointer"
         @click="removeToast(toast.id)"
         :key="toast.id"
       >
@@ -21,13 +21,3 @@ import { useToaster } from '@composables';
 
 const { toasts, removeToast } = useToaster();
 </script>
-
-<style scoped lang="scss">
-.toast-container {
-  @apply fixed bottom-4 left-4 z-50 flex flex-col gap-y-2 w-[300px];
-}
-
-.toast {
-  @apply py-4 px-8 rounded-md cursor-pointer border dark:border-dark-border border-light-border bg-light dark:bg-dark-darker;
-}
-</style>
