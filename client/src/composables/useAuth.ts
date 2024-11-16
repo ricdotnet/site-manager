@@ -8,24 +8,17 @@ const useAuth = () => {
   const api = import.meta.env.VITE_API;
   const userStore = useUserStore();
 
-  const login = async (username: string, password: string) => {
+  const login = async (email: string) => {
     const error = ref<unknown>();
 
     try {
-      const { data } = await axios.post(
-        `${api}/user/login`,
+      await axios.post(
+        `${api}/user/sign-in`,
         {
-          username: username,
-          password: password,
+          email,
         },
         { withCredentials: true },
       );
-
-      // localStorage.setItem('token', data.token);
-
-      userStore.setIsAuthed(true);
-      userStore.setUserId(data.id);
-      userStore.setUsername(data.username);
     } catch (err: unknown) {
       error.value = (err as AxiosError).response?.data;
     }
@@ -46,7 +39,29 @@ const useAuth = () => {
     return { error: error.value };
   };
 
-  return { login, register };
+  const verifyCode = async (code: string) => {
+    const error = ref<unknown>();
+
+    try {
+      const { data } = await axios.post(
+        `${api}/user/verify-code`,
+        {
+          code,
+        },
+        { withCredentials: true },
+      );
+
+      userStore.setIsAuthed(true);
+      userStore.setUserId(data.id);
+      userStore.setUsername(data.username);
+    } catch (err: unknown) {
+      error.value = (err as AxiosError).response?.data;
+    }
+
+    return { error: error.value };
+  };
+
+  return { login, register, verifyCode };
 };
 
 export { useAuth };
