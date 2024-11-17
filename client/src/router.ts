@@ -27,6 +27,14 @@ const routes = [
     },
   },
   {
+    path: '/verify-code',
+    component: pages.VerifyCode,
+    meta: {
+      requiresAuth: false,
+      isAuthPage: true,
+    },
+  },
+  {
     path: '/dashboard',
     component: pages.Dashboard,
     meta: {
