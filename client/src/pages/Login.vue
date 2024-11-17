@@ -1,7 +1,11 @@
 <template>
   <Stack>
-    <div class="title">Login to your account</div>
-    <div class="group">
+    <div class="text-2xl font-bold tracking-widest mb-6">
+      Login to your account
+    </div>
+    <div
+      class="w-full bg-white px-6 py-10 rounded-md shadow-md lg:w-[26rem] dark:bg-dark"
+    >
       <form class="flex flex-col space-y-3" @submit="onSubmitLogin">
         <label for="email" class="flex flex-col space-y-2 relative">
           <span class="pl-4">Email Address</span>
@@ -24,12 +28,15 @@
   <Dialog
     :is-open="isCodeDialogOpen"
     @on-confirm-dialog="onSubmitCode"
+    :is-cancelable="false"
     :is-actioning="isVerifyingCode"
+    title="Verification code"
   >
     <label for="code" class="flex flex-col space-y-2 relative">
       <span class="pl-4">Code</span>
       <Input id="code" ref="code" />
     </label>
+    <p class="pt-5 pl-4 text-lg">Check your email for the verification code.</p>
   </Dialog>
 </template>
 
@@ -52,12 +59,10 @@ const isLoggingIn = ref(false);
 const isCodeDialogOpen = ref(false);
 const isVerifyingCode = ref(false);
 
-type Error = {
-  message_code: 'email_not_found';
-};
-const onErrorResponse = (error: Error) => {
-  if (error.message_code === 'email_not_found') {
-    email.value?.setError(true, messages.user[error.message_code]);
+const onErrorResponse = (error: string) => {
+  if (error === 'email_not_found') {
+    email.value?.setError(true, messages.user[error]);
+    addToast('error', messages.user[error]);
   }
 
   isLoggingIn.value = false;
@@ -75,7 +80,7 @@ const onSubmitLogin = async (evt: Event) => {
   if (e) {
     isLoggingIn.value = true;
     const { error } = await login(e);
-    if (error) return onErrorResponse(error as Error);
+    if (error) return onErrorResponse(error);
 
     isLoggingIn.value = false;
     isCodeDialogOpen.value = true;
@@ -92,7 +97,14 @@ const onSubmitCode = async () => {
   if (c) {
     isVerifyingCode.value = true;
     const { error } = await verifyCode(c);
-    if (error) return addToast('error', 'Could not verify login code.');
+    if (error) {
+      isVerifyingCode.value = false;
+
+      code.value?.setError(true);
+
+      addToast('error', 'Could not verify login code.');
+      return;
+    }
 
     isVerifyingCode.value = false;
     isCodeDialogOpen.value = false;
@@ -100,14 +112,3 @@ const onSubmitCode = async () => {
   }
 };
 </script>
-
-<style scoped lang="scss">
-.title {
-  @apply text-2xl font-bold tracking-widest mb-6;
-}
-
-.group {
-  @apply w-full bg-white px-6 py-10 rounded-md shadow-md;
-  @apply lg:w-[26rem] dark:bg-dark;
-}
-</style>

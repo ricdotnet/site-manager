@@ -22,6 +22,12 @@ export type BaseResponse = {
   message_code?: string;
 };
 
+export type VerifyCodeResponse = BaseResponse & {
+  id: string;
+  email: string;
+  username: string;
+}
+
 export type TSitesResponse = BaseResponse & {
   sites: TSite[];
 };
@@ -42,13 +48,6 @@ export type TActiveSessionsResponse = BaseResponse & {
 };
 
 // more
-export type RegisterData = {
-  username: string;
-  email: string;
-  password: string;
-  password_confirm: string;
-};
-
 export type TSite = {
   id: number;
   domain: string;

@@ -5,12 +5,10 @@ import (
 	"github.com/ricdotnet/goenvironmental"
 	"net/http"
 	"net/smtp"
-	"regexp"
 	"ricr.dev/site-manager/utils"
 	"strconv"
 	"time"
 
-	"github.com/alexedwards/argon2id"
 	"github.com/charmbracelet/log"
 	"github.com/labstack/echo/v4"
 
@@ -56,6 +54,7 @@ func (u *UserAPI) authUser(ctx echo.Context) error {
 func (u *UserAPI) signIn(ctx echo.Context) error {
 	log.Info("Sending magic link email")
 
+	env, err := goenvironmental.Get("ENV")
 	smtpUser, err := goenvironmental.Get("SMTP_USER")
 	smtpPassword, err := goenvironmental.Get("SMTP_PASSWORD")
 	smtpFrom, err := goenvironmental.Get("SMTP_FROM")
@@ -103,18 +102,20 @@ func (u *UserAPI) signIn(ctx echo.Context) error {
 		body.Email,
 	}
 
-	message := []byte("Subject: Login code for Site-Manager!\r\n\r\n" +
-		fmt.Sprintf("Use this code to `%s` login into Site-Manager.\r\n", code))
+	if env == "PRODUCTION" {
+		message := []byte("Subject: Login code for Site-Manager!\r\n\r\n" +
+			fmt.Sprintf("Use this code to `%s` login into Site-Manager.\r\n", code))
 
-	auth := smtp.PlainAuth("", smtpUser, smtpPassword, smtpUrl)
-	err = smtp.SendMail(fmt.Sprintf("%s:%s", smtpUrl, smtpPort), auth, smtpFrom, to, message)
-	if err != nil {
-		log.Errorf("Failed to send email: %s", err.Error())
+		auth := smtp.PlainAuth("", smtpUser, smtpPassword, smtpUrl)
+		err = smtp.SendMail(fmt.Sprintf("%s:%s", smtpUrl, smtpPort), auth, smtpFrom, to, message)
+		if err != nil {
+			log.Errorf("Failed to send email: %s", err.Error())
 
-		return ctx.JSON(http.StatusBadRequest, &config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "failed_to_send_email",
-		})
+			return ctx.JSON(http.StatusBadRequest, &config.ApiResponse{
+				Code:        http.StatusBadRequest,
+				MessageCode: "failed_to_send_email",
+			})
+		}
 	}
 
 	return ctx.JSON(http.StatusOK, &config.ApiResponse{
@@ -202,35 +203,6 @@ func (u *UserAPI) verifyCode(ctx echo.Context) error {
 	})
 }
 
-func (u *UserAPI) registerUser(ctx echo.Context) error {
-	log.Info("Entering the /register handler")
-
-	user := new(models.User)
-	_ = ctx.Bind(user)
-
-	messageCode := u.registerValidationHelper(user)
-
-	if messageCode != "" {
-		log.Info("Exiting the /register handler")
-
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: messageCode,
-		})
-	}
-
-	password, _ := argon2id.CreateHash(user.Password, argon2id.DefaultParams)
-	user.Password = password
-	_ = u.repo.CreateOne(user)
-
-	log.Info("Exiting the /register handler")
-
-	return ctx.JSON(http.StatusOK, config.ApiResponse{
-		Code:        http.StatusOK,
-		MessageCode: "register_success",
-	})
-}
-
 func (u *UserAPI) updateUser(ctx echo.Context) error {
 	log.Info("Entering the /update handler")
 
@@ -296,75 +268,4 @@ func (u *UserAPI) logout(ctx echo.Context) error {
 		Code:        http.StatusOK,
 		MessageCode: "logout_success",
 	})
-}
-
-func (u *UserAPI) registerValidationHelper(user *models.User) string {
-	usernameRegex := "^[A-Za-z0-9_$]+$"
-	emailRegex := "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-.]+\\.[A-Za-z]{2,}$"
-
-	if user.Username == "" {
-		log.Warn("A user tried to register without username")
-
-		return "missing_username"
-	}
-
-	if user.Email == "" {
-		log.Warn("A user tried to register without email address")
-
-		return "missing_email"
-	}
-
-	if user.Password == "" {
-		log.Warn("A user tried to register without password")
-
-		return "missing_password"
-	}
-
-	if len(user.Username) < 5 || len(user.Username) > 30 {
-		log.Warnf("Username %s is invalid: %s", user.Username, "INVALID_LENGTH")
-
-		return "invalid_username_length"
-	}
-
-	if match, _ := regexp.MatchString(usernameRegex, user.Username); !match {
-		log.Warnf("Username %s is invalid", user.Username)
-
-		return "invalid_username"
-	}
-
-	if match, _ := regexp.MatchString(emailRegex, user.Email); !match {
-		log.Warnf("Email address %s is invalid", user.Email)
-
-		return "invalid_email"
-	}
-
-	if len(user.Password) <= 8 {
-		log.Warnf("User %s entered an invalid password: %s", user.Username, "INVALID_LENGTH")
-
-		return "invalid_password_length"
-	}
-
-	if user.Password != user.PasswordConfirm {
-		log.Warnf("User %s tried to register without matching passwords", user.Username)
-
-		return "passwords_not_match"
-	}
-
-	_userUsername := &models.User{}
-	_ = u.repo.GetOne(user.Username, _userUsername, false)
-	if _userUsername.Username != "" {
-		log.Warnf("Username %s is already registered", user.Username)
-
-		return "username_exists"
-	}
-
-	_userEmail := &models.User{}
-	_ = u.repo.GetOne(user.Email, _userEmail, true)
-	if _userEmail.Email != "" {
-		log.Warnf("Email %s is already registered", user.Email)
-
-		return "email_exists"
-	}
-
-	return ""
 }

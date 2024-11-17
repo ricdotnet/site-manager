@@ -1,67 +1,43 @@
-import type { AxiosError } from 'axios';
-import type { RegisterData } from '@types';
-import axios from 'axios';
-import { ref } from 'vue';
+import type { VerifyCodeResponse} from '@types';
+import { useRequest } from '@composables';
 import { useUserStore } from '@stores';
 
 const useAuth = () => {
-  const api = import.meta.env.VITE_API;
   const userStore = useUserStore();
 
   const login = async (email: string) => {
-    const error = ref<unknown>();
+    const { error } = await useRequest({
+      endpoint: '/user/sign-in',
+      method: 'POST',
+      payload: {
+        email,
+      }
+    });
 
-    try {
-      await axios.post(
-        `${api}/user/sign-in`,
-        {
-          email,
-        },
-        { withCredentials: true },
-      );
-    } catch (err: unknown) {
-      error.value = (err as AxiosError).response?.data;
-    }
-
-    return { error: error.value };
-  };
-
-  const register = async (registerData: RegisterData) => {
-    const error = ref<unknown>();
-    try {
-      const { data } = await axios.post(`${api}/user/register`, registerData);
-
-      console.log(data);
-    } catch (err: unknown) {
-      error.value = (err as AxiosError).response?.data;
-    }
-
-    return { error: error.value };
+    return { error };
   };
 
   const verifyCode = async (code: string) => {
-    const error = ref<unknown>();
+    const { error, data } = await useRequest<VerifyCodeResponse>({
+      endpoint: '/user/verify-code',
+      method: 'POST',
+      payload: { code },
+    });
 
-    try {
-      const { data } = await axios.post(
-        `${api}/user/verify-code`,
-        {
-          code,
-        },
-        { withCredentials: true },
-      );
+    if (error) {
+      return { error };
+    }
 
+    if (data) {
       userStore.setIsAuthed(true);
       userStore.setUserId(data.id);
       userStore.setUsername(data.username);
-    } catch (err: unknown) {
-      error.value = (err as AxiosError).response?.data;
     }
 
-    return { error: error.value };
+    return { error };
   };
 
-  return { login, register, verifyCode };
+  return { login, verifyCode };
 };
 
 export { useAuth };

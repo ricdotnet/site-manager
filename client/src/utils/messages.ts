@@ -1,6 +1,7 @@
 export const messages: { [key: string]: { [key: string]: string } } = {
   user: {
     username_not_found: 'A user with that username does not exit',
+    email_not_found: 'A user with that email does not exist',
     missing_username: 'Username cannot be missing',
     username_exists: 'A user with that username already exists',
     invalid_username_length:
