@@ -1,10 +1,8 @@
 package user
 
 import (
-	"fmt"
 	"github.com/ricdotnet/goenvironmental"
 	"net/http"
-	"net/smtp"
 	"ricr.dev/site-manager/utils"
 	"strconv"
 	"time"
@@ -52,20 +50,13 @@ func (u *UserAPI) authUser(ctx echo.Context) error {
 }
 
 func (u *UserAPI) signIn(ctx echo.Context) error {
-	log.Info("Sending magic link email")
+	log.Info("Sending login code email")
 
 	env, err := goenvironmental.Get("ENV")
-	smtpUser, err := goenvironmental.Get("SMTP_USER")
-	smtpPassword, err := goenvironmental.Get("SMTP_PASSWORD")
-	smtpFrom, err := goenvironmental.Get("SMTP_FROM")
-	smtpUrl, err := goenvironmental.Get("SMTP_URL")
-	smtpPort, err := goenvironmental.Get("SMTP_PORT")
-
 	if err != nil {
-		log.Error(err.Error())
-		return ctx.JSON(http.StatusBadRequest, &config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "smtp_invalid_env",
+		log.Errorf("Failed to get ENV variable: %s", err.Error())
+		return ctx.JSON(http.StatusInternalServerError, &config.ApiResponse{
+			Code: http.StatusInternalServerError,
 		})
 	}
 
@@ -98,16 +89,9 @@ func (u *UserAPI) signIn(ctx echo.Context) error {
 	}
 	_ = u.loginCodeRepo.CreateOne(loginCode)
 
-	to := []string{
-		body.Email,
-	}
+	if env == "production" {
+		err = u.userService.SendMail(body.Email, code)
 
-	if env == "PRODUCTION" {
-		message := []byte("Subject: Login code for Site-Manager!\r\n\r\n" +
-			fmt.Sprintf("Use this code to `%s` login into Site-Manager.\r\n", code))
-
-		auth := smtp.PlainAuth("", smtpUser, smtpPassword, smtpUrl)
-		err = smtp.SendMail(fmt.Sprintf("%s:%s", smtpUrl, smtpPort), auth, smtpFrom, to, message)
 		if err != nil {
 			log.Errorf("Failed to send email: %s", err.Error())
 
