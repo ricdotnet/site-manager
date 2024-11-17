@@ -8,14 +8,16 @@
             <slot />
           </div>
           <div class="dialog__footer" v-if="props.showActions">
-            <Button
-              name="cancel"
-              value="cancel"
-              color="gray"
-              :text="cancelLabel"
-              :disabled="isActioning"
-              @click="emits('onCloseDialog')"
-            />
+            <template v-if="isCancelable">
+              <Button
+                name="cancel"
+                value="cancel"
+                color="gray"
+                :text="cancelLabel"
+                :disabled="isActioning"
+                @click="emits('onCloseDialog')"
+              />
+            </template>
             <Button
               name="continue"
               value="continue"
@@ -42,6 +44,7 @@ interface DialogProps {
   cancelLabel?: string;
   confirmLabel?: string;
   isActioning?: boolean;
+  isCancelable?: boolean;
 }
 
 const props = withDefaults(defineProps<DialogProps>(), {
@@ -49,6 +52,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
   confirmLabel: 'Confirm',
   showActions: true,
   isActioning: false,
+  isCancelable: true,
 });
 
 const emits = defineEmits<{

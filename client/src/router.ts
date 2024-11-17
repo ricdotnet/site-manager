@@ -27,14 +27,6 @@ const routes = [
     },
   },
   {
-    path: '/register',
-    component: pages.Register,
-    meta: {
-      requiresAuth: false,
-      isAuthPage: true,
-    },
-  },
-  {
     path: '/dashboard',
     component: pages.Dashboard,
     meta: {

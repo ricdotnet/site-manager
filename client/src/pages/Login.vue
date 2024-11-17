@@ -1,18 +1,17 @@
 <template>
   <Stack>
-    <div class="title">Login to your account</div>
-    <div class="group">
+    <div class="text-2xl font-bold tracking-widest mb-6">
+      Login to your account
+    </div>
+    <div
+      class="w-full bg-white px-6 py-10 rounded-md shadow-md lg:w-[26rem] dark:bg-dark"
+    >
       <form class="flex flex-col space-y-3" @submit="onSubmitLogin">
-        <label for="username" class="flex flex-col space-y-2 relative">
-          <span class="pl-4">Username</span>
-          <Input id="username" ref="username" />
-        </label>
-        <label for="password" class="flex flex-col space-y-2">
-          <span class="pl-4">Password</span>
-          <Input id="password" ref="password" type="password" />
+        <label for="email" class="flex flex-col space-y-2 relative">
+          <span class="pl-4">Email Address</span>
+          <Input id="email" ref="email" />
         </label>
         <ButtonGroup>
-          <LinkButton text="Forgot password" href="#" />
           <Button
             value="login_btn"
             name="login_btn"
@@ -25,70 +24,91 @@
       </form>
     </div>
   </Stack>
+
+  <Dialog
+    :is-open="isCodeDialogOpen"
+    @on-confirm-dialog="onSubmitCode"
+    :is-cancelable="false"
+    :is-actioning="isVerifyingCode"
+    title="Verification code"
+  >
+    <label for="code" class="flex flex-col space-y-2 relative">
+      <span class="pl-4">Code</span>
+      <Input id="code" ref="code" />
+    </label>
+    <p class="pt-5 pl-4 text-lg">Check your email for the verification code.</p>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
-import { Button, ButtonGroup, Input, LinkButton, Stack } from '@components';
+import { Button, ButtonGroup, Dialog, Input, Stack } from '@components';
+import { useAuth, useToaster } from '@composables';
 import type { InputComponent } from '@types';
 import { messages } from '@utils';
 import { ref } from 'vue';
-import { useAuth } from '@composables';
 import { useRouter } from 'vue-router';
 
-const username = ref<InputComponent>();
-const password = ref<InputComponent>();
-const isLoggingIn = ref(false);
-
 const router = useRouter();
+const { login, verifyCode } = useAuth();
+const { addToast } = useToaster();
 
-const { login } = useAuth();
+const email = ref<InputComponent>();
+const code = ref<InputComponent>();
 
-type Error = {
-  message_code: 'username_not_found' | 'incorrect_password';
-};
-const onErrorResponse = (error: Error) => {
-  if (error.message_code === 'username_not_found') {
-    username.value?.setError(true, messages.user[error.message_code]);
-  }
-  if (error.message_code === 'incorrect_password') {
-    password.value?.setError(true, messages.user[error.message_code]);
+const isLoggingIn = ref(false);
+const isCodeDialogOpen = ref(false);
+const isVerifyingCode = ref(false);
+
+const onErrorResponse = (error: string) => {
+  if (error === 'email_not_found') {
+    email.value?.setError(true, messages.user[error]);
+    addToast('error', messages.user[error]);
   }
 
   isLoggingIn.value = false;
 };
 
-const onSubmitLogin = async (e: Event) => {
-  e.preventDefault();
+const onSubmitLogin = async (evt: Event) => {
+  evt.preventDefault();
 
-  const u = username.value?.getValue();
-  const p = password.value?.getValue();
+  const e = email.value?.getValue();
 
-  if (!u) {
-    username.value?.setError(true);
+  if (!e) {
+    email.value?.setError(true);
   }
 
-  if (!p) {
-    password.value?.setError(true);
-  }
-
-  if (u && p) {
+  if (e) {
     isLoggingIn.value = true;
-    const { error } = await login(u, p);
-    if (error) return onErrorResponse(error as Error);
+    const { error } = await login(e);
+    if (error) return onErrorResponse(error);
 
     isLoggingIn.value = false;
+    isCodeDialogOpen.value = true;
+  }
+};
+
+const onSubmitCode = async () => {
+  const c = code.value?.getValue();
+
+  if (!c) {
+    code.value?.setError(true);
+  }
+
+  if (c) {
+    isVerifyingCode.value = true;
+    const { error } = await verifyCode(c);
+    if (error) {
+      isVerifyingCode.value = false;
+
+      code.value?.setError(true);
+
+      addToast('error', 'Could not verify login code.');
+      return;
+    }
+
+    isVerifyingCode.value = false;
+    isCodeDialogOpen.value = false;
     await router.push('/');
   }
 };
 </script>
-
-<style scoped lang="scss">
-.title {
-  @apply text-2xl font-bold tracking-widest mb-6;
-}
-
-.group {
-  @apply w-full bg-white px-6 py-10 rounded-md shadow-md;
-  @apply lg:w-[26rem] dark:bg-dark;
-}
-</style>

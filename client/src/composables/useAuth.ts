@@ -1,52 +1,43 @@
-import type { AxiosError } from 'axios';
-import type { RegisterData } from '@types';
-import axios from 'axios';
-import { ref } from 'vue';
+import type { VerifyCodeResponse} from '@types';
+import { useRequest } from '@composables';
 import { useUserStore } from '@stores';
 
 const useAuth = () => {
-  const api = import.meta.env.VITE_API;
   const userStore = useUserStore();
 
-  const login = async (username: string, password: string) => {
-    const error = ref<unknown>();
+  const login = async (email: string) => {
+    const { error } = await useRequest({
+      endpoint: '/user/sign-in',
+      method: 'POST',
+      payload: {
+        email,
+      }
+    });
 
-    try {
-      const { data } = await axios.post(
-        `${api}/user/login`,
-        {
-          username: username,
-          password: password,
-        },
-        { withCredentials: true },
-      );
+    return { error };
+  };
 
-      // localStorage.setItem('token', data.token);
+  const verifyCode = async (code: string) => {
+    const { error, data } = await useRequest<VerifyCodeResponse>({
+      endpoint: '/user/verify-code',
+      method: 'POST',
+      payload: { code },
+    });
 
+    if (error) {
+      return { error };
+    }
+
+    if (data) {
       userStore.setIsAuthed(true);
       userStore.setUserId(data.id);
       userStore.setUsername(data.username);
-    } catch (err: unknown) {
-      error.value = (err as AxiosError).response?.data;
     }
 
-    return { error: error.value };
+    return { error };
   };
 
-  const register = async (registerData: RegisterData) => {
-    const error = ref<unknown>();
-    try {
-      const { data } = await axios.post(`${api}/user/register`, registerData);
-
-      console.log(data);
-    } catch (err: unknown) {
-      error.value = (err as AxiosError).response?.data;
-    }
-
-    return { error: error.value };
-  };
-
-  return { login, register };
+  return { login, verifyCode };
 };
 
 export { useAuth };

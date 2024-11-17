@@ -1,14 +1,14 @@
 package user
 
 import (
+	"fmt"
 	"github.com/ricdotnet/goenvironmental"
 	"net/http"
-	"regexp"
+	"net/smtp"
 	"ricr.dev/site-manager/utils"
 	"strconv"
 	"time"
 
-	"github.com/alexedwards/argon2id"
 	"github.com/charmbracelet/log"
 	"github.com/labstack/echo/v4"
 
@@ -16,15 +16,23 @@ import (
 	"ricr.dev/site-manager/models"
 )
 
-type User = models.User
+type (
+	Response struct {
+		config.ApiResponse
+		ID             uint              `json:"id,omitempty"`
+		Username       string            `json:"username,omitempty"`
+		Email          string            `json:"email,omitempty"`
+		ActiveSessions *[]models.Session `json:"active_sessions,omitempty"`
+	}
 
-type Response struct {
-	config.ApiResponse
-	ID             uint              `json:"id,omitempty"`
-	Username       string            `json:"username,omitempty"`
-	Email          string            `json:"email,omitempty"`
-	ActiveSessions *[]models.Session `json:"active_sessions,omitempty"`
-}
+	SignIn struct {
+		Email string `json:"email"`
+	}
+
+	Authenticate struct {
+		Code string `json:"code"`
+	}
+)
 
 func (u *UserAPI) authUser(ctx echo.Context) error {
 	session := ctx.Get("user").(*config.Session)
@@ -43,61 +51,104 @@ func (u *UserAPI) authUser(ctx echo.Context) error {
 	})
 }
 
-func (u *UserAPI) loginUser(ctx echo.Context) error {
-	log.Info("Entering the /login handler")
+func (u *UserAPI) signIn(ctx echo.Context) error {
+	log.Info("Sending magic link email")
 
-	user := new(User)
-	_ = ctx.Bind(user)
+	env, err := goenvironmental.Get("ENV")
+	smtpUser, err := goenvironmental.Get("SMTP_USER")
+	smtpPassword, err := goenvironmental.Get("SMTP_PASSWORD")
+	smtpFrom, err := goenvironmental.Get("SMTP_FROM")
+	smtpUrl, err := goenvironmental.Get("SMTP_URL")
+	smtpPort, err := goenvironmental.Get("SMTP_PORT")
 
-	username := user.Username
-	if username == "" {
-		log.Warn("A user tried to login without username")
-
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "missing_username",
-		})
-	}
-
-	password := user.Password
-	if password == "" {
-		log.Warnf("User %s tried to login without password", username)
-
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: "missing_password",
-		})
-	}
-
-	err := u.repo.GetOne(username, user, false)
 	if err != nil {
-		log.Warnf("User %s does not exist", username)
-
-		return ctx.JSON(http.StatusBadRequest, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:        http.StatusBadRequest,
-				MessageCode: "username_not_found",
-			},
+		log.Error(err.Error())
+		return ctx.JSON(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "smtp_invalid_env",
 		})
 	}
 
-	if user == nil {
-		return ctx.JSON(http.StatusBadRequest, &Response{
-			ApiResponse: config.ApiResponse{
-				Code:        http.StatusBadRequest,
-				MessageCode: "username_not_found",
-			},
+	body := &SignIn{}
+	_ = ctx.Bind(body)
+
+	if body.Email == "" {
+		return ctx.JSON(http.StatusBadRequest, &config.ApiResponse{
+			Code:        http.StatusBadRequest,
+			MessageCode: "email_not_present",
 		})
 	}
 
-	correctPassword, _, _ := argon2id.CheckHash(password, user.Password)
-	if !correctPassword {
-		log.Warnf("User %s tried to login with an incorrect password", username)
+	user := &models.User{}
+	_ = u.repo.GetOne(body.Email, user, true)
+
+	if user.Email == "" {
+		return ctx.JSON(http.StatusNotFound, &config.ApiResponse{
+			Code:        http.StatusNotFound,
+			MessageCode: "email_not_found",
+		})
+	}
+
+	code := utils.MakeToken()
+
+	loginCode := &models.LoginCode{
+		Code:      code,
+		Email:     user.Email,
+		CreatedAt: time.Now(),
+	}
+	_ = u.loginCodeRepo.CreateOne(loginCode)
+
+	to := []string{
+		body.Email,
+	}
+
+	if env == "PRODUCTION" {
+		message := []byte("Subject: Login code for Site-Manager!\r\n\r\n" +
+			fmt.Sprintf("Use this code to `%s` login into Site-Manager.\r\n", code))
+
+		auth := smtp.PlainAuth("", smtpUser, smtpPassword, smtpUrl)
+		err = smtp.SendMail(fmt.Sprintf("%s:%s", smtpUrl, smtpPort), auth, smtpFrom, to, message)
+		if err != nil {
+			log.Errorf("Failed to send email: %s", err.Error())
+
+			return ctx.JSON(http.StatusBadRequest, &config.ApiResponse{
+				Code:        http.StatusBadRequest,
+				MessageCode: "failed_to_send_email",
+			})
+		}
+	}
+
+	return ctx.JSON(http.StatusOK, &config.ApiResponse{
+		Code:        http.StatusOK,
+		MessageCode: "email_sent",
+	})
+}
+
+func (u *UserAPI) verifyCode(ctx echo.Context) error {
+	body := &Authenticate{}
+	_ = ctx.Bind(body)
+
+	loginCode := &models.LoginCode{}
+	_ = u.loginCodeRepo.GetOne(body.Code, loginCode)
+
+	if loginCode.CreatedAt.Add(5 * time.Minute).Before(time.Now()) {
+		return ctx.JSON(http.StatusForbidden, &config.ApiResponse{
+			Code:        http.StatusForbidden,
+			MessageCode: "login_code_expired",
+		})
+	}
+
+	_ = u.loginCodeRepo.DeleteOne(loginCode.Code)
+
+	user := &models.User{}
+	err := u.repo.GetOne(loginCode.Email, user, true)
+	if err != nil {
+		log.Warnf("User %s does not exist", loginCode.Email)
 
 		return ctx.JSON(http.StatusBadRequest, &Response{
 			ApiResponse: config.ApiResponse{
 				Code:        http.StatusBadRequest,
-				MessageCode: "incorrect_password",
+				MessageCode: "email_not_found",
 			},
 		})
 	}
@@ -149,35 +200,6 @@ func (u *UserAPI) loginUser(ctx echo.Context) error {
 			Code:        http.StatusOK,
 			MessageCode: "login_success",
 		},
-	})
-}
-
-func (u *UserAPI) registerUser(ctx echo.Context) error {
-	log.Info("Entering the /register handler")
-
-	user := new(User)
-	_ = ctx.Bind(user)
-
-	messageCode := u.registerValidationHelper(user)
-
-	if messageCode != "" {
-		log.Info("Exiting the /register handler")
-
-		return ctx.JSON(http.StatusBadRequest, config.ApiResponse{
-			Code:        http.StatusBadRequest,
-			MessageCode: messageCode,
-		})
-	}
-
-	password, _ := argon2id.CreateHash(user.Password, argon2id.DefaultParams)
-	user.Password = password
-	_ = u.repo.CreateOne(user)
-
-	log.Info("Exiting the /register handler")
-
-	return ctx.JSON(http.StatusOK, config.ApiResponse{
-		Code:        http.StatusOK,
-		MessageCode: "register_success",
 	})
 }
 
@@ -246,75 +268,4 @@ func (u *UserAPI) logout(ctx echo.Context) error {
 		Code:        http.StatusOK,
 		MessageCode: "logout_success",
 	})
-}
-
-func (u *UserAPI) registerValidationHelper(user *User) string {
-	usernameRegex := "^[A-Za-z0-9_$]+$"
-	emailRegex := "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-.]+\\.[A-Za-z]{2,}$"
-
-	if user.Username == "" {
-		log.Warn("A user tried to register without username")
-
-		return "missing_username"
-	}
-
-	if user.Email == "" {
-		log.Warn("A user tried to register without email address")
-
-		return "missing_email"
-	}
-
-	if user.Password == "" {
-		log.Warn("A user tried to register without password")
-
-		return "missing_password"
-	}
-
-	if len(user.Username) < 5 || len(user.Username) > 30 {
-		log.Warnf("Username %s is invalid: %s", user.Username, "INVALID_LENGTH")
-
-		return "invalid_username_length"
-	}
-
-	if match, _ := regexp.MatchString(usernameRegex, user.Username); !match {
-		log.Warnf("Username %s is invalid", user.Username)
-
-		return "invalid_username"
-	}
-
-	if match, _ := regexp.MatchString(emailRegex, user.Email); !match {
-		log.Warnf("Email address %s is invalid", user.Email)
-
-		return "invalid_email"
-	}
-
-	if len(user.Password) <= 8 {
-		log.Warnf("User %s entered an invalid password: %s", user.Username, "INVALID_LENGTH")
-
-		return "invalid_password_length"
-	}
-
-	if user.Password != user.PasswordConfirm {
-		log.Warnf("User %s tried to register without matching passwords", user.Username)
-
-		return "passwords_not_match"
-	}
-
-	_userUsername := &User{}
-	_ = u.repo.GetOne(user.Username, _userUsername, false)
-	if _userUsername.Username != "" {
-		log.Warnf("Username %s is already registered", user.Username)
-
-		return "username_exists"
-	}
-
-	_userEmail := &User{}
-	_ = u.repo.GetOne(user.Email, _userEmail, true)
-	if _userEmail.Email != "" {
-		log.Warnf("Email %s is already registered", user.Email)
-
-		return "email_exists"
-	}
-
-	return ""
 }

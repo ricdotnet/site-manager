@@ -75,6 +75,12 @@ type (
 		UpdateOne
 		DeleteOneByID
 	}
+
+	LoginCodeRepository interface {
+		GetOne
+		CreateOne
+		DeleteOne
+	}
 )
 
 func notImplemented() error {

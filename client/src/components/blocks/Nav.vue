@@ -15,7 +15,6 @@
         />
         <template v-if="!userStore.isAuthed">
           <LinkButton href="login" text="Login" />
-          <LinkButton href="register" text="Register" />
         </template>
         <template v-else>
           <LinkButton href="/dashboard" text="Dashboard" />
