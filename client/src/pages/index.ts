@@ -1,7 +1,6 @@
 export { default as NotFound } from './NotFound.vue';
 export { default as Home } from './Home.vue';
 export { default as Login } from './Login.vue';
-export { default as Register } from './Register.vue';
 export { default as Dashboard } from './Dashboard.vue';
 export { default as Overview } from './Overview.vue';
 export { default as Sites } from './Sites.vue';
