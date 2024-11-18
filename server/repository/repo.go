@@ -42,7 +42,7 @@ type (
 	}
 
 	DeleteManyByID interface {
-		DeleteManyByID([]uint) error
+		DeleteManyByID([]uint, ...interface{}) error
 	}
 
 	UserRepository interface {

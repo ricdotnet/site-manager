@@ -19,8 +19,10 @@ import type { TSite } from '@types';
 import { ref } from 'vue';
 import { useRequest } from '@composables';
 import { useSitesStore } from '@stores';
+import { useToaster } from '@composables';
 
 const sitesStore = useSitesStore();
+const { addToast } = useToaster();
 
 const props = defineProps<{
   isOpenDeleteSites: boolean;
@@ -53,6 +55,7 @@ const onConfirmDeleteSites = async () => {
 
   sitesStore.removeSites(sitesToDelete);
   isDeletingSites.value = false;
+  addToast('success', 'Sites deleted successfully');
   props.closeDialog();
 };
 </script>

@@ -219,7 +219,15 @@ func (s *SitesAPI) deleteSite(ctx echo.Context) error {
 		})
 	}
 
-	if err = s.repo.DeleteManyByID(sites.Sites); err != nil {
+	deleted := &[]models.Site{}
+	err = s.repo.DeleteManyByID(sites.Sites, deleted)
+
+	for _, site := range *deleted {
+		_ = s.sitesService.DeleteSingle(site.ConfigName)
+		log.Infof("Deleted site %s", site.ConfigName)
+	}
+
+	if err != nil {
 		log.Error(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, &config.ApiResponse{
 			Code:        http.StatusBadRequest,
