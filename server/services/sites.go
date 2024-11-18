@@ -71,8 +71,10 @@ func (ss *SitesService) WriteSingle(name string, content string) error {
 	return nil
 }
 
-func (ss *SitesService) DeleteSingle(dir string, name string) {
-	// not implemented yet
+func (ss *SitesService) DeleteSingle(name string) error {
+	nginxDir, _ := goenvironmental.Get("NGINX_PATH")
+
+	return os.Remove(filepath.Join(nginxDir, name))
 }
 
 func (ss *SitesService) UpdateName(curr string, new string) error {

@@ -11,10 +11,8 @@ type SitesRepo struct {
 	Db *gorm.DB
 }
 
-type Site = models.Site
-
 func (repo *SitesRepo) GetAll(items ...interface{}) error {
-	sites := items[0].(*[]Site)
+	sites := items[0].(*[]models.Site)
 	user := items[1].(*config.Session)
 
 	if err := repo.Db.Find(&sites, "user_id = ?", user.UserID).Error; err != nil {
@@ -27,7 +25,7 @@ func (repo *SitesRepo) GetAll(items ...interface{}) error {
 }
 
 func (repo *SitesRepo) GetOneByID(id uint, items ...interface{}) error {
-	site := items[0].(*Site)
+	site := items[0].(*models.Site)
 	user := items[1].(*config.Session)
 
 	if err := repo.Db.First(site, "id = ? AND user_id = ?", id, user.UserID).Error; err != nil {
@@ -44,37 +42,21 @@ func (repo *SitesRepo) GetOneByID(id uint, items ...interface{}) error {
 }
 
 func (repo *SitesRepo) CreateOne(item interface{}) error {
-	site := item.(*Site)
+	site := item.(*models.Site)
 
-	if err := repo.Db.Create(site).Error; err != nil {
-		return err
-	}
-
-	return nil
+	return repo.Db.Create(site).Error
 }
 
 func (repo *SitesRepo) UpdateOne(item interface{}) error {
-	site := item.(*Site)
+	site := item.(*models.Site)
 
-	if err := repo.Db.Updates(site).Error; err != nil {
-		return err
-	}
-
-	return nil
+	return repo.Db.Updates(site).Error
 }
 
-func (repo *SitesRepo) DeleteManyByID(sites []uint) error {
-	err := repo.Db.Transaction(func(tx *gorm.DB) error {
-		for _, site := range sites {
-			log.Infof("Deleting site with id %d", site)
+func (repo *SitesRepo) DeleteManyByID(deleteIds []uint, items ...interface{}) error {
+	sites := items[0].(*[]models.Site)
 
-			if err := repo.Db.Delete(Site{}, site).Error; err != nil {
-				return err
-			}
-		}
+	repo.Db.Find(&sites, `ID in ?`, deleteIds)
 
-		return nil
-	})
-
-	return err
+	return repo.Db.Where(`ID in ?`, deleteIds).Delete(&models.Site{}).Error
 }
