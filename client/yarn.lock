@@ -1575,7 +1575,7 @@ __metadata:
     eslint-plugin-vue: ^9.30.0
     globals: ^15.11.0
     inter-ui: ^4.0.2
-    monaco-editor: ^0.39.0
+    monaco-editor: ^0.52.0
     pinia: ^2.2.4
     postcss: ^8.4.47
     prettier: ^3.3.3
@@ -3143,10 +3143,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:^0.39.0":
-  version: 0.39.0
-  resolution: "monaco-editor@npm:0.39.0"
-  checksum: 6d906c5f07fc6761b93bebee70bc1c461d6bbea493252751f4e2e60f26678faced9261ed9cca21613511695e6d7b75c2f2214b6d53aaa479a7e0b6f2d912f90b
+"monaco-editor@npm:^0.52.0":
+  version: 0.52.0
+  resolution: "monaco-editor@npm:0.52.0"
+  checksum: 76ab4ea38dfd2bc5687a2d777d7fc14fd7182ac6ed1ed6819b76a47924434bf3a08bcb75c68cd5aff20db86a7633ac46b335a6971ae21a8723a7dcf3e8289931
   languageName: node
   linkType: hard
 
