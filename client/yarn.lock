@@ -930,13 +930,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-vue@npm:^5.1.4":
-  version: 5.1.4
-  resolution: "@vitejs/plugin-vue@npm:5.1.4"
+"@vitejs/plugin-vue@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "@vitejs/plugin-vue@npm:5.2.0"
   peerDependencies:
     vite: ^5.0.0
     vue: ^3.2.25
-  checksum: 80ee2d749c84fc8c495647f7704b143b8670464e6ddc894171d7a28547073cce6055e47fb6ce596a2ae525ae1059a08499d0336cc5a27997c21368d4db2bb6be
+  checksum: 36321ec1fe29393c396da6cabb780de4dfeca9c908b29a0f4d317fd95a93d65aa285c4750de2944a5cc6d0eca182f987c3979f6d0cdebad482b73320ffd413c3
   languageName: node
   linkType: hard
 
@@ -1567,7 +1567,7 @@ __metadata:
     "@eslint/js": ^9.14.0
     "@heroicons/vue": ^2.0.17
     "@types/node": ^22.9.0
-    "@vitejs/plugin-vue": ^5.1.4
+    "@vitejs/plugin-vue": ^5.2.0
     autoprefixer: ^10.4.20
     axios: ^1.7.7
     babel-loader: ^9.2.1
