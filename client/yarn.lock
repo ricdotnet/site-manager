@@ -1577,7 +1577,7 @@ __metadata:
     inter-ui: ^4.0.2
     monaco-editor: ^0.52.0
     pinia: ^2.2.6
-    postcss: ^8.4.47
+    postcss: ^8.4.49
     prettier: ^3.3.3
     react: ^18.3.1
     react-dom: ^18.3.1
@@ -3590,7 +3590,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.48":
+"postcss@npm:^8.4.48, postcss@npm:^8.4.49":
   version: 8.4.49
   resolution: "postcss@npm:8.4.49"
   dependencies:
