@@ -19,4 +19,6 @@ func Routes(v1 *echo.Group, db *gorm.DB) {
 	sites.PATCH("/", sitesApi.updateSite)
 	sites.DELETE("/", sitesApi.deleteSite)
 	sites.GET("/reload", sitesApi.reloadNginx)
+
+	sites.GET("/:id/realtime", sitesApi.siteRealtime)
 }
