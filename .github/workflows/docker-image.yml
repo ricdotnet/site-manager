@@ -11,6 +11,7 @@ on:
 
 jobs:
   build_docker_image:
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
     name: Build Docker Image
     runs-on: ubuntu-latest
     env:
