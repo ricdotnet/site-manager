@@ -1586,7 +1586,7 @@ __metadata:
     eslint: ^9.15.0
     eslint-plugin-vue: ^9.31.0
     globals: ^15.12.0
-    inter-ui: ^4.0.2
+    inter-ui: ^4.1.0
     monaco-editor: ^0.52.0
     pinia: ^2.2.6
     postcss: ^8.4.49
@@ -2657,10 +2657,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inter-ui@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "inter-ui@npm:4.0.2"
-  checksum: 80cd901a01489d04774c027086d13ff70f03ca9b739081de2484d86b5efa31fccba70eda3bc1680cffb585ac4093a475d0aa124d736c0f4a851738f77a5bcb30
+"inter-ui@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "inter-ui@npm:4.1.0"
+  checksum: dafb26994f8efa947364ed483bacc09feeb599f3a5b56eef52f7c77842fed3afe29f1d2a96ecf520d9173e1549b6cd90306dc6358173d7c782f400c72860a721
   languageName: node
   linkType: hard
 
