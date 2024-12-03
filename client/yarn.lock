@@ -1588,7 +1588,7 @@ __metadata:
     globals: ^15.12.0
     inter-ui: ^4.1.0
     monaco-editor: ^0.52.0
-    pinia: ^2.2.6
+    pinia: ^2.2.8
     postcss: ^8.4.49
     prettier: ^3.3.3
     react: ^18.3.1
@@ -3496,9 +3496,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pinia@npm:^2.2.6":
-  version: 2.2.6
-  resolution: "pinia@npm:2.2.6"
+"pinia@npm:^2.2.8":
+  version: 2.2.8
+  resolution: "pinia@npm:2.2.8"
   dependencies:
     "@vue/devtools-api": ^6.6.3
     vue-demi: ^0.14.10
@@ -3511,7 +3511,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: d0349fca8ae2087d112805144c188c5c950a5b380f96eb6054de1d2a218471e90c050422583ffae4eb49653a89a1de70353c5faa09e12eaa9f0205f0e0c03eab
+  checksum: 8bc01b5440433c5a97c9e57b6a45e2c423e24a3e7e687ab007a6615aa8f83bde6b2bcddda245bca9a9eaf9911b277f5798f61c91cfd81f33464519356cee8050
   languageName: node
   linkType: hard
 
