@@ -15,7 +15,7 @@ func (repo *SitesRepo) GetAll(items ...interface{}) error {
 	sites := items[0].(*[]models.Site)
 	user := items[1].(*config.Session)
 
-	if err := repo.Db.Find(&sites, "user_id = ?", user.UserID).Error; err != nil {
+	if err := repo.Db.Order("domain").Find(&sites, "user_id = ?", user.UserID).Error; err != nil {
 		return err
 	}
 
