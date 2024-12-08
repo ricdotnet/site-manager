@@ -2,7 +2,7 @@
 .idea
 
 # system
-*/**/.DS_Store
+**/.DS_Store
 
 # environment vars
 .env
