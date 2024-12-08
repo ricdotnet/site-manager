@@ -1739,7 +1739,7 @@ __metadata:
     tailwindcss: ^3.4.15
     typescript: 5.6.3
     typescript-eslint: 8.16.0
-    vite: 6.0.3
+    vite: ^6.0.3
     vite-plugin-monaco-editor: ^1.1.0
     vue: ^3.5.13
     vue-loader: ^17.4.2
@@ -4541,7 +4541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:6.0.3":
+"vite@npm:^6.0.3":
   version: 6.0.3
   resolution: "vite@npm:6.0.3"
   dependencies:
