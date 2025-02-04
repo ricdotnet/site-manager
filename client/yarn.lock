@@ -1730,7 +1730,7 @@ __metadata:
     monaco-editor: ^0.52.2
     pinia: ^2.3.0
     postcss: ^8.4.49
-    prettier: ^3.3.3
+    prettier: ^3.4.2
     react: ^19.0.0
     react-dom: ^19.0.0
     sass: ^1.83.0
@@ -3773,12 +3773,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.3.3":
-  version: 3.3.3
-  resolution: "prettier@npm:3.3.3"
+"prettier@npm:^3.4.2":
+  version: 3.4.2
+  resolution: "prettier@npm:3.4.2"
   bin:
     prettier: bin/prettier.cjs
-  checksum: bc8604354805acfdde6106852d14b045bb20827ad76a5ffc2455b71a8257f94de93f17f14e463fe844808d2ccc87248364a5691488a3304f1031326e62d9276e
+  checksum: 061c84513db62d3944c8dc8df36584dad82883ce4e49efcdbedd8703dce5b173c33fd9d2a4e1725d642a3b713c932b55418342eaa347479bc4a9cca114a04cd0
   languageName: node
   linkType: hard
 
