@@ -30,7 +30,7 @@
     "eslint-plugin-vue": "^9.32.0",
     "globals": "^15.14.0",
     "postcss": "^8.4.49",
-    "prettier": "^3.3.3",
+    "prettier": "^3.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sass": "^1.83.0",
