@@ -468,10 +468,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:^9.14.0":
-  version: 9.14.0
-  resolution: "@eslint/js@npm:9.14.0"
-  checksum: 727767d3c80bf88e08565af10cc3732ca0d272c729bbd39043722a203eea289ec6149ab42d977d2d28a81d99329dceeed091b70db37b868e6659913a0840e17b
+"@eslint/js@npm:^9.20.0":
+  version: 9.20.0
+  resolution: "@eslint/js@npm:9.20.0"
+  checksum: e49dcbcea1a7892222988ba410b3f1e2b756177558f3f11fa3627682c3aca7585f8124c128711035e176daf56f82b4af47dc5655ca7a825057451607e42e5d13
   languageName: node
   linkType: hard
 
@@ -1716,7 +1716,7 @@ __metadata:
   resolution: "client@workspace:."
   dependencies:
     "@babel/core": ^7.26.0
-    "@eslint/js": ^9.14.0
+    "@eslint/js": ^9.20.0
     "@heroicons/vue": ^2.2.0
     "@types/node": ^22.10.2
     "@vitejs/plugin-vue": ^5.2.1
