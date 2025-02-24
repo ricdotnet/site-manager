@@ -984,12 +984,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.10.2":
-  version: 22.10.2
-  resolution: "@types/node@npm:22.10.2"
+"@types/node@npm:^22.13.5":
+  version: 22.13.5
+  resolution: "@types/node@npm:22.13.5"
   dependencies:
     undici-types: ~6.20.0
-  checksum: b22401e6e7d1484e437d802c72f5560e18100b1257b9ad0574d6fe05bebe4dbcb620ea68627d1f1406775070d29ace8b6b51f57e7b1c7b8bafafe6da7f29c843
+  checksum: 8789d9bc3efd212819fd03f7bbd429901b076703e9852ccf4950c8c7cd300d5d5a05f273d0936cbaf28194485d2bd0c265a1a25390720e353a53359526c28fb3
   languageName: node
   linkType: hard
 
@@ -1718,7 +1718,7 @@ __metadata:
     "@babel/core": ^7.26.0
     "@eslint/js": ^9.14.0
     "@heroicons/vue": ^2.2.0
-    "@types/node": ^22.10.2
+    "@types/node": ^22.13.5
     "@vitejs/plugin-vue": ^5.2.1
     autoprefixer: ^10.4.20
     axios: ^1.7.9
