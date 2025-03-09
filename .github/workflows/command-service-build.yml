@@ -11,7 +11,7 @@ on:
 jobs:
   build_binary:
     if: github.event.pull_request.user.login != 'dependabot[bot]'
-    name: Build Docker Image
+    name: Build command service binary
     runs-on: ubuntu-latest
 
     steps:
@@ -24,6 +24,6 @@ jobs:
           echo "Binary built successfully"
 
       - name: Upload binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: command-service
