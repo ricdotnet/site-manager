@@ -21,7 +21,7 @@ jobs:
       - name: Build binary
         working-directory: ./command-service
         run: |
-          go build -o command-service main.go
+          go build -o command-service .
           echo "Binary built successfully"
 
       - name: Upload binary
