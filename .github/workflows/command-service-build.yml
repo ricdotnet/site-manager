@@ -19,6 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build binary
+        working-directory: ./command-service
         run: |
           go build -o command-service main.go
           echo "Binary built successfully"
