@@ -1,9 +1,12 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/charmbracelet/log"
 	"github.com/ricdotnet/goenvironmental"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"ricr.dev/site-manager/models"
@@ -117,6 +120,36 @@ func (ss *SitesService) FindFileOnly(sites *[]models.Site) error {
 				ConfigOnly: true,
 			})
 		}
+	}
+
+	return nil
+}
+
+type CertificatesResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Failed  bool   `json:"failed"`
+}
+
+func (ss *SitesService) GetCertificates() error {
+	commandServiceUrl, _ := goenvironmental.Get("APP_COMMAND_SERVICE_URL")
+
+	req, _ := http.NewRequest("POST", commandServiceUrl+"certificates", nil)
+	req.Header.Set("Authorization", "some-secret-key")
+
+	client := &http.Client{}
+	response, _ := client.Do(req)
+
+	responseBuf, _ := io.ReadAll(response.Body)
+	//responseStr := string(responseBuf)
+
+	var result CertificatesResponse
+	_ = json.Unmarshal(responseBuf, &result)
+
+	certificateParts := strings.Split(result.Message, "\n")
+
+	for _, certificatePart := range certificateParts {
+		println(certificatePart)
 	}
 
 	return nil

@@ -47,6 +47,8 @@ func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 
 	_ = s.sitesService.FindFileOnly(sites)
 
+	s.sitesService.GetCertificates()
+
 	return ctx.JSON(http.StatusOK, &Response{
 		ApiResponse: config.ApiResponse{
 			Code:        http.StatusOK,
