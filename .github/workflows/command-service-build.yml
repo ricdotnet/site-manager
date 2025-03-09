@@ -1,0 +1,29 @@
+name: Build and push command-service binary
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'command-service/**'
+
+jobs:
+  build_binary:
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Build binary
+      run: |
+        go build -o command-service main.go
+        echo "Binary built successfully"
+
+    - name: Upload binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: command-service
