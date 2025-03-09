@@ -9,7 +9,8 @@ on:
     branches:
       - 'main'
     paths:
-      - ['client/**', 'server/**']
+      - 'client/**'
+      - 'server/**'
 
 jobs:
   build_docker_image:
