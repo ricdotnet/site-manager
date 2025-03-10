@@ -10,6 +10,7 @@ type SitesAPI struct {
 	db           *gorm.DB
 	repository   *repository.Repository
 	sitesService *services.SitesService
+	commandsService *services.CommandsService
 }
 
 func New(db *gorm.DB) *SitesAPI {
@@ -17,5 +18,6 @@ func New(db *gorm.DB) *SitesAPI {
 		db:           db,
 		repository:   repository.NewRepository(db),
 		sitesService: services.NewSitesService(),
+		commandsService: services.NewCommandsService(db),
 	}
 }

@@ -47,6 +47,15 @@ func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 
 	_ = s.sitesService.FindFileOnly(sites)
 
+	certificateParts, err := s.commandsService.GetCertificates(userCtx)
+	if err != nil {
+		println(err.Error())
+	}
+
+	for _, cert := range certificateParts {
+		println(cert)
+	}
+
 	return ctx.JSON(http.StatusOK, &Response{
 		ApiResponse: config.ApiResponse{
 			Code:        http.StatusOK,

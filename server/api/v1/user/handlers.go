@@ -100,6 +100,8 @@ func (u *UserAPI) signIn(ctx echo.Context) error {
 				MessageCode: "failed_to_send_email",
 			})
 		}
+	} else {
+		log.Infof("Login code: %s", code)
 	}
 
 	return ctx.JSON(http.StatusOK, &config.ApiResponse{
