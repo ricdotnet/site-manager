@@ -7,23 +7,14 @@ import (
 )
 
 type UserAPI struct {
-	db            *gorm.DB
-	repo          repository.UserRepository
-	sessionRepo   repository.SessionRepository
-	loginCodeRepo repository.LoginCodeRepository
-	userService   *services.UsersService
+	db          *gorm.DB
+	repository  *repository.Repository
+	userService *services.UsersService
 }
 
 func New(db *gorm.DB) *UserAPI {
-	userRepository := &repository.UserRepo{Db: db}
-	sessionRepo := &repository.SessionRepo{Db: db}
-	loginCodeRepo := &repository.LoginCodeRepo{Db: db}
-	userService := &services.UsersService{}
-
 	return &UserAPI{
-		repo:          userRepository,
-		sessionRepo:   sessionRepo,
-		loginCodeRepo: loginCodeRepo,
-		userService:   userService,
+		repository:  repository.NewRepository(db),
+		userService: &services.UsersService{},
 	}
 }

@@ -8,15 +8,13 @@ import (
 
 type SettingsAPI struct {
 	db              *gorm.DB
-	repo            repository.SettingsRepository
+	repository      *repository.Repository
 	settingsService *services.SettingsService
 }
 
 func New(db *gorm.DB) *SettingsAPI {
-	settingsRepo := &repository.SettingsRepo{Db: db}
-
 	return &SettingsAPI{
-		repo:            settingsRepo,
+		repository:      repository.NewRepository(db),
 		settingsService: services.NewSettingsService(),
 	}
 }

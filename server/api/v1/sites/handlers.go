@@ -37,7 +37,7 @@ func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 	sites := &[]Site{}
 	userCtx := ctx.Get("user")
 
-	err := s.repo.GetAll(sites, userCtx)
+	err := s.repository.SitesRepository.GetAll(sites, userCtx)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, &config.ApiResponse{
 			Code:        http.StatusInternalServerError,
@@ -61,7 +61,7 @@ func (s *SitesAPI) getSite(ctx echo.Context) error {
 	userCtx := ctx.Get("user")
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	err := s.repo.GetOneByID(uint(id), site, userCtx)
+	err := s.repository.SitesRepository.GetOneByID(uint(id), site, userCtx)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, &config.ApiResponse{
@@ -155,7 +155,7 @@ func (s *SitesAPI) updateSite(ctx echo.Context) error {
 
 	oldSite := &Site{}
 
-	err = s.repo.GetOneByID(body.Site.ID, oldSite, ctx.Get("user").(*config.Session))
+	err = s.repository.SitesRepository.GetOneByID(body.Site.ID, oldSite, ctx.Get("user").(*config.Session))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, &config.ApiResponse{
 			Code:        http.StatusNotFound,
@@ -220,7 +220,7 @@ func (s *SitesAPI) deleteSite(ctx echo.Context) error {
 	}
 
 	deleted := &[]models.Site{}
-	err = s.repo.DeleteManyByID(sites.Sites, deleted)
+	err = s.repository.SitesRepository.DeleteManyByID(sites.Sites, deleted)
 
 	for _, site := range *deleted {
 		_ = s.sitesService.DeleteSingle(site.ConfigName)
