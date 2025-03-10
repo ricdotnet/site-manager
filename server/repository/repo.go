@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"gorm.io/gorm"
 )
 
 type (
@@ -81,8 +82,26 @@ type (
 		CreateOne
 		DeleteOne
 	}
+
+	Repository struct {
+		UserRepository      UserRepository
+		SitesRepository     SitesRepository
+		SettingsRepository  SettingsRepository
+		SessionRepository   SessionRepository
+		LoginCodeRepository LoginCodeRepository
+	}
 )
 
 func notImplemented() error {
 	return errors.New("not implemented")
+}
+
+func NewRepository(db *gorm.DB) *Repository {
+	return &Repository{
+		UserRepository:      &UserRepo{Db: db},
+		SitesRepository:     &SitesRepo{Db: db},
+		SettingsRepository:  &SettingsRepo{Db: db},
+		SessionRepository:   &SessionRepo{Db: db},
+		LoginCodeRepository: &LoginCodeRepo{Db: db},
+	}
 }

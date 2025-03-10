@@ -36,7 +36,7 @@ func (u *UserAPI) authUser(ctx echo.Context) error {
 	session := ctx.Get("user").(*config.Session)
 
 	user := &models.User{}
-	_ = u.repo.GetOneByID(session.UserID, user)
+	_ = u.repository.UserRepository.GetOneByID(session.UserID, user)
 
 	return ctx.JSON(http.StatusOK, Response{
 		ID:       user.ID,
@@ -71,7 +71,7 @@ func (u *UserAPI) signIn(ctx echo.Context) error {
 	}
 
 	user := &models.User{}
-	_ = u.repo.GetOne(body.Email, user, true)
+	_ = u.repository.UserRepository.GetOne(body.Email, user, true)
 
 	if user.Email == "" {
 		return ctx.JSON(http.StatusNotFound, &config.ApiResponse{
@@ -87,7 +87,7 @@ func (u *UserAPI) signIn(ctx echo.Context) error {
 		Email:     user.Email,
 		CreatedAt: time.Now(),
 	}
-	_ = u.loginCodeRepo.CreateOne(loginCode)
+	_ = u.repository.LoginCodeRepository.CreateOne(loginCode)
 
 	if env == "production" {
 		err = u.userService.SendMail(body.Email, code)
@@ -115,7 +115,7 @@ func (u *UserAPI) verifyCode(ctx echo.Context) error {
 	_ = ctx.Bind(body)
 
 	loginCode := &models.LoginCode{}
-	_ = u.loginCodeRepo.GetOne(body.Code, loginCode)
+	_ = u.repository.LoginCodeRepository.GetOne(body.Code, loginCode)
 
 	if loginCode.CreatedAt.Add(5 * time.Minute).Before(time.Now()) {
 		return ctx.JSON(http.StatusForbidden, &config.ApiResponse{
@@ -124,10 +124,10 @@ func (u *UserAPI) verifyCode(ctx echo.Context) error {
 		})
 	}
 
-	_ = u.loginCodeRepo.DeleteOne(loginCode.Code)
+	_ = u.repository.LoginCodeRepository.DeleteOne(loginCode.Code)
 
 	user := &models.User{}
-	err := u.repo.GetOne(loginCode.Email, user, true)
+	err := u.repository.UserRepository.GetOne(loginCode.Email, user, true)
 	if err != nil {
 		log.Warnf("User %s does not exist", loginCode.Email)
 
@@ -154,7 +154,7 @@ func (u *UserAPI) verifyCode(ctx echo.Context) error {
 	expiresAt = expiresAt.AddDate(0, 0, 30)
 
 	session.ExpiresAt = expiresAt
-	_ = u.sessionRepo.CreateOne(session)
+	_ = u.repository.SessionRepository.CreateOne(session)
 
 	cookieName, _ := goenvironmental.Get("COOKIE_NAME")
 	cookieDomain, _ := goenvironmental.Get("COOKIE_DOMAIN")
@@ -174,7 +174,7 @@ func (u *UserAPI) verifyCode(ctx echo.Context) error {
 
 	user.LastLogin = time.Now()
 
-	_ = u.repo.UpdateOne(user)
+	_ = u.repository.UserRepository.UpdateOne(user)
 
 	log.Info("Exiting /login handler")
 
@@ -208,7 +208,7 @@ func (u *UserAPI) getSessions(ctx echo.Context) error {
 	session := ctx.Get("user").(*config.Session)
 
 	activeSessions := &[]models.Session{}
-	_ = u.sessionRepo.GetAll(activeSessions, session)
+	_ = u.repository.SessionRepository.GetAll(activeSessions, session)
 
 	newActiveSessions := make([]models.Session, 0)
 
@@ -236,7 +236,7 @@ func (u *UserAPI) getSessions(ctx echo.Context) error {
 func (u *UserAPI) deleteSession(ctx echo.Context) error {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 
-	_ = u.sessionRepo.DeleteOneByID(uint(id))
+	_ = u.repository.SessionRepository.DeleteOneByID(uint(id))
 
 	return ctx.JSON(http.StatusOK, config.ApiResponse{
 		Code:        http.StatusOK,
@@ -247,7 +247,7 @@ func (u *UserAPI) deleteSession(ctx echo.Context) error {
 func (u *UserAPI) logout(ctx echo.Context) error {
 	log.Info("Entering the /logout handler")
 
-	_ = u.sessionRepo.DeleteOne(ctx.Get("token"))
+	_ = u.repository.SettingsRepository.DeleteOne(ctx.Get("token"))
 	ctx.SetCookie(utils.MakeEmptyCookie())
 
 	return ctx.JSON(http.StatusOK, config.ApiResponse{
