@@ -75,7 +75,7 @@ import { storeToRefs } from 'pinia';
 import { useSitesStore } from '@stores';
 
 const sitesStore = useSitesStore();
-const { sites } = storeToRefs(sitesStore);
+const { sites, certificates } = storeToRefs(sitesStore);
 
 const fetchError = ref(false);
 const isLoading = ref(false);

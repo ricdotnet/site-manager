@@ -26,10 +26,11 @@ export type VerifyCodeResponse = BaseResponse & {
   id: string;
   email: string;
   username: string;
-}
+};
 
 export type TSitesResponse = BaseResponse & {
   sites: TSite[];
+  certificates: TCertificate[];
 };
 
 export type TSiteResponse = BaseResponse & {
@@ -59,6 +60,13 @@ export type TSite = {
   config?: string;
   checked?: boolean;
   config_only?: boolean;
+};
+
+export type TCertificate = {
+  name: string;
+  domains: string;
+  expiry_date: string;
+  expiry_days: number;
 };
 
 export type TToast = {
