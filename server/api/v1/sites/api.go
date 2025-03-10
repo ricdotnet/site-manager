@@ -7,15 +7,17 @@ import (
 )
 
 type SitesAPI struct {
-	db           *gorm.DB
-	repo         repository.SitesRepository
-	sitesService *services.SitesService
+	db              *gorm.DB
+	repo            repository.SitesRepository
+	sitesService    *services.SitesService
+	commandsService *services.CommandsService
 }
 
 func New(db *gorm.DB) *SitesAPI {
 	return &SitesAPI{
-		db:           db,
-		repo:         &repository.SitesRepo{Db: db},
-		sitesService: services.NewSitesService(),
+		db:              db,
+		repo:            &repository.SitesRepo{Db: db},
+		sitesService:    services.NewSitesService(),
+		commandsService: services.NewCommandsService(db),
 	}
 }
