@@ -1,5 +1,6 @@
 import type {
   BaseResponse,
+  TCertificate,
   TSite,
   TSiteResponse,
   TSitesResponse,
@@ -12,6 +13,7 @@ import { useRoute } from 'vue-router';
 
 export const useSitesStore = defineStore('sites', () => {
   const sites = ref<TSite[]>([]);
+  const certificates = ref<TCertificate[]>([]);
   const site = ref<TSite>();
 
   const route = useRoute();
@@ -36,6 +38,10 @@ export const useSitesStore = defineStore('sites', () => {
 
     if (data?.sites) {
       sites.value = [...data.sites];
+    }
+
+    if (data?.certificates) {
+      certificates.value = [...data.certificates];
     }
   };
 
@@ -88,6 +94,7 @@ export const useSitesStore = defineStore('sites', () => {
 
   return {
     sites,
+    certificates,
     addSite,
     fetchSites,
     fetchSite,

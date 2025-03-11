@@ -9,7 +9,7 @@ type Site struct {
 	Domain     string `json:"domain" gorm:"size:255;"`
 	ConfigName string `json:"config_name" gorm:"size:255;"`
 	Enabled    bool   `json:"enabled" gorm:"default:0"`
-	HasSSL     bool   `json:"has_ssl" gorm:"default:0"`
+	HasSSL     bool   `json:"has_ssl" gorm:"-"`
 	UserID     uint   `json:"user_id" gorm:"foreignKey:User"`
 	ConfigOnly bool   `json:"config_only" gorm:"-"`
 }

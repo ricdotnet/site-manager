@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"ricr.dev/site-manager/services"
 	"strconv"
 
 	"github.com/charmbracelet/log"
@@ -19,9 +20,10 @@ type User = models.User
 
 type Response struct {
 	config.ApiResponse
-	Site   *Site   `json:"site,omitempty"`
-	Sites  *[]Site `json:"sites,omitempty"`
-	Config string  `json:"config,omitempty"`
+	Site         *Site                  `json:"site,omitempty"`
+	Sites        *[]Site                `json:"sites,omitempty"`
+	Config       string                 `json:"config,omitempty"`
+	Certificates []services.Certificate `json:"certificates,omitempty"`
 }
 
 type RequestBody struct {
@@ -47,12 +49,18 @@ func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 
 	_ = s.sitesService.FindFileOnly(sites)
 
+	certificates, err := s.commandsService.GetCertificates(userCtx)
+	if err != nil {
+		println(err.Error())
+	}
+
 	return ctx.JSON(http.StatusOK, &Response{
 		ApiResponse: config.ApiResponse{
 			Code:        http.StatusOK,
 			MessageCode: "sites_fetch_success",
 		},
-		Sites: sites,
+		Sites:        sites,
+		Certificates: certificates,
 	})
 }
 

@@ -50,7 +50,7 @@
           <TableCell>{{ site.config_name }}</TableCell>
           <TableCell>{{ new Date(site.created_at).toDateString() }}</TableCell>
           <TableCell class="text-right">
-            {{ site.has_ssl ? 'Yes' : 'No' }}
+            {{ hasSSL(site.domain) }}
           </TableCell>
         </TableRow>
       </TableBody>
@@ -75,7 +75,7 @@ import { storeToRefs } from 'pinia';
 import { useSitesStore } from '@stores';
 
 const sitesStore = useSitesStore();
-const { sites } = storeToRefs(sitesStore);
+const { sites, certificates } = storeToRefs(sitesStore);
 
 const fetchError = ref(false);
 const isLoading = ref(false);
@@ -105,5 +105,24 @@ const onCheckAll = (e: Event & { target: HTMLInputElement }) => {
 
 const isEnabled = (isEnabled: boolean) => {
   return isEnabled ? 'Site enabled' : 'Site disabled';
+};
+
+const hasSSL = (domain: string) => {
+  const hasDirectSSL = certificates.value.some(
+    (cert) => cert.domains === domain,
+  );
+
+  if (hasDirectSSL) {
+    return true;
+  }
+
+  const domainMatches = domain.match(/([\w-]+.\w{1,4})$/);
+
+  if (!domainMatches || !domainMatches.length) {
+    return false;
+  }
+
+  const wildcardDomain = `*.${domainMatches[domainMatches.length - 1]}`;
+  return certificates.value.some((cert) => cert.domains === wildcardDomain);
 };
 </script>
