@@ -67,9 +67,10 @@ func (cs *CommandsService) GetCertificates(userCtx interface{}) ([]Certificate, 
 	user := userCtx.(*config.Session)
 
 	result, err := commandApiCall(cs.settingsRepo, user.UserID)
+	certificates := make([]Certificate, 0)
 
 	if err != nil {
-		return nil, err
+		return certificates, err
 	}
 
 	certificateParts := strings.Split(result.Message, "\n")
@@ -80,8 +81,6 @@ func (cs *CommandsService) GetCertificates(userCtx interface{}) ([]Certificate, 
 	certificateExpiryDate := regexp.MustCompile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\+00:00")
 	certificateExpiryDays := regexp.MustCompile("(\\((VALID|INVALID): .+)")
 	certificateMatchDigits := regexp.MustCompile("\\d{2}")
-
-	certificates := make([]Certificate, 0)
 
 	for i, certificate := range certificateParts {
 		if certificateHeader.MatchString(certificate) {
