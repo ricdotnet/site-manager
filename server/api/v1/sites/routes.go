@@ -18,5 +18,7 @@ func Routes(v1 *echo.Group, db *gorm.DB) {
 	sites.POST("/", sitesApi.createSite)
 	sites.PATCH("/", sitesApi.updateSite)
 	sites.DELETE("/", sitesApi.deleteSite)
+
+	sites.GET("/certificates", sitesApi.getCertificates)
 	sites.GET("/reload", sitesApi.reloadNginx)
 }
