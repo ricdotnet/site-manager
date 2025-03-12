@@ -1,5 +1,5 @@
 <template>
-  <template v-if="isLoading">
+  <template v-if="isLoadingSites">
     <TableLoading />
   </template>
   <template v-else-if="!sitesStore.sites.length">
@@ -50,7 +50,10 @@
           <TableCell>{{ site.config_name }}</TableCell>
           <TableCell>{{ new Date(site.created_at).toDateString() }}</TableCell>
           <TableCell class="text-right">
-            {{ hasSSL(site.domain) }}
+            <span v-if="isLoadingCertificates" class="flex justify-end">
+              <Spinner />
+            </span>
+            <span v-else>{{ hasSSL(site.domain) ? 'Yes' : 'No' }}</span>
           </TableCell>
         </TableRow>
       </TableBody>
@@ -62,6 +65,7 @@
 import {
   Checkbox,
   Empty,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -78,7 +82,8 @@ const sitesStore = useSitesStore();
 const { sites, certificates } = storeToRefs(sitesStore);
 
 const fetchError = ref(false);
-const isLoading = ref(false);
+const isLoadingSites = ref(true);
+const isLoadingCertificates = ref(true);
 
 const allChecked = computed(
   () =>
@@ -87,12 +92,21 @@ const allChecked = computed(
 const anyChecked = computed(() => sites.value.some((site) => site.checked));
 
 onMounted(async () => {
-  isLoading.value = true;
-
-  const error = await sitesStore.fetchSites();
-  if (error) fetchError.value = true;
-
-  isLoading.value = false;
+  const promises = [
+    await (async () => {
+      const error = await sitesStore.fetchSites();
+      isLoadingSites.value = false;
+      return error;
+    })(),
+    await (async () => {
+      await sitesStore.fetchCertificates();
+      isLoadingCertificates.value = false;
+    })(),
+  ];
+  const [sitesError] = await Promise.all(promises);
+  if (sitesError) {
+    fetchError.value = true;
+  }
 });
 
 const onCheckSite = (id: number) => {

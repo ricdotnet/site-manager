@@ -2,7 +2,6 @@ package sites
 
 import (
 	"net/http"
-	"os"
 	"regexp"
 	"ricr.dev/site-manager/services"
 	"strconv"
@@ -49,18 +48,12 @@ func (s *SitesAPI) getAllSites(ctx echo.Context) error {
 
 	_ = s.sitesService.FindFileOnly(sites)
 
-	certificates, err := s.commandsService.GetCertificates(userCtx)
-	if err != nil {
-		println(err.Error())
-	}
-
 	return ctx.JSON(http.StatusOK, &Response{
 		ApiResponse: config.ApiResponse{
 			Code:        http.StatusOK,
 			MessageCode: "sites_fetch_success",
 		},
-		Sites:        sites,
-		Certificates: certificates,
+		Sites: sites,
 	})
 }
 
@@ -251,39 +244,6 @@ func (s *SitesAPI) deleteSite(ctx echo.Context) error {
 	})
 }
 
-func (s *SitesAPI) reloadNginx(ctx echo.Context) error {
-	commandPipePath, _ := goenvironmental.Get("COMMAND_PIPE")
-
-	commandPipe, err := os.OpenFile(commandPipePath, os.O_WRONLY, os.ModeNamedPipe)
-	defer commandPipe.Close()
-
-	if err != nil {
-		log.Errorf("Failed to open the command pipe: %s", commandPipePath)
-		return echo.NewHTTPError(http.StatusInternalServerError, &config.ApiResponse{
-			Code:        http.StatusInternalServerError,
-			MessageCode: "nginx_reload_failed",
-		})
-	}
-
-	command := "nginx -s reload"
-	_, err = commandPipe.WriteString(command + "\n")
-
-	if err != nil {
-		log.Errorf("Failed to write command: %s", command)
-		return echo.NewHTTPError(http.StatusInternalServerError, &config.ApiResponse{
-			Code:        http.StatusInternalServerError,
-			MessageCode: "nginx_reload_failed",
-		})
-	}
-
-	log.Info("Nginx reloaded")
-
-	return ctx.JSON(http.StatusOK, &config.ApiResponse{
-		Code:        http.StatusOK,
-		MessageCode: "nginx_reload_success",
-	})
-}
-
 func (s *SitesAPI) validateSite(site *Site) string {
 	domainRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$"
 	configRegex := "^[A-Za-z0-9-]+(.[A-Za-z0-9-]+)*.[A-Za-z]{2,}\\.conf$"
@@ -309,4 +269,48 @@ func (s *SitesAPI) validateSite(site *Site) string {
 	}
 
 	return ""
+}
+
+func (s *SitesAPI) reloadNginx(ctx echo.Context) error {
+	userCtx := ctx.Get("user")
+
+	err := s.commandsService.ReloadNginx(userCtx)
+	if err != nil {
+		log.Error(err.Error())
+
+		return echo.NewHTTPError(http.StatusInternalServerError, &config.ApiResponse{
+			Code:        http.StatusInternalServerError,
+			MessageCode: "nginx_reload_failed",
+			Message:     "Failed to reload nginx",
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, &config.ApiResponse{
+		Code:        http.StatusOK,
+		MessageCode: "nginx_reload_success",
+		Message:     "Successfully reloaded nginx",
+	})
+}
+
+func (s *SitesAPI) getCertificates(ctx echo.Context) error {
+	userCtx := ctx.Get("user")
+
+	certificates, err := s.commandsService.GetCertificates(userCtx)
+	if err != nil {
+		log.Error(err.Error())
+
+		return echo.NewHTTPError(http.StatusInternalServerError, &config.ApiResponse{
+			Code:        http.StatusInternalServerError,
+			MessageCode: "failed_to_get_certificates",
+			Message:     "Failed to get certificates",
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, &Response{
+		ApiResponse: config.ApiResponse{
+			Code:        http.StatusOK,
+			MessageCode: "sites_fetch_success",
+		},
+		Certificates: certificates,
+	})
 }

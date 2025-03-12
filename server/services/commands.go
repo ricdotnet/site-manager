@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/ricdotnet/goenvironmental"
 	"gorm.io/gorm"
 	"io"
@@ -39,7 +40,7 @@ func NewCommandsService(db *gorm.DB) *CommandsService {
 	}
 }
 
-func commandApiCall(sr *repository.SettingsRepo, userId uint) (*CommandsResponse, error) {
+func commandApiCall(sr *repository.SettingsRepo, endpoint string, userId uint) (*CommandsResponse, error) {
 	commandServiceUrl, _ := goenvironmental.Get("APP_COMMAND_SERVICE_URL")
 
 	setting := &models.Settings{}
@@ -49,7 +50,7 @@ func commandApiCall(sr *repository.SettingsRepo, userId uint) (*CommandsResponse
 		return nil, err
 	}
 
-	req, _ := http.NewRequest("POST", commandServiceUrl+"certificates", nil)
+	req, _ := http.NewRequest("POST", commandServiceUrl+endpoint, nil)
 	req.Header.Set("Authorization", setting.Value)
 
 	client := &http.Client{}
@@ -63,10 +64,26 @@ func commandApiCall(sr *repository.SettingsRepo, userId uint) (*CommandsResponse
 	return result, nil
 }
 
+func (cs *CommandsService) ReloadNginx(userCtx interface{}) error {
+	user := userCtx.(*config.Session)
+
+	result, err := commandApiCall(cs.settingsRepo, "reload-nginx", user.UserID)
+
+	if err != nil {
+		return err
+	}
+
+	if result.Failed {
+		return errors.New("failed to reload nginx")
+	}
+
+	return nil
+}
+
 func (cs *CommandsService) GetCertificates(userCtx interface{}) ([]Certificate, error) {
 	user := userCtx.(*config.Session)
 
-	result, err := commandApiCall(cs.settingsRepo, user.UserID)
+	result, err := commandApiCall(cs.settingsRepo, "certificates", user.UserID)
 	certificates := make([]Certificate, 0)
 
 	if err != nil {

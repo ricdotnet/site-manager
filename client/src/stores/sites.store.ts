@@ -1,6 +1,7 @@
 import type {
   BaseResponse,
   TCertificate,
+  TCertificatesResponse,
   TSite,
   TSiteResponse,
   TSitesResponse,
@@ -24,7 +25,9 @@ export const useSitesStore = defineStore('sites', () => {
 
   const removeSites = (ids: number[]): void => {
     sites.value = sites.value.reduce((filtered: TSite[], site: TSite) => {
-      if (!ids.includes(site.id)) filtered.push(site);
+      if (!ids.includes(site.id)) {
+        filtered.push(site);
+      }
       return filtered;
     }, []);
   };
@@ -39,6 +42,16 @@ export const useSitesStore = defineStore('sites', () => {
     if (data?.sites) {
       sites.value = [...data.sites];
     }
+  };
+
+  const fetchCertificates = async (): Promise<string | undefined> => {
+    const { data, error } = await useRequest<TCertificatesResponse>({
+      endpoint: '/site/certificates',
+    });
+
+    if (error) {
+      return error;
+    }
 
     if (data?.certificates) {
       certificates.value = [...data.certificates];
@@ -50,7 +63,9 @@ export const useSitesStore = defineStore('sites', () => {
       endpoint: `/site/${route.params.id}`,
     });
 
-    if (error) return error;
+    if (error) {
+      return error;
+    }
 
     if (data?.site) {
       site.value = data.site;
@@ -104,5 +119,6 @@ export const useSitesStore = defineStore('sites', () => {
     getSite,
     getSites,
     reloadNginx,
+    fetchCertificates,
   };
 });

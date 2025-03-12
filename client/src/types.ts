@@ -30,6 +30,9 @@ export type VerifyCodeResponse = BaseResponse & {
 
 export type TSitesResponse = BaseResponse & {
   sites: TSite[];
+};
+
+export type TCertificatesResponse = BaseResponse & {
   certificates: TCertificate[];
 };
 
