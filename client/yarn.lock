@@ -1725,7 +1725,7 @@ __metadata:
     babel-loader: ^9.2.1
     eslint: ^9.17.0
     eslint-plugin-vue: ^9.32.0
-    globals: ^15.14.0
+    globals: ^16.0.0
     inter-ui: ^4.1.0
     monaco-editor: ^0.52.2
     pinia: ^2.3.0
@@ -2635,10 +2635,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:^15.14.0":
-  version: 15.14.0
-  resolution: "globals@npm:15.14.0"
-  checksum: fa993433a01bf4a118904fbafbcff34db487fce83f73da75fb4a8653afc6dcd72905e6208c49bab307ff0980928273d0ecd1cfc67e1a4782dabfbd92c234ab68
+"globals@npm:^16.0.0":
+  version: 16.0.0
+  resolution: "globals@npm:16.0.0"
+  checksum: 41df1cb6f86c36dfdf8fb6c270247105c85cc3aec8d8238c5e691b0d2aad9eed8ff390d1035f4b5a27ee24bf75b095c7b84717e9d2050d2122e61f37d9c6131a
   languageName: node
   linkType: hard
 
