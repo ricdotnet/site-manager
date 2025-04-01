@@ -1733,7 +1733,7 @@ __metadata:
     prettier: ^3.4.2
     react: ^19.0.0
     react-dom: ^19.0.0
-    sass: ^1.83.0
+    sass: ^1.86.1
     tailwindcss: ^3.4.17
     typescript: 5.8.2
     typescript-eslint: 8.23.0
@@ -4073,9 +4073,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.83.0":
-  version: 1.83.0
-  resolution: "sass@npm:1.83.0"
+"sass@npm:^1.86.1":
+  version: 1.86.1
+  resolution: "sass@npm:1.86.1"
   dependencies:
     "@parcel/watcher": ^2.4.1
     chokidar: ^4.0.0
@@ -4086,7 +4086,7 @@ __metadata:
       optional: true
   bin:
     sass: sass.js
-  checksum: ab7ba7829b3a53f4cc209dba4b515e48b67fbabfa7afc1195275991a18511e04259c1e1b19bf93d77e6f5c39556e022f2ea2ce68117668f59f6679cd8c58ddd9
+  checksum: b578c4a7e34cf0edd4fd907a36529c7feeec769162ba776fc5701caa24adc01e81ccf104013a5da6a36431d4820b3ea47d84843ed6244cd6948d10fda01a2aa1
   languageName: node
   linkType: hard
 
