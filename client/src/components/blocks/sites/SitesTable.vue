@@ -53,7 +53,7 @@
             <span v-if="isLoadingCertificates" class="flex justify-end">
               <Spinner />
             </span>
-            <span v-else>{{ hasSSL(site.domain) ? 'Yes' : 'No' }}</span>
+            <span v-else>{{ certificate(site.domain) }}</span>
           </TableCell>
         </TableRow>
       </TableBody>
@@ -121,22 +121,30 @@ const isEnabled = (isEnabled: boolean) => {
   return isEnabled ? 'Site enabled' : 'Site disabled';
 };
 
-const hasSSL = (domain: string) => {
-  const hasDirectSSL = certificates.value.some(
+const certificate = (domain: string) => {
+  const domainCertificate = certificates.value.find(
     (cert) => cert.domains === domain,
   );
 
-  if (hasDirectSSL) {
-    return true;
+  if (domainCertificate) {
+    return `Yes (${domainCertificate.expiry_days})`;
   }
 
   const domainMatches = domain.match(/([\w-]+.\w{1,4})$/);
 
   if (!domainMatches || !domainMatches.length) {
-    return false;
+    return 'No';
   }
 
   const wildcardDomain = `*.${domainMatches[domainMatches.length - 1]}`;
-  return certificates.value.some((cert) => cert.domains === wildcardDomain);
+  const wildcardCertificate = certificates.value.find(
+    (cert) => cert.domains === wildcardDomain,
+  );
+
+  if (wildcardCertificate) {
+    return `Yes (*. ${wildcardCertificate.expiry_days})`;
+  }
+
+  return 'No';
 };
 </script>

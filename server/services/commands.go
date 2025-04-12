@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"errors"
+	"github.com/charmbracelet/log"
 	"github.com/ricdotnet/goenvironmental"
 	"gorm.io/gorm"
 	"io"
@@ -13,6 +14,7 @@ import (
 	"ricr.dev/site-manager/repository"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type (
@@ -90,6 +92,7 @@ func (cs *CommandsService) GetCertificates(userCtx interface{}) ([]Certificate, 
 		return certificates, err
 	}
 
+	startParsing := time.Now()
 	certificateParts := strings.Split(result.Message, "\n")
 
 	certificateHeader := regexp.MustCompile("^.+Certificate Name: .+")
@@ -97,7 +100,7 @@ func (cs *CommandsService) GetCertificates(userCtx interface{}) ([]Certificate, 
 	certificateExpiry := regexp.MustCompile("^.+Expiry Date: .+")
 	certificateExpiryDate := regexp.MustCompile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\+00:00")
 	certificateExpiryDays := regexp.MustCompile("(\\((VALID|INVALID): .+)")
-	certificateMatchDigits := regexp.MustCompile("\\d{2}")
+	certificateMatchDigits := regexp.MustCompile("\\d{1,2}")
 
 	for i, certificate := range certificateParts {
 		if certificateHeader.MatchString(certificate) {
@@ -105,6 +108,8 @@ func (cs *CommandsService) GetCertificates(userCtx interface{}) ([]Certificate, 
 			name := strings.Split(certificate, " Name: ")[1]
 
 			cert.Name = name
+
+			log.Infof("Parsing certificate %s", name)
 
 			for j := 1; j < 7; j++ {
 				if certificateDomains.MatchString(certificateParts[i+j]) {
@@ -131,6 +136,7 @@ func (cs *CommandsService) GetCertificates(userCtx interface{}) ([]Certificate, 
 			continue
 		}
 	}
+	log.Infof("Finished parsing certificates in %s", time.Since(startParsing))
 
 	return certificates, nil
 }
