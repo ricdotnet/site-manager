@@ -14,5 +14,3 @@ export { default as ApiKeys } from './settings/ApiKeys.vue';
 export { default as ActiveSessions } from './settings/ActiveSessions.vue';
 export { default as DomainDetails } from './domains/DomainDetails.vue';
 export { default as DNSRecords } from './domains/DNSRecords.vue';
-
-export { default as Video } from './Video.vue';
