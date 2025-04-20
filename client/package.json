@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
+    "@unhead/vue": "^2.0.8",
     "axios": "^1.7.9",
     "inter-ui": "^4.1.0",
     "monaco-editor": "^0.52.2",

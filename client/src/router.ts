@@ -12,6 +12,13 @@ declare module 'vue-router' {
 
 const routes = [
   {
+    path: '/v/some-sample-video-uuid',
+    component: pages.Video,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
     path: '/',
     component: pages.Home,
     meta: {
