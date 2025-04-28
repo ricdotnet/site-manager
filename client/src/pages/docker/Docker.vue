@@ -18,11 +18,18 @@
   import { useRequest } from '@composables';
 
   const loading = ref(true);
-  const containers = ref([]);
+  const containers = ref<Container[]>([]);
+
+  interface Container {
+    id: string;
+    names: string;
+    state: string;
+    ports: string;
+  }
 
   onMounted(async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await useRequest<any>({
+    const { data, error } = await useRequest<{ data: Container[] }>({
       endpoint: '/docker/containers',
     });
 
@@ -31,8 +38,12 @@
       return;
     }
 
-    console.log('Containers:', data);
+    if (!data) {
+      console.error('No data received');
+      return;
+    }
 
+    console.log('Containers:', data);
     containers.value = data.data;
 
     loading.value = false;
