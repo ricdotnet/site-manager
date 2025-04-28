@@ -12,6 +12,12 @@ type (
 		MessageCode string `json:"message_code,omitempty"`
 	}
 
+	Response[T any] struct {
+		Code    int    `json:"code"`
+		Message string `json:"message,omitempty"`
+		Data    T      `json:"data,omitempty"`
+	}
+
 	BaseModel struct {
 		ID        uint      `json:"id" gorm:"primaryKey"`
 		CreatedAt time.Time `json:"created_at"`

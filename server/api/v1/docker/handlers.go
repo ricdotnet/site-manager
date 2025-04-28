@@ -2,6 +2,7 @@ package docker
 
 import (
 	"encoding/json"
+	"net/http"
 
 	"github.com/charmbracelet/log"
 	"github.com/labstack/echo/v4"
@@ -31,11 +32,16 @@ func (d *DockerAPI) getContainers(ctx echo.Context) error {
 
 	containers, err := d.commandsService.GetContainers(userCtx)
 
-	log.Infof("Retrieved %d containers", len(containers))
-
 	if err != nil {
-		return ctx.JSON(500, err)
+		log.Errorf("Error retrieving containers: %v", err)
+
+		return ctx.JSON(http.StatusInternalServerError, &config.Response[any]{
+			Code:    http.StatusInternalServerError,
+			Message: "Error retrieving containers",
+		})
 	}
+
+	log.Infof("Retrieved %d containers", len(containers))
 
 	unmarshalledContainers := make([]config.Container, 0)
 
@@ -48,11 +54,19 @@ func (d *DockerAPI) getContainers(ctx echo.Context) error {
 
 		if err != nil {
 			log.Errorf("Error unmarshalling container: %v", err)
-			return ctx.JSON(500, err)
+
+			return ctx.JSON(http.StatusInternalServerError, &config.Response[any]{
+				Code:    http.StatusInternalServerError,
+				Message: "Error unmarshalling container data",
+			})
 		}
 
 		unmarshalledContainers = append(unmarshalledContainers, *unmarshalledContainer)
 	}
 
-	return ctx.JSON(200, unmarshalledContainers)
+	return ctx.JSON(http.StatusOK, &config.Response[[]config.Container]{
+		Code:    http.StatusOK,
+		Message: "Containers retrieved successfully",
+		Data:    unmarshalledContainers,
+	})
 }
