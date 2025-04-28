@@ -3,7 +3,13 @@
     <p>Loading...</p>
   </div>
   <div v-else>
-    {{ containers }}
+    <h1>Docker Containers</h1>
+    <p>Docker containers:</p>
+    <ul>
+      <li v-for="container in containers" :key="container.id">
+        {{ container.id }} - {{ container.names }} [{{ container.ports }}] ({{ container.state }})
+      </li>
+    </ul>
   </div>
 </template>
 
