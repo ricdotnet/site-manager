@@ -1,9 +1,10 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/charmbracelet/log"
 	"github.com/ricdotnet/goenvironmental"
-	"net/http"
 )
 
 type reloadNginxBody struct {
@@ -25,6 +26,7 @@ func main() {
 
 	http.HandleFunc("POST /reload-nginx", auth(reloadNginx))
 	http.HandleFunc("POST /certificates", auth(certificates))
+	http.HandleFunc("POST /docker-containers", auth(dockerContainers))
 
 	http.HandleFunc("POST /custom-command", auth(customCommand))
 
