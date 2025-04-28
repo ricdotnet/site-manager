@@ -24,4 +24,13 @@ type (
 		Email    string
 		Role     string
 	}
+
+	Container struct {
+		ID     string `json:"id"`
+		Names  string `json:"names"`
+		Image  string `json:"image"`
+		State  string `json:"state"`
+		Status string `json:"status"`
+		Ports  string `json:"ports"`
+	}
 )

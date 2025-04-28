@@ -31,6 +31,15 @@ func main() {
 		return
 	}
 
+	env := os.Getenv("ENV")
+	if env == "" {
+		env = "development"
+	}
+
+	if env == "development" {
+		log.SetLevel(log.DebugLevel)
+	}
+
 	if *run {
 		conn, err := database.Connect()
 		if err != nil {
