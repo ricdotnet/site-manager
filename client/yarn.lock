@@ -1105,18 +1105,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@unhead/vue@npm:^2.0.8":
-  version: 2.0.8
-  resolution: "@unhead/vue@npm:2.0.8"
-  dependencies:
-    hookable: ^5.5.3
-    unhead: 2.0.8
-  peerDependencies:
-    vue: ">=3.5.13"
-  checksum: eeab7ebcbc40e6d9ec6c6caa5f00eabfc2d69baa500abbbb0bd51f4e1fd00d583c50df728c4d39392b9680cc6800207c72d2803677c7164666dab02be0469e81
-  languageName: node
-  linkType: hard
-
 "@vitejs/plugin-vue@npm:^5.2.1":
   version: 5.2.1
   resolution: "@vitejs/plugin-vue@npm:5.2.1"
@@ -1731,7 +1719,6 @@ __metadata:
     "@eslint/js": ^9.22.0
     "@heroicons/vue": ^2.2.0
     "@types/node": ^22.13.10
-    "@unhead/vue": ^2.0.8
     "@vitejs/plugin-vue": ^5.2.1
     autoprefixer: ^10.4.20
     axios: ^1.7.9
@@ -1746,7 +1733,7 @@ __metadata:
     prettier: ^3.4.2
     react: ^19.0.0
     react-dom: ^19.0.0
-    sass: ^1.83.0
+    sass: ^1.88.0
     tailwindcss: ^3.4.17
     typescript: 5.8.2
     typescript-eslint: 8.23.0
@@ -2714,13 +2701,6 @@ __metadata:
   bin:
     he: bin/he
   checksum: 3d4d6babccccd79c5c5a3f929a68af33360d6445587d628087f39a965079d84f18ce9c3d3f917ee1e3978916fc833bb8b29377c3b403f919426f91bc6965e7a7
-  languageName: node
-  linkType: hard
-
-"hookable@npm:^5.5.3":
-  version: 5.5.3
-  resolution: "hookable@npm:5.5.3"
-  checksum: df659977888398649b6ef8c4470719e7e8384a1d939a6587e332e86fd55b3881806e2f8aaebaabdb4f218f74b83b98f2110e143df225e16d62a39dc271e7e288
   languageName: node
   linkType: hard
 
@@ -4093,9 +4073,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.83.0":
-  version: 1.83.0
-  resolution: "sass@npm:1.83.0"
+"sass@npm:^1.88.0":
+  version: 1.88.0
+  resolution: "sass@npm:1.88.0"
   dependencies:
     "@parcel/watcher": ^2.4.1
     chokidar: ^4.0.0
@@ -4106,7 +4086,7 @@ __metadata:
       optional: true
   bin:
     sass: sass.js
-  checksum: ab7ba7829b3a53f4cc209dba4b515e48b67fbabfa7afc1195275991a18511e04259c1e1b19bf93d77e6f5c39556e022f2ea2ce68117668f59f6679cd8c58ddd9
+  checksum: 290a2797d2f6c0b9e9a4aeeb59abe3fdb68ffc9e1e154d5aafb363d5c897118ec50726812f63f4d8526a5b22a2d5b08001929acefb5120f05a0c16d8013d5ff8
   languageName: node
   linkType: hard
 
@@ -4475,7 +4455,7 @@ __metadata:
 
 "typescript@patch:typescript@5.8.2#~builtin<compat/typescript>":
   version: 5.8.2
-  resolution: "typescript@patch:typescript@npm%3A5.8.2#~builtin<compat/typescript>::version=5.8.2&hash=b45daf"
+  resolution: "typescript@patch:typescript@npm%3A5.8.2#~builtin<compat/typescript>::version=5.8.2&hash=8c6c40"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
@@ -4487,15 +4467,6 @@ __metadata:
   version: 6.20.0
   resolution: "undici-types@npm:6.20.0"
   checksum: b7bc50f012dc6afbcce56c9fd62d7e86b20a62ff21f12b7b5cbf1973b9578d90f22a9c7fe50e638e96905d33893bf2f9f16d98929c4673c2480de05c6c96ea8b
-  languageName: node
-  linkType: hard
-
-"unhead@npm:2.0.8":
-  version: 2.0.8
-  resolution: "unhead@npm:2.0.8"
-  dependencies:
-    hookable: ^5.5.3
-  checksum: b5e5450fa61295bab135c79e66a95d8e2abee730b14054650c491acd89446d97d1646dda17b6cc441dd6907c6c1d92f8ca07253d14fcd7b8ea9637bf0ff74df8
   languageName: node
   linkType: hard
 
