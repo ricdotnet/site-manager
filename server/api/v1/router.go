@@ -1,11 +1,13 @@
 package v1
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/ricdotnet/goenvironmental"
 	"gorm.io/gorm"
-	"net/http"
+	"ricr.dev/site-manager/api/v1/docker"
 	"ricr.dev/site-manager/api/v1/domains"
 	"ricr.dev/site-manager/api/v1/settings"
 	"ricr.dev/site-manager/api/v1/sites"
@@ -48,6 +50,7 @@ func NewRouter(db *gorm.DB) *echo.Echo {
 	user.Routes(v1, db)
 	settings.Routes(v1, db)
 	domains.Routes(v1, db)
+	docker.Routes(v1, db)
 
 	return e
 }

@@ -3,18 +3,19 @@ package services
 import (
 	"encoding/json"
 	"errors"
-	"github.com/charmbracelet/log"
-	"github.com/ricdotnet/goenvironmental"
-	"gorm.io/gorm"
 	"io"
 	"net/http"
 	"regexp"
-	"ricr.dev/site-manager/config"
-	"ricr.dev/site-manager/models"
-	"ricr.dev/site-manager/repository"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/charmbracelet/log"
+	"github.com/ricdotnet/goenvironmental"
+	"gorm.io/gorm"
+	"ricr.dev/site-manager/config"
+	"ricr.dev/site-manager/models"
+	"ricr.dev/site-manager/repository"
 )
 
 type (
@@ -98,9 +99,9 @@ func (cs *CommandsService) GetCertificates(userCtx interface{}) ([]Certificate, 
 	certificateHeader := regexp.MustCompile("^.+Certificate Name: .+")
 	certificateDomains := regexp.MustCompile("^.+Domains: .+")
 	certificateExpiry := regexp.MustCompile("^.+Expiry Date: .+")
-	certificateExpiryDate := regexp.MustCompile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\+00:00")
-	certificateExpiryDays := regexp.MustCompile("(\\((VALID|INVALID): .+)")
-	certificateMatchDigits := regexp.MustCompile("\\d{1,2}")
+	certificateExpiryDate := regexp.MustCompile(`\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\+00:00`)
+	certificateExpiryDays := regexp.MustCompile(`(\((VALID|INVALID): .+)`)
+	certificateMatchDigits := regexp.MustCompile(`\d{1,2}`)
 
 	for i, certificate := range certificateParts {
 		if certificateHeader.MatchString(certificate) {
@@ -139,4 +140,22 @@ func (cs *CommandsService) GetCertificates(userCtx interface{}) ([]Certificate, 
 	log.Infof("Finished parsing certificates in %s", time.Since(startParsing))
 
 	return certificates, nil
+}
+
+func (cs *CommandsService) GetContainers(userCtx interface{}) ([]string, error) {
+	user := userCtx.(*config.Session)
+
+	result, err := commandApiCall(cs.settingsRepo, "docker-containers", user.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Failed {
+		return nil, errors.New("failed to get containers")
+	}
+
+	containers := strings.Split(result.Message, "\n")
+	containers = containers[:len(containers)-1]
+
+	return containers, nil
 }

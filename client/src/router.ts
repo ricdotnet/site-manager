@@ -47,6 +47,11 @@ const routes = [
         name: 'overview',
       },
       {
+        path: 'docker',
+        component: pages.Docker,
+        name: 'docker',
+      },
+      {
         path: 'sites',
         component: pages.Sites,
         name: 'sites',

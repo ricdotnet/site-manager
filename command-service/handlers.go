@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/charmbracelet/log"
 	"net/http"
+
+	"github.com/charmbracelet/log"
 )
 
 func reloadNginx(w http.ResponseWriter, r *http.Request) {
@@ -62,6 +63,26 @@ func customCommand(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Error(err)
+		send(w, &response{
+			Code:    http.StatusOK,
+			Message: err.Error(),
+			Failed:  true,
+		})
+		return
+	}
+
+	send(w, &response{
+		Code:    http.StatusOK,
+		Message: out,
+		Failed:  false,
+	})
+}
+
+func dockerContainers(w http.ResponseWriter, r *http.Request) {
+	out, err := execute("docker", []string{"ps", "-a", "--format={{json .}}"})
+
+	if err != nil {
+		log.Error(err.Error())
 		send(w, &response{
 			Code:    http.StatusOK,
 			Message: err.Error(),

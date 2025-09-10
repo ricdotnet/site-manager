@@ -10,6 +10,8 @@ export { default as Domains } from './Domains.vue';
 export { default as Settings } from './Settings.vue';
 export { default as NotBuiltYet } from './NotBuiltYet.vue';
 
+export { default as Docker } from './docker/Docker.vue';
+
 export { default as ApiKeys } from './settings/ApiKeys.vue';
 export { default as ActiveSessions } from './settings/ActiveSessions.vue';
 export { default as DomainDetails } from './domains/DomainDetails.vue';
